@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenido</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Asegúrate de que la ruta sea correcta -->
+</head>
+<body>
+     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js">
+        // Verifica si el usuario está autenticado al cargar la página
+        window.onload = async function() {
+            const token = localStorage.getItem('token'); // Obtiene el token de localStorage
+            console.log('Token encontrado:', token); // Log del token encontrado
+
+            if (!token) {
+                console.log('No se encontró el token, redirigiendo a login.html');
+                setTimeout(() => {
+                    window.location.href = '/login.html'; // Redirige si no hay token
+                }, 2000); // 2000 ms = 2 segundos
+            } else {
+                // Decodifica el token para obtener la información del usuario
+                const decoded = jwt.decode(token);
+                const nombreCompleto = decoded.nombre_completo; // Obtiene el nombre completo del token
+                console.log("Nombre ", nombreCompleto);
+                // Muestra el nombre completo en el elemento correspondiente
+                document.getElementById('nombre_usuario').innerText = nombreCompleto;
+            }
+        };
+
+      
+        // Maneja el cierre de sesión
+        const logoutButton = document.getElementById('logout-button');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', function() {
+                logout(); // Llama a la función de cierre de sesión
+            });
+        }
+
+        // Función para manejar el cierre de sesión
+        function logout() {
+            localStorage.removeItem('token'); // Elimina el token de localStorage
+            window.location.href = '/login.html'; // Redirige al usuario a la página de inicio de sesión
+        }
+
+    </script>
+    <div id="header">
+        <div id="welcome-message">Bienvenido, <span style="font-weight: bold;" id="nombre_usuario"></span></div> <!-- Mensaje de bienvenida con nombre -->
+        <button id="logout-button">Cerrar sesión</button> <!-- Botón a la derecha -->
+    </div>
+    <div id="content">
+        <p>Has iniciado sesión correctamente. Esta es una página de inicio.</p>
+        <p><a href="/home">Ir a la página principal</a></p>
+    </div>
+    <label for="materias">Selecciona una materia:</label>
+    <select id="materias">
+        <option value="" disabled selected>Selecciona una materia</option>
+    </select>
+</body>
+</html>

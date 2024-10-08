@@ -1,119 +1,177 @@
-/**
- * This is the main Node.js server script for your project
- * Check out the two endpoints this back-end API provides in fastify.get and fastify.post below
- */
+require('dotenv').config(); // Cargar variables de entorno
+const express = require('express');
+const session = require('express-session');
+const bcrypt = require('bcrypt');
+const bodyParser = require('body-parser');
+const { createClient } = require('@supabase/supabase-js');
+const path = require('path'); // Importar el módulo path
+const jwt = require('jsonwebtoken'); // Asegúrate de instalar jsonwebtoken con npm
 
-const path = require("path");
+const app = express();
 
-// Require the fastify framework and instantiate it
-const fastify = require("fastify")({
-  // Set this to true for detailed logging:
-  logger: false,
+// Configurar Supabase
+const supabaseUrl = process.env.SUPABASE_URL; // Cargar URL de Supabase desde la variable de entorno
+const supabaseKey = process.env.SUPABASE_KEY; // Cargar clave de Supabase desde la variable de entorno
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Servir archivos estáticos desde la carpeta public
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(session({
+    secret: 'tu_secreto', // Cambia esto por un secreto más seguro
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true } // Cambia a true si usas HTTPS
+}));
+
+// Ruta para el formulario de login
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'login.html')); // Servir el HTML de login
 });
 
-// ADD FAVORITES ARRAY VARIABLE FROM TODO HERE
+// Manejo del login
+app.post('/login', async (req, res) => {
+  console.log("Inicio del proceso de login"); // Mensaje inicial
+    const { email, password } = req.body;
 
-// Setup our static files
-fastify.register(require("@fastify/static"), {
-  root: path.join(__dirname, "public"),
-  prefix: "/", // optional: default '/'
-});
+    // Buscar usuario en Supabase
+    const { data: usuario, error } = await supabase
+        .from('Usuario')
+        .select('*')
+        .eq('email', email)
+        .single(); // Obtiene un único usuario
 
-// Formbody lets us parse incoming forms
-fastify.register(require("@fastify/formbody"));
-
-// View is a templating manager for fastify
-fastify.register(require("@fastify/view"), {
-  engine: {
-    handlebars: require("handlebars"),
-  },
-});
-
-// Load and parse SEO data
-const seo = require("./src/seo.json");
-if (seo.url === "glitch-default") {
-  seo.url = `https://${process.env.PROJECT_DOMAIN}.glitch.me`;
-}
-
-/**
- * Our home page route
- *
- * Returns src/pages/index.hbs with data built into it
- */
-fastify.get("/", function (request, reply) {
-  // params is an object we'll pass to our handlebars template
-  let params = { seo: seo };
-
-  // If someone clicked the option for a random color it'll be passed in the querystring
-  if (request.query.randomize) {
-    // We need to load our color data file, pick one at random, and add it to the params
-    const colors = require("./src/colors.json");
-    const allColors = Object.keys(colors);
-    let currentColor = allColors[(allColors.length * Math.random()) << 0];
-
-    // Add the color properties to the params object
-    params = {
-      color: colors[currentColor],
-      colorError: null,
-      seo: seo,
-    };
-  }
-
-  // The Handlebars code will be able to access the parameter values and build them into the page
-  return reply.view("/src/pages/index.hbs", params);
-});
-
-/**
- * Our POST route to handle and react to form submissions
- *
- * Accepts body data indicating the user choice
- */
-fastify.post("/", function (request, reply) {
-  // Build the params object to pass to the template
-  let params = { seo: seo };
-
-  // If the user submitted a color through the form it'll be passed here in the request body
-  let color = request.body.color;
-
-  // If it's not empty, let's try to find the color
-  if (color) {
-    // ADD CODE FROM TODO HERE TO SAVE SUBMITTED FAVORITES
-
-    // Load our color data file
-    const colors = require("./src/colors.json");
-
-    // Take our form submission, remove whitespace, and convert to lowercase
-    color = color.toLowerCase().replace(/\s/g, "");
-
-    // Now we see if that color is a key in our colors object
-    if (colors[color]) {
-      // Found one!
-      params = {
-        color: colors[color],
-        colorError: null,
-        seo: seo,
-      };
-    } else {
-      // No luck! Return the user value as the error property
-      params = {
-        colorError: request.body.color,
-        seo: seo,
-      };
+    if (error) {
+        console.error("Error al buscar usuario:", error); // Log de error
+        return res.json({ success: false, message: 'Error al buscar usuario.' });
     }
-  }
 
-  // The Handlebars template will use the parameter values to update the page with the chosen color
-  return reply.view("/src/pages/index.hbs", params);
+     if (usuario) {
+        console.log("Usuario encontrado:", usuario); // Agrega esto para verificar si se encontró el usuario
+        // Verificar contraseña
+        const passwordMatch = await bcrypt.compare(password, usuario.password);
+        console.log("Contraseña coincide:", passwordMatch); // Log del resultado de comparación
+
+        if (passwordMatch) {
+            // Buscar el profesor relacionado con el usuario
+            console.log("ID del usuario:", usuario.id); // Agrega esta línea para imprimir el ID del usuario
+            const { data: profesor, error: errorProfesor } = await supabase
+                .from('Profesor')
+                .select('*')
+                .eq('id_usuario', usuario.id) // Suponiendo que id_usuario en Profesor relaciona con id en Usuario
+                .single();
+
+            if (errorProfesor) {
+                console.error("Error al buscar profesor:", errorProfesor);
+                return res.json({ success: false, message: 'Error al buscar profesor.' });
+            }
+
+            if (profesor) {
+                // Generar el nombre completo del profesor
+                const nombreCompleto = `${profesor.nombre} ${profesor.apellido_paterno} ${profesor.apellido_materno}`;
+
+                // Generar un token JWT con el nombre completo del profesor
+                const token = jwt.sign(
+                    { id: usuario.id, nombre_completo: nombreCompleto },
+                    'tu_secreto_aqui',
+                    { expiresIn: '1h' }
+                );
+
+                // Responder con el token
+                return res.json({ success: true, token }); // Envía el token al cliente
+            } else {
+                return res.json({ success: false, message: 'Profesor no encontrado.' });
+            }
+        }
+    }
 });
 
-// Run the server and report out to the logs
-fastify.listen(
-  { port: process.env.PORT, host: "0.0.0.0" },
-  function (err, address) {
-    if (err) {
-      console.error(err);
-      process.exit(1);
+// Manejo del usuario
+app.get('/get-usuario', async (req, res) => {
+    const token = req.headers['authorization']?.split(' ')[1]; // Asegúrate de obtener el token del encabezado
+
+    if (!token) {
+        return res.status(401).json({ message: 'No autorizado' }); // Si no hay token, responde con un error 401
     }
-    console.log(`Your app is listening on ${address}`);
-  }
-);
+
+    try {
+        const decoded = jwt.verify(token, 'tu_secreto_aqui'); // Verifica el token
+        const { data: usuario, error } = await supabase
+            .from('Usuario')
+            .select('*')
+            .eq('id', decoded.id) // Usa el ID del token para obtener el usuario
+            .single();
+
+        if (error) {
+            console.error("Error al obtener usuario:", error);
+            return res.status(500).json({ message: 'Error al obtener usuario.' });
+        }
+
+        return res.json({ nombreUsuario: usuario.nombre_usuario }); // Responde con el nombre de usuario
+    } catch (err) {
+        console.error('Error al verificar el token:', err);
+        return res.status(401).json({ message: 'Token inválido' });
+    }
+});
+
+
+// Ruta para registrar un nuevo usuario
+app.post('/register', async (req, res) => {
+    const { email, password } = req.body;
+
+    // Hashear la contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Insertar usuario en Supabase
+    const { data, error } = await supabase
+        .from('Usuario')
+        .insert([{ email: email, password: hashedPassword }]);
+
+    if (error) {
+        return res.json({ success: false, message: 'Error al registrar usuario.' });
+    }
+
+    res.json({ success: true, message: 'Usuario registrado exitosamente.' });
+});
+
+// Ruta protegida
+app.get('/dashboard', (req, res) => {
+    if (!req.session.userId) {
+        return res.status(403).send('Acceso denegado. Por favor inicie sesión.');
+    }
+    res.send('Bienvenido al dashboard.'); // Lógica para el dashboard
+});
+
+// Iniciar el servidor
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Servidor escuchando en http://localhost:${PORT}`);
+});
+
+// Ruta para obtener el usuario
+app.get('/get-usuario', async (req, res) => { // Agrega async aquí
+    if (!req.session.userId) {
+        return res.status(401).json({ success: false, message: 'No autenticado' });
+    }
+
+    // Busca al usuario en la base de datos
+    const { data: usuario, error } = await supabase
+        .from('Usuario')
+        .select('*')
+        .eq('id', req.session.userId) // Usando el ID de la sesión
+        .single();
+
+    if (error || !usuario) {
+        return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+    }
+
+    res.json({ success: true, nombreUsuario: usuario.nombre }); // Asegúrate de usar la propiedad correcta
+});
+
+
+
+
