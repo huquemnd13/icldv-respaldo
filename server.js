@@ -79,7 +79,6 @@ app.post('/login', async (req, res) => {
             if (profesor) {
                 // Generar el nombre completo del profesor
                 const nombreCompleto = `${profesor.nombre} ${profesor.apellido_paterno} ${profesor.apellido_materno}`;
-              console.log("Profesor:", nombreCompleto);
                 // Generar un token JWT con el nombre completo del profesor
                 const token = jwt.sign(
                     { id: usuario.id, nombre_completo: nombreCompleto },
@@ -162,25 +161,6 @@ app.listen(PORT, () => {
     console.log(`Servidor escuchando en http://localhost:${PORT}`);
 });
 
-// Ruta para obtener el usuario
-app.get('/get-usuario', async (req, res) => { // Agrega async aquí
-    if (!req.session.userId) {
-        return res.status(401).json({ success: false, message: 'No autenticado' });
-    }
-
-    // Busca al usuario en la base de datos
-    const { data: usuario, error } = await supabase
-        .from('Usuario')
-        .select('*')
-        .eq('id', req.session.userId) // Usando el ID de la sesión
-        .single();
-
-    if (error || !usuario) {
-        return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
-    }
-
-    res.json({ success: true, nombreUsuario: usuario.nombre }); // Asegúrate de usar la propiedad correcta
-});
 
 
 
