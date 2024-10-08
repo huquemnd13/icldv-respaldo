@@ -130,15 +130,12 @@ app.get('/get-usuario', async (req, res) => {
 app.get('/materias', async (req, res) => {
     try {
         const token = req.headers.authorization.split(' ')[1]; // Obtener el token del header
-        const decodedToken = jwt.verify(token, 'tu_secreto_jwt'); // Decodificar el token
+        const decodedToken = jwt.verify(token, 'tu_secreto_aqui'); // Decodificar el token
         const profesorId = decodedToken.id; // Obtener el ID del profesor
-        if (!token) {
-                return res.status(401).json({ message: 'Token no proporcionado' });
-            }
         // Consultar las materias relacionadas con el profesor
         const { data: materias, error } = await supabase
             .from('ProfesorMateria')
-            .select('Materia(nombre)')
+            .select('materia_id')
             .eq('profesor_id', profesorId);
 
         if (error) {

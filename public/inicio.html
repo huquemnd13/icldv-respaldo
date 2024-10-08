@@ -32,12 +32,12 @@
                     if (response.ok) {
                         const materias = await response.json(); // Obtiene las materias en formato JSON
                         const selectElement = document.getElementById('materias');
-                        
+                        console.log(materias);
                         // Llenar el dropdown con las materias
                         materias.forEach(materia => {
                             const option = document.createElement('option');
-                            option.value = materia.id; // Usa el ID de la materia como valor
-                            option.textContent = materia.nombre; // Usa el nombre de la materia como texto
+                            option.value = materia.materia_id; // Usa el ID de la materia como valor
+                            option.textContent = materia.materia_id; // Usa el nombre de la materia como texto
                             selectElement.appendChild(option); // Añadir opción al select
                         });
                     } else {
