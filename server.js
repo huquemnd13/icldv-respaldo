@@ -81,11 +81,11 @@ app.post('/login', async (req, res) => {
                 const nombreCompleto = `${profesor.nombre} ${profesor.apellido_paterno} ${profesor.apellido_materno}`;
                 // Generar un token JWT con el nombre completo del profesor
                 const token = jwt.sign(
-                    { id: usuario.id, nombre_completo: nombreCompleto },
+                    { id: usuario.id, nombre_completo: nombreCompleto, profesor_id: profesor.id },
                     'tu_secreto_aqui',
                     { expiresIn: '1h' }
                 );
-
+                console.log("ID PROFESOR TABLA", profesor.id);
                 // Responder con el token
                 return res.json({ success: true, token }); // Envía el token al cliente
             } else {
@@ -146,7 +146,7 @@ app.get('/materias', async (req, res) => {
     try {
         const token = req.headers.authorization.split(' ')[1]; // Obtener el token del header
         const decodedToken = jwt.verify(token, 'tu_secreto_aqui'); // Decodificar el token
-        const profesorId = decodedToken.id; // Obtener el ID del profesor
+        const profesorId = decodedToken.profesor_id; // Obtener el ID del profesor
         console.log(profesorId);
         // Consultar las materias relacionadas con el profesor
         const { data: materias, error } = await supabase

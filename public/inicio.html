@@ -17,9 +17,11 @@
                     const decodedToken = jwt_decode(token); // Decodifica el token
                     console.log("Token decodificado: ", decodedToken); // Muestra el token decodificado
                     const nombreProfesor = decodedToken.nombre_completo || "Campo nombre_completo no encontrado"; 
-                    const idProfesor = decodedToken.id || "Campo id no encontrado"; 
+                    const idUsuario = decodedToken.id || "Campo id no encontrado"; 
+                    const profesorId = decodedToken.profesor_id || "Campo profesor_id no encontrado";
                     console.log("Nombre del profesor: ", nombreProfesor); // Log del nombre para verificar
-                    console.log("ID profesor: ", idProfesor); // Log del nombre para verificar
+                    console.log("ID usuario: ", idUsuario); // Log del nombre para verificar
+                    console.log("ID profesor: ", profesorId); // Log del nombre para verificar
                     document.getElementById('nombre_usuario').textContent = nombreProfesor; // Muestra el nombre en el span
 
                     // Hacer petición al servidor para obtener las materias del profesor
