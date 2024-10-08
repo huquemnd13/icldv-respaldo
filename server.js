@@ -18,6 +18,12 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Forzar el tipo MIME de CSS
+app.use('/styles.css', (req, res, next) => {
+    res.type('text/css');
+    next();
+});
+
 // Servir archivos estáticos desde la carpeta public
 app.use(express.static(path.join(__dirname, 'public')));
 
