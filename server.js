@@ -109,17 +109,32 @@ app.get('/get-usuario', async (req, res) => {
 
     try {
         const decoded = jwt.verify(token, 'tu_secreto_aqui'); // Verifica el token
-        const { data: usuario, error } = await supabase
+        // Obtener el usuario a partir del token decodificado
+        const { data: usuario, error: usuarioError } = await supabase
             .from('Usuario')
             .select('*')
             .eq('id', decoded.id) // Usa el ID del token para obtener el usuario
             .single();
 
-        if (error) {
-            console.error("Error al obtener usuario:", error);
-            return res.status(500).json({ message: 'Error al obtener usuario.' });
-        }
+        if (usuarioError) {
+            console.error('Error al obtener el usuario:', usuarioError);
+        } else {
+            // Si se obtuvo el usuario, busca el profesor relacionado
+            const { data: profesor, error: profesorError } = await supabase
+                .from('Profesor')
+                .select('id') // Selecciona el campo 'id' de la tabla Profesor
+                .eq('id_usuario', usuario.id) // Usa 'id_usuario' para buscar el profesor relacionado
+                .single();
 
+            if (profesorError) {
+                console.error('Error al obtener el profesor:', profesorError);
+            } else {
+                const profesorId = profesor.id; // Ahora tienes el ID del profesor
+                console.log('ID del profesor:', profesorId);
+                // Aquí puedes continuar con la lógica usando profesorId
+            }
+        }
+      
         return res.json({ nombreUsuario: usuario.nombre_usuario }); // Responde con el nombre de usuario
     } catch (err) {
         console.error('Error al verificar el token:', err);
@@ -132,6 +147,7 @@ app.get('/materias', async (req, res) => {
         const token = req.headers.authorization.split(' ')[1]; // Obtener el token del header
         const decodedToken = jwt.verify(token, 'tu_secreto_aqui'); // Decodificar el token
         const profesorId = decodedToken.id; // Obtener el ID del profesor
+        console.log(profesorId);
         // Consultar las materias relacionadas con el profesor
         const { data: materias, error } = await supabase
             .from('ProfesorMateria')
