@@ -127,6 +127,32 @@ app.get('/get-usuario', async (req, res) => {
     }
 });
 
+app.get('/materias', async (req, res) => {
+    try {
+        const token = req.headers.authorization.split(' ')[1]; // Obtener el token del header
+        const decodedToken = jwt.verify(token, 'tu_secreto_jwt'); // Decodificar el token
+        const profesorId = decodedToken.id; // Obtener el ID del profesor
+        if (!token) {
+                return res.status(401).json({ message: 'Token no proporcionado' });
+            }
+        // Consultar las materias relacionadas con el profesor
+        const { data: materias, error } = await supabase
+            .from('ProfesorMateria')
+            .select('Materia(nombre)')
+            .eq('profesor_id', profesorId);
+
+        if (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Error al obtener las materias.' });
+        }
+
+        res.json(materias);
+    } catch (error) {
+        console.error(error);
+        res.status(401).json({ message: 'No autorizado.' });
+    }
+});
+
 
 // Ruta para registrar un nuevo usuario
 app.post('/register', async (req, res) => {

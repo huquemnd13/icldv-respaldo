@@ -8,7 +8,7 @@
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js" defer></script> <!-- Script de jwt-decode -->
     <script defer>
         // Decodificar el token y mostrar el nombre del profesor
-        window.onload = function() {
+        window.onload = async function() {
             const token = localStorage.getItem('token'); // Obtén el token del localStorage
             console.log("Token: ", token); // Verifica si se obtiene el token correctamente
             
@@ -21,8 +21,31 @@
                     console.log("Nombre del profesor: ", nombreProfesor); // Log del nombre para verificar
                     console.log("ID profesor: ", idProfesor); // Log del nombre para verificar
                     document.getElementById('nombre_usuario').textContent = nombreProfesor; // Muestra el nombre en el span
+
+                    // Hacer petición al servidor para obtener las materias del profesor
+                    const response = await fetch('/materias', {
+                        headers: {
+                            'Authorization': `Bearer ${token}` // Envía el token en los headers
+                        }
+                    });
+
+                    if (response.ok) {
+                        const materias = await response.json(); // Obtiene las materias en formato JSON
+                        const selectElement = document.getElementById('materias');
+                        
+                        // Llenar el dropdown con las materias
+                        materias.forEach(materia => {
+                            const option = document.createElement('option');
+                            option.value = materia.id; // Usa el ID de la materia como valor
+                            option.textContent = materia.nombre; // Usa el nombre de la materia como texto
+                            selectElement.appendChild(option); // Añadir opción al select
+                        });
+                    } else {
+                        console.error('Error al obtener las materias.');
+                    }
+
                 } catch (error) {
-                    console.error('Error al decodificar el token:', error);
+                    console.error('Error al decodificar el token o al obtener materias:', error);
                 }
             } else {
                 // Si no hay token, redirige al usuario al login u otra acción
