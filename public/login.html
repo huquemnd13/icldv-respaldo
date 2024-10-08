@@ -34,12 +34,13 @@
     <div id="login-forms">
         <h1>Iniciar sesión</h1>
         <form id="login-form">
-            <input type="email" id="email" placeholder="Correo electrónico" required>
+            <input type="email" id="email" placeholder="Correo electrónico" required autocomplete="username">
             <input type="password" id="password" placeholder="Contraseña" required autocomplete="current-password">
             <button type="submit">Iniciar sesión</button>
         </form>
         <div class="notification" id="notification"></div> <!-- Barra de notificación justo después del formulario -->
+      <div id="error-message" style="color: red; display: none;"></div>
     </div>
-    <script src="scripts.js"></script>
 </body>
+  <script src="scripts.js"></script>
 </html>

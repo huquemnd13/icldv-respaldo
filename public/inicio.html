@@ -4,10 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bienvenido</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Asegúrate de que la ruta sea correcta -->
+    <link rel="stylesheet" href="style.css"> <!-- Asegúrate de que la ruta sea correcta -->
 </head>
 <body>
-     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js">
+    <div id="header">
+        <div id="welcome-message">Bienvenido, <span style="font-weight: bold;" id="nombre_usuario"></span></div> <!-- Mensaje de bienvenida con nombre -->
+        <button id="logout-button">Cerrar sesión</button> <!-- Botón a la derecha -->
+    </div>
+    <div id="content">
+        <p>Has iniciado sesión correctamente. Esta es una página de inicio.</p>
+        <p><a href="/home">Ir a la página principal</a></p>
+    </div>
+    <label for="materias">Selecciona una materia:</label>
+    <select id="materias">
+        <option value="" disabled selected>Selecciona una materia</option>
+    </select>
+</body>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js" defer>
         // Verifica si el usuario está autenticado al cargar la página
         window.onload = async function() {
             const token = localStorage.getItem('token'); // Obtiene el token de localStorage
@@ -44,17 +57,4 @@
         }
 
     </script>
-    <div id="header">
-        <div id="welcome-message">Bienvenido, <span style="font-weight: bold;" id="nombre_usuario"></span></div> <!-- Mensaje de bienvenida con nombre -->
-        <button id="logout-button">Cerrar sesión</button> <!-- Botón a la derecha -->
-    </div>
-    <div id="content">
-        <p>Has iniciado sesión correctamente. Esta es una página de inicio.</p>
-        <p><a href="/home">Ir a la página principal</a></p>
-    </div>
-    <label for="materias">Selecciona una materia:</label>
-    <select id="materias">
-        <option value="" disabled selected>Selecciona una materia</option>
-    </select>
-</body>
 </html>
