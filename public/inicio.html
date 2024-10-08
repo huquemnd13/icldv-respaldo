@@ -14,10 +14,12 @@
             
             if (token) {
                 try {
-                    const decodedToken = jwt_decode(token); // Decodifica el token
+                    const decodedidToken = jwt_decode(token); // Decodifica el token
                     console.log("Token decodificado: ", decodedToken); // Muestra el token decodificado
+                    const id = decodedToken.id || "Campo id no encontrado";
                     const nombreProfesor = decodedToken.nombre_completo || "Campo no encontrado"; // Cambia 'nombre_completo' si es necesario
                     console.log("Nombre del profesor: ", nombreProfesor); // Log del nombre para verificar
+                    console.log("ID profesor: ", id); // Log del nombre para verificar
                     document.getElementById('nombre_usuario').textContent = nombreProfesor; // Muestra el nombre en el span
                 } catch (error) {
                     console.error('Error al decodificar el token:', error);
