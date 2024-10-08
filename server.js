@@ -53,7 +53,7 @@ app.post('/login', async (req, res) => {
 
     if (error) {
         console.error("Error al buscar usuario:", error); // Log de error
-        return res.json({ success: false, message: 'Error al buscar usuario.' });
+        return res.json({ success: false, message: 'Error al buscar correo.' });
     }
 
      if (usuario) {
@@ -93,6 +93,10 @@ app.post('/login', async (req, res) => {
                 return res.json({ success: false, message: 'Profesor no encontrado.' });
             }
         }
+       else{
+                console.error("Contraseña incorrecta.");
+                return res.json({ success: false, message: 'Contraseña incorrecta.' });
+            }
     }
 });
 

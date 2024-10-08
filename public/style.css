@@ -97,21 +97,34 @@ button:hover {
     text-align: center; /* Centrar el mensaje de error */
 }
 
-/* Estilo para la barra de notificación */
+/* Estilo básico para las notificaciones */
 .notification {
+    display: none; /* Ocultar por defecto */
+    position: fixed; /* Posicionar en la pantalla */
+    top: 0; /* Colocarla en la parte superior */
+    left: 0; /* Alinear a la izquierda */
     width: 100%; /* Ancho completo */
-    background-color: #f44336; /* Rojo para errores */
-    color: white;
-    padding: 10px; /* Espaciado interno */
+    padding: 15px; /* Espaciado interno */
     text-align: center; /* Centrar el texto */
-    z-index: 1000;
-    margin-top: 10px; /* Espacio entre el formulario y la barra */
-    opacity: 0; /* Ocultar inicialmente */
-    transition: opacity 0.5s ease-in-out;
+    z-index: 1000; /* Asegúrate de que se superponga a otros elementos */
+    transition: opacity 0.5s; /* Efecto de transición */
+    opacity: 0; /* Inicialmente invisible */
 }
 
+/* Mostrar la notificación */
 .notification.show {
-    opacity: 1; /* Mostrar cuando tenga la clase "show" */
+    display: block; /* Mostrar notificación */
+    opacity: 1; /* Hacerla visible */
 }
 
+.notification.error {
+    background-color: #f8d7da; /* Color de fondo para errores */
+    color: #721c24; /* Color de texto para errores */
+    border: none; /* Sin borde */
+}
 
+.notification.success {
+    background-color: #d4edda; /* Color de fondo para éxito */
+    color: #155724; /* Color de texto para éxito */
+    border: none; /* Sin borde */
+}

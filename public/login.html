@@ -4,30 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Iniciar sesión</title>
-    
+    <link rel="stylesheet" href="style.css"> <!-- Asegúrate de que la ruta sea correcta -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Estilo básico para las notificaciones */
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background-color: #4CAF50; /* Verde por defecto */
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            z-index: 1000;
-            transition: opacity 0.5s ease-in-out;
-            opacity: 0;
-            visibility: hidden;
-        }
-        .notification.show {
-            opacity: 1;
-            visibility: visible;
-        }
-        .notification.error {
-            background-color: #f44336; /* Rojo para errores */
-        }
+        
     </style>
 </head>
 <body>
@@ -39,7 +19,6 @@
             <button type="submit">Iniciar sesión</button>
         </form>
         <div class="notification" id="notification"></div> <!-- Barra de notificación justo después del formulario -->
-      <div id="error-message" style="color: red; display: none;"></div>
     </div>
 </body>
   <script src="scripts.js"></script>

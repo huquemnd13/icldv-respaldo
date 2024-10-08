@@ -8,14 +8,17 @@ document.addEventListener('DOMContentLoaded', () => {
         notification.className = 'notification show'; // Mostrar notificación
         if (isError) {
             notification.classList.add('error'); // Agregar clase de error
+            notification.classList.remove('success'); // Asegurarse de que no tenga la clase de éxito
         } else {
-            notification.classList.remove('error');
+            notification.classList.add('success'); // Agregar clase de éxito
+            notification.classList.remove('error'); // Asegurarse de que no tenga la clase de error
         }
         // Ocultar notificación después de 3 segundos
         setTimeout(() => {
             notification.classList.remove('show');
         }, 3000);
     }
+
 
     // Manejo del formulario de inicio de sesión
     if (loginForm) {
