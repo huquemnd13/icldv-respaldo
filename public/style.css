@@ -118,13 +118,13 @@ button:hover {
 }
 
 .notification.error {
-    background-color: #f8d7da; /* Color de fondo para errores */
-    color: #721c24; /* Color de texto para errores */
+    background-color: #b70011; /* Color de fondo para errores */
+    color: #ffffff; /* Color de texto para errores */
     border: none; /* Sin borde */
 }
 
 .notification.success {
-    background-color: #d4edda; /* Color de fondo para éxito */
-    color: #155724; /* Color de texto para éxito */
+    background-color: #00cb4d; /* Color de fondo para éxito */
+    color: #ffffff; /* Color de texto para éxito */
     border: none; /* Sin borde */
 }
