@@ -165,6 +165,22 @@ app.get('/grados', async (req, res) => {
     }
 });
 
+app.get('/obtener-ciclos-escolares', async (req, res) => {
+    try {
+        const { data, error } = await supabase.rpc('obtener_ciclos_escolares');
+
+        if (error) {
+            console.error('Error al obtener ciclos escolares:', error);
+            return res.status(500).json({ message: 'Error al obtener ciclos escolares' });
+        }
+
+        return res.json(data);
+    } catch (err) {
+        console.error('Error interno del servidor:', err);
+        return res.status(500).json({ message: 'Error interno del servidor' });
+    }
+});
+
 
 // Ruta para registrar un nuevo usuario
 app.post('/register', async (req, res) => {

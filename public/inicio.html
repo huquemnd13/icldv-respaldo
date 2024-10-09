@@ -44,6 +44,26 @@
                     } else {
                         console.error('Error al obtener los grados.');
                     }
+                    // Hacer petición al servidor para obtener los ciclos escolares
+                    const responseCiclos = await fetch('/obtener-ciclos-escolares', {
+                        headers: {
+                            'Authorization': `Bearer ${token}` // Envía el token en los headers
+                        }
+                    });
+                    if (responseCiclos.ok) {
+                        const ciclosEscolares = await responseCiclos.json(); // Obtiene los ciclos escolares en formato JSON
+                        const selectElementCiclos = document.getElementById('ciclos');
+
+                        // Llenar el dropdown con los ciclos escolares
+                        ciclosEscolares.forEach(ciclo => {
+                            const option = document.createElement('option');
+                            option.value = ciclo.id; // ID del ciclo escolar
+                            option.textContent = `${ciclo.inicio_ciclo} - ${ciclo.fin_ciclo}`; // Formato "inicio - fin"
+                            selectElementCiclos.appendChild(option); // Añadir opción al select
+                        });
+                    } else {
+                        console.error('Error al obtener los ciclos escolares.');
+                    }
 
                 } catch (error) {
                     console.error('Error al decodificar el token o al obtener grados:', error);
@@ -71,18 +91,24 @@
 </head>
 <body>
     <div id="header">
-        <div id="welcome-message">Bienvenido, 
-          <span style="font-weight: bold;" id="nombre_usuario"></span>
-          <span style="margin-left: 100px;">
-            <label for="grados">Selecciona un grado:</label>
-            <select id="grados">
-              <option value="" disabled selected>Selecciona un grado</option>
-            </select>
-          </span>
-      </div> <!-- Mensaje de bienvenida con nombre -->
-        <button id="logout-button">Cerrar sesión</button> <!-- Botón a la derecha -->
-    </div>
-    <div id="content">
+          <div id="welcome-message">Bienvenido, 
+              <span style="font-weight: bold;" id="nombre_usuario"></span>
+              <span style="margin-left: 100px;">
+                  <label for="grados">Selecciona un grado:</label>
+                  <select id="grados">
+                      <option value="" disabled selected>Selecciona un grado</option>
+                  </select>
+              </span>
+              <span style="margin-left: 50px;">
+                  <label for="ciclos">Selecciona un ciclo escolar:</label>
+                  <select id="ciclos">
+                      <option value="" disabled selected>Selecciona un ciclo escolar</option>
+                  </select>
+              </span>
+          </div> <!-- Mensaje de bienvenida con nombre -->
+          <button id="logout-button">Cerrar sesión</button> <!-- Botón a la derecha -->
+      </div>
+      <div id="content">
         <p>Has iniciado sesión correctamente. Esta es una página de inicio.</p>
         <p><a href="/home">Ir a la página principal</a></p>
     </div>
