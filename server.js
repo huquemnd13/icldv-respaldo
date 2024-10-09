@@ -142,24 +142,23 @@ app.get('/get-usuario', async (req, res) => {
     }
 });
 
-app.get('/materias', async (req, res) => {
+app.get('/grados', async (req, res) => {
     try {
         const token = req.headers.authorization.split(' ')[1]; // Obtener el token del header
         const decodedToken = jwt.verify(token, 'tu_secreto_aqui'); // Decodificar el token
         const profesorId = decodedToken.profesor_id; // Obtener el ID del profesor
         console.log(profesorId);
-        // Consultar las materias relacionadas con el profesor
-        const { data: materias, error } = await supabase
-            .from('ProfesorMateria')
-            .select('materia_id')
-            .eq('profesor_id', profesorId);
+        // Obtener los grados y descripciones del nivel escolar para un profesor específico
+        const { data: grados, error } = await supabase
+          .rpc('obtener_grados_por_profesor', { _id_profesor: profesorId }); // Llamamos a la función con el ID del profesor
 
         if (error) {
-            console.error(error);
-            return res.status(500).json({ message: 'Error al obtener las materias.' });
+            console.error("Error al ejecutar la función obtener_grados_por_profesor:", error);
+            return res.status(500).json({ message: 'Error al obtener los grados y descripciones del nivel escolar.' });
         }
 
-        res.json(materias);
+        // Enviar el resultado en la respuesta
+        res.json(grados);
     } catch (error) {
         console.error(error);
         res.status(401).json({ message: 'No autorizado.' });

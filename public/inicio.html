@@ -25,16 +25,16 @@
                     document.getElementById('nombre_usuario').textContent = nombreProfesor; // Muestra el nombre en el span
 
                     // Hacer petición al servidor para obtener las materias del profesor
-                    const response = await fetch('/materias', {
+                    const response = await fetch('/grados', {
                         headers: {
                             'Authorization': `Bearer ${token}` // Envía el token en los headers
                         }
                     });
 
                     if (response.ok) {
-                        const materias = await response.json(); // Obtiene las materias en formato JSON
-                        const selectElement = document.getElementById('materias');
-                        console.log(materias);
+                        const gradis = await response.json(); // Obtiene las materias en formato JSON
+                        const selectElement = document.getElementById('grados');
+                        console.log(grados);
                         // Llenar el dropdown con las materias
                         materias.forEach(materia => {
                             const option = document.createElement('option');
