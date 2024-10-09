@@ -74,9 +74,14 @@
         };
       
         // Función para crear un dropdown con las calificaciones
-        function createCalificacionDropdown(calificacion) {
+        function createCalificacionDropdown(calificacion, tiempos, tiempoIndex, currentDateTime) {
             const select = document.createElement('select');
             select.classList.add('calificacion-dropdown');
+
+            // Comprobar si hay tiempos y si la fecha actual está dentro del rango para el tiempo específico
+            const isWithinRange = tiempos[tiempoIndex] && currentDateTime >= new Date(tiempos[tiempoIndex].fecha_inicio) && currentDateTime <= new Date(tiempos[tiempoIndex].fecha_fin);
+
+            select.disabled = !isWithinRange; // Habilitar o deshabilitar el dropdown
 
             for (let i = 0; i <= 10; i++) {
                 const option = document.createElement('option');
@@ -92,6 +97,8 @@
 
             return select; // Devuelve el elemento select creado
         }
+
+
 
         // Función para cargar los alumnos según el grado y ciclo escolar seleccionados
         async function cargarAlumnos() {
@@ -139,6 +146,7 @@
                     const alumnos = await alumnosResponse.json(); // Obtiene los alumnos en formato JSON
                     console.log("Alumnos:", alumnos); // Verifica que los alumnos se obtengan correctamente
 
+                    // Llenar la tabla con los datos de los alumnos
                     alumnos.forEach(alumno => {
                         const row = document.createElement('tr'); // Crear una nueva fila
 
@@ -153,10 +161,13 @@
                             <td></td> <!-- Calificacion3 será un dropdown -->
                         `;
 
+                        // Obtener la fecha actual
+                        const currentDateTime = new Date();
+
                         // Crear y agregar los dropdowns de calificaciones a las celdas correspondientes
-                        const calificacion1Dropdown = createCalificacionDropdown(alumno.calificacion1, fechas, currentDateTime);
-                        const calificacion2Dropdown = createCalificacionDropdown(alumno.calificacion2, fechas, currentDateTime);
-                        const calificacion3Dropdown = createCalificacionDropdown(alumno.calificacion3, fechas, currentDateTime);
+                        const calificacion1Dropdown = createCalificacionDropdown(alumno.calificacion1, tiempos, 0, currentDateTime); // Tiempo 1
+                        const calificacion2Dropdown = createCalificacionDropdown(alumno.calificacion2, tiempos, 1, currentDateTime); // Tiempo 2
+                        const calificacion3Dropdown = createCalificacionDropdown(alumno.calificacion3, tiempos, 2, currentDateTime); // Tiempo 3
 
                         // Agregar los dropdowns a las celdas correspondientes
                         row.cells[5].appendChild(calificacion1Dropdown); // Calificacion1
@@ -165,6 +176,7 @@
 
                         tbody.appendChild(row); // Añadir la fila a la tabla
                     });
+
                 } else {
                     console.error('Error al obtener los alumnos.');
                 }
