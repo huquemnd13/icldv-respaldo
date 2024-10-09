@@ -181,6 +181,31 @@ app.get('/obtener-ciclos-escolares', async (req, res) => {
     }
 });
 
+// Ruta para obtener alumnos por grado
+app.get('/obtener-alumnos-grados', async (req, res) => {
+    const { profesor_id, grado_id, ciclo_id } = req.query; // Obtener los parámetros de la consulta
+
+    try {
+        const { data: alumnos, error } = await supabase
+            .rpc('obtener_alumnos_por_grado', {
+                profesor_id: profesor_id,
+                grado_id: grado_id,
+                ciclo_id: ciclo_id
+            });
+
+        if (error) {
+            console.error('Error al obtener alumnos:', error);
+            return res.status(500).json({ success: false, message: 'Error al obtener alumnos.' });
+        }
+
+        return res.json(alumnos); // Retornar los datos de alumnos
+    } catch (err) {
+        console.error('Error en la consulta:', err);
+        return res.status(500).json({ success: false, message: 'Error en la consulta.' });
+    }
+});
+
+
 // Iniciar el servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

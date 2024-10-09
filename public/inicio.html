@@ -7,14 +7,15 @@
     <link rel="stylesheet" href="style.css"> <!-- Asegúrate de que la ruta sea correcta -->
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js" defer></script> <!-- Script de jwt-decode -->
     <script defer>
+        let decodedToken; // Declara la variable en el ámbito global
+
         // Decodificar el token y mostrar el nombre del profesor
         window.onload = async function() {
             const token = localStorage.getItem('token'); // Obtén el token del localStorage
-            console.log("Token: ", token); // Verifica si se obtiene el token correctamente
 
             if (token) {
                 try {
-                    const decodedToken = jwt_decode(token); // Decodifica el token
+                    decodedToken = jwt_decode(token); // Decodifica el token y asigna a la variable global
                     const nombreProfesor = decodedToken.nombre_completo || "Campo nombre_completo no encontrado"; 
                     document.getElementById('nombre_usuario').textContent = nombreProfesor; // Muestra el nombre en el span
 
@@ -60,9 +61,8 @@
                         console.error('Error al obtener los ciclos escolares.');
                     }
 
-                    // Añadir event listener para cargar alumnos cuando se cambie el grado o ciclo
-                    selectGrados.addEventListener('change', cargarAlumnos);
-                    document.getElementById('ciclos').addEventListener('change', cargarAlumnos);
+                    // Añadir event listener para cargar alumnos al hacer clic en el botón
+                    document.getElementById('cargar-alumnos-button').addEventListener('click', cargarAlumnos);
 
                 } catch (error) {
                     console.error('Error al decodificar el token o al obtener grados:', error);
@@ -88,7 +88,7 @@
                         return;
                     }
 
-                    const response = await fetch(`/obtener-alumnos?profesor_id=${profesorId}&grado_id=${gradoId}&ciclo_id=${cicloId}`, {
+                    const response = await fetch(`//obtener-alumnos-grados?profesor_id=${profesorId}&grado_id=${gradoId}&ciclo_id=${cicloId}`, {
                         headers: {
                             'Authorization': `Bearer ${token}` // Envía el token en los headers
                         }
@@ -142,7 +142,6 @@
             }
         });
     </script>
-
 </head>
 <body>
     <div id="header">
@@ -159,6 +158,7 @@
                   <select id="ciclos">
                       <option value="" disabled selected>Selecciona un ciclo escolar</option>
                   </select>
+                  <button id="cargar-alumnos-button" style="margin-left: 20px;">Cargar Alumnos</button>
               </span>
           </div> <!-- Mensaje de bienvenida con nombre -->
           <button id="logout-button">Cerrar sesión</button> <!-- Botón a la derecha -->
