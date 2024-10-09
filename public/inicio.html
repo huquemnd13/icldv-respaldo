@@ -88,7 +88,7 @@
                         return;
                     }
 
-                    const response = await fetch(`//obtener-alumnos-grados?profesor_id=${profesorId}&grado_id=${gradoId}&ciclo_id=${cicloId}`, {
+                    const response = await fetch(`/obtener-alumnos-grados?profesor_id=${profesorId}&grado_id=${gradoId}&ciclo_id=${cicloId}`, {
                         headers: {
                             'Authorization': `Bearer ${token}` // Envía el token en los headers
                         }
@@ -107,7 +107,7 @@
                             const row = document.createElement('tr'); // Crear una nueva fila
 
                             row.innerHTML = `
-                                <td>${alumno.id}</td>
+                                <td>${alumno.alumno_id}</td>
                                 <td>${alumno.nombre}</td>
                                 <td>${alumno.apellido_paterno}</td>
                                 <td>${alumno.apellido_materno}</td>
