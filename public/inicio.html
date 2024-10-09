@@ -30,24 +30,24 @@
                             'Authorization': `Bearer ${token}` // Envía el token en los headers
                         }
                     });
-
                     if (response.ok) {
                         const gradis = await response.json(); // Obtiene las materias en formato JSON
                         const selectElement = document.getElementById('grados');
                         console.log(grados);
+
                         // Llenar el dropdown con las materias
-                        materias.forEach(materia => {
+                        grados.forEach(grado => {
                             const option = document.createElement('option');
-                            option.value = materia.materia_id; // Usa el ID de la materia como valor
-                            option.textContent = materia.materia_id; // Usa el nombre de la materia como texto
+                            option.value = grado.descripcion; // Usa el ID de la materia como valor
+                            option.textContent = grado.descripcion; // Usa el nombre de la materia como texto
                             selectElement.appendChild(option); // Añadir opción al select
                         });
                     } else {
-                        console.error('Error al obtener las materias.');
+                        console.error('Error al obtener los grados.');
                     }
 
                 } catch (error) {
-                    console.error('Error al decodificar el token o al obtener materias:', error);
+                    console.error('Error al decodificar el token o al obtener grados:', error);
                 }
             } else {
                 // Si no hay token, redirige al usuario al login u otra acción
@@ -79,9 +79,9 @@
         <p>Has iniciado sesión correctamente. Esta es una página de inicio.</p>
         <p><a href="/home">Ir a la página principal</a></p>
     </div>
-    <label for="materias">Selecciona una materia:</label>
-    <select id="materias">
-        <option value="" disabled selected>Selecciona una materia</option>
+    <label for="grados">Selecciona un grado:</label>
+    <select id="grados">
+        <option value="" disabled selected>Selecciona un grado</option>
     </select>
 </body>
 </html>
