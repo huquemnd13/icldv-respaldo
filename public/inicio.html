@@ -95,69 +95,84 @@
 
         // Función para cargar los alumnos según el grado y ciclo escolar seleccionados
         async function cargarAlumnos() {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const gradoId = document.getElementById('grados').value; // Obtener el ID del grado seleccionado
-                    const cicloId = document.getElementById('ciclos').value; // Obtener el ID del ciclo seleccionado
-                    const profesorId = decodedToken.profesor_id; // Obtener el ID del profesor desde el token
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                const gradoId = document.getElementById('grados').value; // Obtener el ID del grado seleccionado
+                const cicloId = document.getElementById('ciclos').value; // Obtener el ID del ciclo seleccionado
+                const profesorId = decodedToken.profesor_id; // Obtener el ID del profesor desde el token
 
-                    // Verificar que ambos valores están seleccionados
-                    if (!gradoId || !cicloId) {
-                        console.error('Por favor selecciona un grado y un ciclo escolar.');
-                        return;
-                    }
-
-                    const response = await fetch(`/obtener-alumnos-grados?profesor_id=${profesorId}&grado_id=${gradoId}&ciclo_id=${cicloId}`, {
-                        headers: {
-                            'Authorization': `Bearer ${token}` // Envía el token en los headers
-                        }
-                    });
-
-                    if (response.ok) {
-                        const alumnos = await response.json(); // Obtiene los alumnos en formato JSON
-                        console.log("Alumnos:", alumnos); // Verifica que los alumnos se obtengan correctamente
-
-                        // Limpiar tabla antes de llenarla
-                        const tbody = document.getElementById('alumnos-table').querySelector('tbody');
-                        tbody.innerHTML = ''; // Limpiar contenido anterior
-
-                        // Llenar la tabla con los datos de los alumnos
-                        alumnos.forEach(alumno => {
-                            const row = document.createElement('tr'); // Crear una nueva fila
-
-                            row.innerHTML = `
-                                <td>${alumno.alumno_id}</td>
-                                <td>${alumno.nombre}</td>
-                                <td>${alumno.apellido_paterno}</td>
-                                <td>${alumno.apellido_materno}</td>
-                                <td>${alumno.curp}</td>
-                                <td></td> <!-- Calificacion1 será un dropdown -->
-                                <td></td> <!-- Calificacion2 será un dropdown -->
-                                <td></td> <!-- Calificacion3 será un dropdown -->
-                            `;
-
-                            // Crear y agregar los dropdowns de calificaciones a las celdas correspondientes
-                            const calificacion1Dropdown = createCalificacionDropdown(alumno.calificacion1);
-                            const calificacion2Dropdown = createCalificacionDropdown(alumno.calificacion2);
-                            const calificacion3Dropdown = createCalificacionDropdown(alumno.calificacion3);
-
-                            // Agregar los dropdowns a las celdas correspondientes
-                            row.cells[5].appendChild(calificacion1Dropdown); // Calificacion1
-                            row.cells[6].appendChild(calificacion2Dropdown); // Calificacion2
-                            row.cells[7].appendChild(calificacion3Dropdown); // Calificacion3
-
-                            tbody.appendChild(row); // Añadir la fila a la tabla
-                        });
-                    } else {
-                        console.error('Error al obtener los alumnos.');
-                    }
-                } catch (error) {
-                    console.error('Error al cargar los alumnos:', error);
+                // Verificar que ambos valores están seleccionados
+                if (!gradoId || !cicloId) {
+                    console.error('Por favor selecciona un grado y un ciclo escolar.');
+                    return;
                 }
+
+                // Obtener la vigencia de las fechas del ciclo escolar
+                const responseFechas = await fetch(`/obtener-fechas-ciclo?ciclo_id=${cicloId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}` // Envía el token en los headers
+                    }
+                });
+                let fechas;
+                if (responseFechas.ok) {
+                    fechas = await responseFechas.json(); // Obtiene las fechas en formato JSON
+                } else {
+                    console.error('Error al obtener las fechas del ciclo escolar.');
+                    return;
+                }
+
+                const currentDateTime = new Date(); // Obtener la fecha y hora actual
+
+                // Limpiar tabla antes de llenarla
+                const tbody = document.getElementById('alumnos-table').querySelector('tbody');
+                tbody.innerHTML = ''; // Limpiar contenido anterior
+
+                // Llenar la tabla con los datos de los alumnos
+                const alumnosResponse = await fetch(`/obtener-alumnos-grados?profesor_id=${profesorId}&grado_id=${gradoId}&ciclo_id=${cicloId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}` // Envía el token en los headers
+                    }
+                });
+
+                if (alumnosResponse.ok) {
+                    const alumnos = await alumnosResponse.json(); // Obtiene los alumnos en formato JSON
+                    console.log("Alumnos:", alumnos); // Verifica que los alumnos se obtengan correctamente
+
+                    alumnos.forEach(alumno => {
+                        const row = document.createElement('tr'); // Crear una nueva fila
+
+                        row.innerHTML = `
+                            <td>${alumno.alumno_id}</td>
+                            <td>${alumno.nombre}</td>
+                            <td>${alumno.apellido_paterno}</td>
+                            <td>${alumno.apellido_materno}</td>
+                            <td>${alumno.curp}</td>
+                            <td></td> <!-- Calificacion1 será un dropdown -->
+                            <td></td> <!-- Calificacion2 será un dropdown -->
+                            <td></td> <!-- Calificacion3 será un dropdown -->
+                        `;
+
+                        // Crear y agregar los dropdowns de calificaciones a las celdas correspondientes
+                        const calificacion1Dropdown = createCalificacionDropdown(alumno.calificacion1, fechas, currentDateTime);
+                        const calificacion2Dropdown = createCalificacionDropdown(alumno.calificacion2, fechas, currentDateTime);
+                        const calificacion3Dropdown = createCalificacionDropdown(alumno.calificacion3, fechas, currentDateTime);
+
+                        // Agregar los dropdowns a las celdas correspondientes
+                        row.cells[5].appendChild(calificacion1Dropdown); // Calificacion1
+                        row.cells[6].appendChild(calificacion2Dropdown); // Calificacion2
+                        row.cells[7].appendChild(calificacion3Dropdown); // Calificacion3
+
+                        tbody.appendChild(row); // Añadir la fila a la tabla
+                    });
+                } else {
+                    console.error('Error al obtener los alumnos.');
+                }
+            } catch (error) {
+                console.error('Error al cargar los alumnos:', error);
             }
         }
-
+    }
         // Función para manejar el cierre de sesión
         function logout() {
             localStorage.removeItem('token'); // Elimina el token de localStorage

@@ -205,6 +205,27 @@ app.get('/obtener-alumnos-grados', async (req, res) => {
     }
 });
 
+// API para obtener fechas del ciclo escolar
+app.get('/obtener-fechas-ciclo', async (req, res) => {
+    const { ciclo_id } = req.query;
+
+    try {
+        const { data, error } = await supabase
+            .from('TiempoCicloEscolar')
+            .select('fecha_inicio, fecha_fin, tiempo') // Ahora incluye el campo 'tiempo'
+            .eq('id_ciclo_escolar', ciclo_id);
+
+        if (error) {
+            return res.status(500).json({ error: 'Error al obtener las fechas del ciclo escolar.' });
+        }
+
+        res.json(data);
+    } catch (error) {
+        console.error('Error al ejecutar la consulta:', error);
+        res.status(500).json({ error: 'Error en el servidor.' });
+    }
+});
+
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 3000;
