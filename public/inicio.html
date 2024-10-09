@@ -33,10 +33,6 @@
                     if (response.ok) {
                         const grados = await response.json(); // Obtiene las materias en formato JSON
                         const selectElement = document.getElementById('grados');
-                        console.log(grados);
-                        console.log("Datos recibidos:", grados);
-                        console.log("Tipo de dato:", typeof grados); // Verifica el tipo de dato
-                        console.log("Es un array?:", Array.isArray(grados)); // Verifica si es un array
 
                         // Llenar el dropdown con las materias
                         grados.forEach(grado => {
