@@ -213,7 +213,8 @@ app.get('/obtener-fechas-ciclo', async (req, res) => {
         const { data, error } = await supabase
             .from('TiempoCicloEscolar')
             .select('fecha_inicio, fecha_fin, tiempo') // Ahora incluye el campo 'tiempo'
-            .eq('id_ciclo_escolar', ciclo_id);
+            .eq('id_ciclo_escolar', ciclo_id)
+            .order('tiempo', { ascending: true }); // Ordenar por 'tiempo' en orden ascendente
 
         if (error) {
             return res.status(500).json({ error: 'Error al obtener las fechas del ciclo escolar.' });
@@ -225,6 +226,7 @@ app.get('/obtener-fechas-ciclo', async (req, res) => {
         res.status(500).json({ error: 'Error en el servidor.' });
     }
 });
+
 
 
 // Iniciar el servidor
