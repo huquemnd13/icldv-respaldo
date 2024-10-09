@@ -209,23 +209,35 @@
 </head>
 <body>
     <div id="header">
-          <div id="welcome-message">Bienvenido, 
-              <span style="font-weight: bold;" id="nombre_usuario"></span>
-              <span style="margin-left: 100px;">
-                  <label for="grados">Selecciona un grado:</label>
-                  <select id="grados">
-                      <option value="" disabled selected>Selecciona un grado</option>
-                  </select>
-              </span>
-              <span style="margin-left: 50px;">
-                  <label for="ciclos">Selecciona un ciclo escolar:</label>
-                  <select id="ciclos">
-                      <option value="" disabled selected>Selecciona un ciclo escolar</option>
-                  </select>
-                  <button id="cargar-alumnos-button" style="margin-left: 20px;">Cargar Alumnos</button>
-              </span>
-          </div> <!-- Mensaje de bienvenida con nombre -->
-          <button id="logout-button">Cerrar sesión</button> <!-- Botón a la derecha -->
+          <div id="welcome-message" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
+              <div>
+                  Bienvenido, 
+                  <span style="font-weight: bold;" id="nombre_usuario"></span>
+              </div>
+
+              <button id="logout-button" style="margin-left: auto;">Cerrar sesión</button> <!-- Botón a la derecha -->
+          </div>
+
+          <div style="margin-top: 20px; display: flex; align-items: center;">
+              <label for="ciclos" style="margin-right: 10px; font-size: 12px;">Selecciona un ciclo escolar:</label>
+              <select id="ciclos" style="margin-right: 20px;">
+                  <option value="" disabled selected>Selecciona un ciclo escolar</option>
+              </select>
+
+              <label for="grados" style="margin-right: 10px; font-size: 12px;">Selecciona un grado:</label>
+              <select id="grados" style="margin-right: 20px;">
+                  <option value="" disabled selected>Selecciona un grado</option>
+              </select>
+
+              <label for="materias" style="margin-right: 10px; font-size: 12px;">Selecciona una materia:</label>
+              <select id="materias">
+                  <option value="" disabled selected>Selecciona una materia</option>
+              </select>
+
+              <button id="cargar-alumnos-button" style="margin-left: 20px;">Cargar Alumnos</button>
+          </div>
+
+
       </div>
       <div id="content">
         <table id="alumnos-table">
