@@ -165,49 +165,22 @@ app.get('/grados', async (req, res) => {
     }
 });
 
-app.get('/obtener-ciclos-escolares', async (req, res) => {
-    try {
-        const { data, error } = await supabase.rpc('obtener_ciclos_escolares');
+// Ruta para obtener alumnos por grado
+app.get('/obtener-alumnos', async (req, res) => {
+    const { profesor_id, grado_id, ciclo_id } = req.query; // Obtener los IDs del query string
 
-        if (error) {
-            console.error('Error al obtener ciclos escolares:', error);
-            return res.status(500).json({ message: 'Error al obtener ciclos escolares' });
-        }
-
-        return res.json(data);
-    } catch (err) {
-        console.error('Error interno del servidor:', err);
-        return res.status(500).json({ message: 'Error interno del servidor' });
-    }
-});
-
-
-// Ruta para registrar un nuevo usuario
-app.post('/register', async (req, res) => {
-    const { email, password } = req.body;
-
-    // Hashear la contraseña
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Insertar usuario en Supabase
+    // Llamar a la función en Supabase
     const { data, error } = await supabase
-        .from('Usuario')
-        .insert([{ email: email, password: hashedPassword }]);
+        .rpc('obtener_alumnos_por_grado', { profesor_id, grado_id, ciclo_id });
 
     if (error) {
-        return res.json({ success: false, message: 'Error al registrar usuario.' });
+        console.error("Error al obtener alumnos:", error);
+        return res.status(500).json({ message: 'Error al obtener alumnos.' });
     }
 
-    res.json({ success: true, message: 'Usuario registrado exitosamente.' });
+    return res.json(data);
 });
 
-// Ruta protegida
-app.get('/dashboard', (req, res) => {
-    if (!req.session.userId) {
-        return res.status(403).send('Acceso denegado. Por favor inicie sesión.');
-    }
-    res.send('Bienvenido al dashboard.'); // Lógica para el dashboard
-});
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 3000;

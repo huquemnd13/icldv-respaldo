@@ -73,6 +73,60 @@
                 window.location.href = '/login.html'; // Redirige a la página de login
             }
         };
+      
+        // Función para cargar los alumnos según el grado y ciclo escolar seleccionados
+        async function cargarAlumnos() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const gradoId = document.getElementById('grados').value; // Obtener el ID del grado seleccionado
+                    const cicloId = document.getElementById('ciclos').value; // Obtener el ID del ciclo seleccionado
+                    const profesorId = decodedToken.profesor_id; // Obtener el ID del profesor desde el token
+
+                    const response = await fetch(`/obtener-alumnos?profesor_id=${profesorId}&grado_id=${gradoId}&ciclo_id=${cicloId}`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}` // Envía el token en los headers
+                        }
+                    });
+
+                    if (response.ok) {
+                        const alumnos = await response.json(); // Obtiene los alumnos en formato JSON
+                        console.log("Alumnos:", alumnos); // Verifica que los alumnos se obtengan correctamente
+
+                        // Limpiar tabla antes de llenarla
+                        const tbody = document.getElementById('alumnos-table').querySelector('tbody');
+                        tbody.innerHTML = ''; // Limpiar contenido anterior
+
+                        // Llenar la tabla con los datos de los alumnos
+                        alumnos.forEach(alumno => {
+                            const row = document.createElement('tr'); // Crear una nueva fila
+
+                            row.innerHTML = `
+                                <td>${alumno.id}</td>
+                                <td>${alumno.nombre}</td>
+                                <td>${alumno.apellido_paterno}</td>
+                                <td>${alumno.apellido_materno}</td>
+                                <td>${alumno.curp}</td>
+                                <td>${alumno.calificacion1 || 'N/A'}</td>
+                                <td>${alumno.calificacion2 || 'N/A'}</td>
+                                <td>${alumno.calificacion3 || 'N/A'}</td>
+                            `; // Rellenar la fila con los datos del alumno
+
+                            tbody.appendChild(row); // Añadir la fila a la tabla
+                        });
+                    } else {
+                        console.error('Error al obtener los alumnos.');
+                    }
+                } catch (error) {
+                    console.error('Error al cargar los alumnos:', error);
+                }
+            }
+        }
+
+        // Añadir event listener para cargar alumnos cuando se cambie el grado o ciclo
+        document.getElementById('grados').addEventListener('change', cargarAlumnos);
+        document.getElementById('ciclos').addEventListener('change', cargarAlumnos);
+
 
         // Función para manejar el cierre de sesión
         function logout() {
@@ -109,8 +163,23 @@
           <button id="logout-button">Cerrar sesión</button> <!-- Botón a la derecha -->
       </div>
       <div id="content">
-        <p>Has iniciado sesión correctamente. Esta es una página de inicio.</p>
-        <p><a href="/home">Ir a la página principal</a></p>
+        <table id="alumnos-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido Paterno</th>
+                    <th>Apellido Materno</th>
+                    <th>CURP</th>
+                    <th>Calificación 1</th>
+                    <th>Calificación 2</th>
+                    <th>Calificación 3</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Las filas de datos se agregarán aquí dinámicamente -->
+            </tbody>
+        </table>
     </div>
 </body>
 </html>
