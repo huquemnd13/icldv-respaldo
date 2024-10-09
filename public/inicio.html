@@ -72,6 +72,26 @@
                 window.location.href = '/login.html'; // Redirige a la página de login
             }
         };
+      
+        // Función para crear un dropdown con las calificaciones
+        function createCalificacionDropdown(calificacion) {
+            const select = document.createElement('select');
+            select.classList.add('calificacion-dropdown');
+
+            for (let i = 0; i <= 10; i++) {
+                const option = document.createElement('option');
+                option.value = i; // Valor de la opción
+                option.textContent = i; // Texto que se mostrará
+                if (calificacion === i) {
+                    option.selected = true; // Marca como seleccionado si coincide con la calificación
+                } else if (!calificacion && i === 0) {
+                    option.selected = true; // Selecciona 0 si no hay calificación
+                }
+                select.appendChild(option); // Agrega la opción al dropdown
+            }
+
+            return select; // Devuelve el elemento select creado
+        }
 
         // Función para cargar los alumnos según el grado y ciclo escolar seleccionados
         async function cargarAlumnos() {
@@ -112,10 +132,20 @@
                                 <td>${alumno.apellido_paterno}</td>
                                 <td>${alumno.apellido_materno}</td>
                                 <td>${alumno.curp}</td>
-                                <td>${alumno.calificacion1 || 'N/A'}</td>
-                                <td>${alumno.calificacion2 || 'N/A'}</td>
-                                <td>${alumno.calificacion3 || 'N/A'}</td>
-                            `; // Rellenar la fila con los datos del alumno
+                                <td></td> <!-- Calificacion1 será un dropdown -->
+                                <td></td> <!-- Calificacion2 será un dropdown -->
+                                <td></td> <!-- Calificacion3 será un dropdown -->
+                            `;
+
+                            // Crear y agregar los dropdowns de calificaciones a las celdas correspondientes
+                            const calificacion1Dropdown = createCalificacionDropdown(alumno.calificacion1);
+                            const calificacion2Dropdown = createCalificacionDropdown(alumno.calificacion2);
+                            const calificacion3Dropdown = createCalificacionDropdown(alumno.calificacion3);
+
+                            // Agregar los dropdowns a las celdas correspondientes
+                            row.cells[5].appendChild(calificacion1Dropdown); // Calificacion1
+                            row.cells[6].appendChild(calificacion2Dropdown); // Calificacion2
+                            row.cells[7].appendChild(calificacion3Dropdown); // Calificacion3
 
                             tbody.appendChild(row); // Añadir la fila a la tabla
                         });
@@ -172,9 +202,9 @@
                     <th>Apellido Paterno</th>
                     <th>Apellido Materno</th>
                     <th>CURP</th>
-                    <th>Calificación 1</th>
-                    <th>Calificación 2</th>
-                    <th>Calificación 3</th>
+                    <th>Tiempo 1</th>
+                    <th>Tiempo 2</th>
+                    <th>Tiempo 3</th>
                 </tr>
             </thead>
             <tbody>
