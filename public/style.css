@@ -1,12 +1,12 @@
 body {
-    position: relative; /* Necesario para el pseudo-elemento */
-    height: 100vh; /* Asegúrate de que el body ocupe toda la altura de la ventana */
+    position: relative;
+    height: 100vh;
     margin: 0;
-    overflow: hidden; /* Evita el desplazamiento */
-    display: flex; /* Habilita el uso de flexbox */
-    align-items: center; /* Centra el contenido verticalmente */
-    justify-content: center; /* Centra el contenido horizontalmente */
-    font-family: 'Roboto', sans-serif; /* Aplica la fuente Roboto a todo el cuerpo */
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Roboto', sans-serif;
 }
 
 body::before {
@@ -16,139 +16,133 @@ body::before {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url('https://cdn.glitch.global/658c90a1-f44d-4451-81a6-3ec2d9249e80/backgroundCLD.png?v=1728204174982'); /* Reemplaza con la URL de tu imagen en assets */
-    background-size: cover; /* Asegúrate de que la imagen cubra toda la pantalla */
-    background-position: center; /* Centra la imagen */
-    background-repeat: no-repeat; /* Evita que la imagen se repita */
-    opacity: 0.5; /* Cambia la opacidad para hacer la imagen más o menos transparente */
-    z-index: -1; /* Asegúrate de que el pseudo-elemento esté detrás del contenido */
+    background-image: url('https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/blackboard.jpg?v=1728486670727');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.5;
+    z-index: -1;
 }
 
-/* Estilos para el contenido del formulario */
 #login-forms {
-    position: relative; /* Necesario para asegurarse de que el contenido esté encima del fondo */
-    z-index: 1; /* Asegúrate de que el contenido esté por encima del fondo */
-    padding: 20px; /* Espaciado alrededor del contenido */
-    background-color: rgba(255, 255, 255, 0.9); /* Fondo negro semi-transparente para el formulario */
-    border-radius: 10px; /* Bordes redondeados para el formulario */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para un efecto elevado */
-    text-align: center; /* Centra el texto dentro del formulario */
-    width: 300px; /* Ancho fijo para el formulario */
-    color: black; /* Cambia el color del texto a blanco */
+    position: relative;
+    z-index: 1;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 300px;
+    color: black;
 }
 
-/* Estilos para los inputs y botones */
 input {
-    width: 100%; /* Hace que los inputs ocupen todo el ancho del contenedor */
-    padding: 10px; /* Añade espacio interno */
-    margin: 10px 0; /* Añade margen entre los inputs */
-    border: 1px solid #cccccc; /* Color del borde */
-    border-radius: 5px; /* Bordes redondeados para los inputs */
-    font-family: 'Roboto', sans-serif; /* Asegura que los inputs usen la misma fuente */
-    box-sizing: border-box; /* Asegura que el padding y el borde se incluyan en el ancho total */
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    font-family: 'Roboto', sans-serif;
+    box-sizing: border-box;
 }
 
 button {
-    padding: 10px 20px; /* Espacio interno vertical y horizontal */
-    border: none; /* Elimina el borde */
-    border-radius: 5px; /* Bordes redondeados para el botón */
-    background-color: #28a745; /* Color verde para el fondo del botón */
-    color: white; /* Color del texto del botón */
-    font-family: 'Roboto', sans-serif; /* Asegura que el botón use la misma fuente */
-    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
-    font-size: 16px; /* Tamaño de fuente del texto en el botón */
-    min-width: 100px; /* Ancho mínimo del botón */
-    max-width: 200px; /* Ancho máximo del botón */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #87CEEB; /* Azul celeste claro */
+    color: white;
+    font-family: 'Roboto', sans-serif;
+    cursor: pointer;
+    font-size: 16px;
+    min-width: 100px;
+    max-width: 200px;
+    transition: background-color 0.3s;
 }
 
-/* Ajusta el botón al pasar el mouse */
 button:hover {
-    background-color: #218838; /* Color verde oscuro al pasar el mouse */
+    background-color: #00BFFF; /* Color más oscuro al pasar el mouse */
 }
 
 #header {
-    display: flex; /* Usa flexbox para alinear los elementos */
-    justify-content: space-between; /* Espacia los elementos en la cabecera */
-    align-items: center; /* Centra verticalmente los elementos */
-    padding: 10px 20px; /* Añade espacio alrededor */
-    background-color: rgba(255, 255, 255, 0.5); /* Fondo verde con transparencia (RGBA) */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para un efecto elevado */
-    position: fixed; /* Fija el header en la parte superior */
-    top: 0; /* Ubica el header en la parte superior */
-    left: 0; /* Alinea el header a la izquierda */
-    right: 0; /* Alinea el header a la derecha */
-    z-index: 10; /* Asegura que el header esté por encima de otros elementos */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
 }
 
 #content {
-    margin-top: 60px; /* Añade margen superior para no cubrir el contenido por el header */
-    text-align: center; /* Centra el texto en el contenido */
-    padding: 20px; /* Espacio alrededor del contenido */
+    margin-top: 60px;
+    text-align: center;
+    padding: 20px;
 }
 
 #welcome-message {
-    font-size: 18px; /* Tamaño de fuente para el mensaje de bienvenida */
+    font-size: 18px;
 }
 
 #error-message {
     color: red;
     margin-top: 10px;
-    display: none; /* Ocultar inicialmente el mensaje de error */
-    text-align: center; /* Centrar el mensaje de error */
+    display: none;
+    text-align: center;
 }
 
-/* Estilo básico para las notificaciones */
 .notification {
-    display: none; /* Ocultar por defecto */
-    position: fixed; /* Posicionar en la pantalla */
-    top: 0; /* Colocarla en la parte superior */
-    left: 0; /* Alinear a la izquierda */
-    width: 100%; /* Ancho completo */
-    padding: 15px; /* Espaciado interno */
-    text-align: center; /* Centrar el texto */
-    z-index: 1000; /* Asegúrate de que se superponga a otros elementos */
-    transition: opacity 0.5s; /* Efecto de transición */
-    opacity: 0; /* Inicialmente invisible */
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px;
+    text-align: center;
+    z-index: 1000;
+    transition: opacity 0.5s;
+    opacity: 0;
 }
 
-/* Mostrar la notificación */
 .notification.show {
-    display: block; /* Mostrar notificación */
-    opacity: 1; /* Hacerla visible */
+    display: block;
+    opacity: 1;
 }
 
 .notification.error {
-    background-color: #b70011; /* Color de fondo para errores */
-    color: #ffffff; /* Color de texto para errores */
-    border: none; /* Sin borde */
+    background-color: #b70011;
+    color: #ffffff;
 }
 
 .notification.success {
-    background-color: #00cb4d; /* Color de fondo para éxito */
-    color: #ffffff; /* Color de texto para éxito */
-    border: none; /* Sin borde */
+    background-color: #00cb4d;
+    color: #ffffff;
 }
 
 #alumnos-table {
     width: 100%;
     border-collapse: collapse;
     margin: 20px 0;
-    border-radius: 8px; /* Bordes redondeados */
-    overflow: hidden; /* Para los bordes redondeados */
+    border-radius: 8px;
+    overflow: hidden;
     background-color: white; /* Fondo blanco para la tabla */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Sombra sutil para la tabla */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 #alumnos-table th, #alumnos-table td {
-    border: 1px solid #dddddd; /* Borde ligero */
-    padding: 12px; /* Aumentar espaciado interno */
+    border: 1px solid #dddddd;
+    padding: 12px;
     text-align: left;
 }
 
 #alumnos-table th {
-    background-color: #4CAF50; /* Color de fondo para encabezados */
-    color: white; /* Color del texto */
-    text-transform: uppercase; /* Texto en mayúsculas */
+    background-color: #87CEEB; /* Cambia a azul celeste claro para encabezados */
+    color: white;
+    text-transform: uppercase;
 }
 
 #alumnos-table tr:nth-child(even) {
@@ -160,10 +154,11 @@ button:hover {
 }
 
 #alumnos-table td {
-    font-size: 14px; /* Tamaño de fuente */
+    font-size: 14px;
+    background-color: #ffffff; /* Asegúrate de que todas las celdas tengan fondo blanco */
 }
 
-/* Opcional: agregar más contraste para las filas sin color */
+/* Cambia el fondo de filas impares para que sea blanco */
 #alumnos-table tr:nth-child(odd) {
     background-color: #ffffff; /* Fondo blanco para las filas impares */
 }
