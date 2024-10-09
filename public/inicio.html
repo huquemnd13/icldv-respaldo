@@ -31,14 +31,17 @@
                         }
                     });
                     if (response.ok) {
-                        const gradis = await response.json(); // Obtiene las materias en formato JSON
+                        const grados = await response.json(); // Obtiene las materias en formato JSON
                         const selectElement = document.getElementById('grados');
                         console.log(grados);
+                        console.log("Datos recibidos:", grados);
+                        console.log("Tipo de dato:", typeof grados); // Verifica el tipo de dato
+                        console.log("Es un array?:", Array.isArray(grados)); // Verifica si es un array
 
                         // Llenar el dropdown con las materias
                         grados.forEach(grado => {
                             const option = document.createElement('option');
-                            option.value = grado.descripcion; // Usa el ID de la materia como valor
+                            option.value = grado.id_grado_nivel_escolar; // Usa el ID de la materia como valor
                             option.textContent = grado.descripcion; // Usa el nombre de la materia como texto
                             selectElement.appendChild(option); // Añadir opción al select
                         });
@@ -72,16 +75,20 @@
 </head>
 <body>
     <div id="header">
-        <div id="welcome-message">Bienvenido, <span style="font-weight: bold;" id="nombre_usuario"></span></div> <!-- Mensaje de bienvenida con nombre -->
+        <div id="welcome-message">Bienvenido, 
+          <span style="font-weight: bold;" id="nombre_usuario"></span>
+          <span style="margin-left: 100px;">
+            <label for="grados">Selecciona un grado:</label>
+            <select id="grados">
+              <option value="" disabled selected>Selecciona un grado</option>
+            </select>
+          </span>
+      </div> <!-- Mensaje de bienvenida con nombre -->
         <button id="logout-button">Cerrar sesión</button> <!-- Botón a la derecha -->
     </div>
     <div id="content">
         <p>Has iniciado sesión correctamente. Esta es una página de inicio.</p>
         <p><a href="/home">Ir a la página principal</a></p>
     </div>
-    <label for="grados">Selecciona un grado:</label>
-    <select id="grados">
-        <option value="" disabled selected>Selecciona un grado</option>
-    </select>
 </body>
 </html>
