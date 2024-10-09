@@ -165,22 +165,21 @@ app.get('/grados', async (req, res) => {
     }
 });
 
-// Ruta para obtener alumnos por grado
-app.get('/obtener-alumnos', async (req, res) => {
-    const { profesor_id, grado_id, ciclo_id } = req.query; // Obtener los IDs del query string
+app.get('/obtener-ciclos-escolares', async (req, res) => {
+    try {
+        const { data, error } = await supabase.rpc('obtener_ciclos_escolares');
 
-    // Llamar a la función en Supabase
-    const { data, error } = await supabase
-        .rpc('obtener_alumnos_por_grado', { profesor_id, grado_id, ciclo_id });
+        if (error) {
+            console.error('Error al obtener ciclos escolares:', error);
+            return res.status(500).json({ message: 'Error al obtener ciclos escolares' });
+        }
 
-    if (error) {
-        console.error("Error al obtener alumnos:", error);
-        return res.status(500).json({ message: 'Error al obtener alumnos.' });
+        return res.json(data);
+    } catch (err) {
+        console.error('Error interno del servidor:', err);
+        return res.status(500).json({ message: 'Error interno del servidor' });
     }
-
-    return res.json(data);
 });
-
 
 // Iniciar el servidor
 const PORT = process.env.PORT || 3000;
