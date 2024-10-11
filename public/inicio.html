@@ -316,24 +316,25 @@
           width: 97%;
         "
       >
-        <div style="display: flex; flex-direction: column; align-items: center;">
-        <img
-          src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/MarcaLDV.png?v=1728659537627"
-          alt="Logo"
-          style="width: 300px; margin-bottom: 20px;"/>
-        <div style="flex: 1; text-align: left">
-          Bienvenido,
-          <span style="font-weight: bold" id="nombre_usuario"></span>
+        <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+          <img
+            src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/MarcaLDV.png?v=1728659537627"
+            alt="Logo"
+            style="width: 300px; margin-right: 20px;"/>
+          <div style="flex: 1; text-align: left; margin-right: 20px;"> <!-- Añade margen a la derecha del texto -->
+            Bienvenid@,
+            <span style="font-weight: bold" id="nombre_usuario"></span>
+          </div>
+          <div style="flex: 1; text-align: center; margin-right: 20px;">
+            <span id="ciclo_activo" style="font-weight: bold"></span>
+            <!-- Aquí se mostrará el ciclo activo -->
+          </div>
+          <div style="flex: 1; text-align: right;">
+            <button id="logout-button">Cerrar sesión</button>
+            <!-- Botón a la derecha -->
+          </div>
         </div>
-        <div style="flex: 1; text-align: center">
-          <span id="ciclo_activo" style="font-weight: bold"></span>
-          <!-- Aquí se mostrará el ciclo activo -->
-        </div>
-        <div style="flex: 1; text-align: right">
-          <button id="logout-button">Cerrar sesión</button>
-          <!-- Botón a la derecha -->
-        </div>
-</div>
+
       </div>
 
       <!-- Fila 2: Dropdowns de Grado, Materia y Botón Cargar Alumnos -->
