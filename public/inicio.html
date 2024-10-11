@@ -54,9 +54,6 @@
                         const grados = await responseGrados.json(); // Obtiene los grados en formato JSON
                         const selectGrados = document.getElementById('grados');
 
-                        // Limpiar el dropdown antes de llenarlo (opcional)
-                        selectGrados.innerHTML = '';
-
                         // Llenar el dropdown de grados
                         grados.forEach(grado => {
                             const option = document.createElement('option');
@@ -87,6 +84,14 @@
                                     const materias = await response.json(); // Obtén las materias en formato JSON
                                     const selectMaterias = document.getElementById('materias');
                                     selectMaterias.innerHTML = '';
+                                  
+                                    // Agregar la opción por defecto
+    const defaultOption = document.createElement('option');
+    defaultOption.value = ''; // O '0' si deseas un valor por defecto
+    defaultOption.textContent = 'Selecciona una materia';
+    defaultOption.disabled = true; // Deshabilitar opción por defecto
+    defaultOption.selected = true; // Seleccionarla como la opción por defecto
+    selectMaterias.appendChild(defaultOption); // Añadir la opción por defecto
 
                                     // Llenar el dropdown de ciclos
                                     materias.forEach(materia => {
