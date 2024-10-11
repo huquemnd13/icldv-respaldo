@@ -1,211 +1,248 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bienvenido</title>
-    <link rel="stylesheet" href="style.css"> <!-- Asegúrate de que la ruta sea correcta -->
-    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js" defer></script> <!-- Script de jwt-decode -->
+    <link rel="stylesheet" href="style.css" />
+    <!-- Asegúrate de que la ruta sea correcta -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"
+      defer
+    ></script>
+    <!-- Script de jwt-decode -->
     <script defer>
-        let decodedToken; // Declara la variable en el ámbito global
+      let decodedToken; // Declara la variable en el ámbito global
 
-        // Decodificar el token y mostrar el nombre del profesor
-        window.onload = async function() {
-            const token = localStorage.getItem('token'); // Obtén el token del localStorage
+      // Decodificar el token y mostrar el nombre del profesor
+      window.onload = async function () {
+        const token = localStorage.getItem("token"); // Obtén el token del localStorage
 
-            if (token) {
-                try {
-                    decodedToken = jwt_decode(token); // Decodifica el token y asigna a la variable global
-                    const nombreProfesor = decodedToken.nombre_completo || "Campo nombre_completo no encontrado"; 
-                    document.getElementById('nombre_usuario').textContent = nombreProfesor; // Muestra el nombre en el span
-                  
-                    // Añadir event listener para cargar alumnos al hacer clic en el botón
-                    document.getElementById('cargar-alumnos-button').addEventListener('click', cargarAlumnos);
-                  
-                    // Hacer petición al servidor para obtener el ciclo escolar activo
-                    const responseCiclo = await fetch('/obtener-ciclos-escolares', {
-                        headers: {
-                            'Authorization': `Bearer ${token}` // Envía el token en los headers
-                        }
-                    });
+        if (token) {
+          try {
+            decodedToken = jwt_decode(token); // Decodifica el token y asigna a la variable global
+            const nombreProfesor =
+              decodedToken.nombre_completo ||
+              "Campo nombre_completo no encontrado";
+            document.getElementById("nombre_usuario").textContent =
+              nombreProfesor; // Muestra el nombre en el span
 
-                    if (responseCiclo.ok) {
-                        const cicloActivo = await responseCiclo.json(); // Obtiene el ciclo activo en formato JSON
+            // Añadir event listener para cargar alumnos al hacer clic en el botón
+            document
+              .getElementById("cargar-alumnos-button")
+              .addEventListener("click", cargarAlumnos);
 
-                        // Asegúrate de que el elemento span para el ciclo activo esté presente
-                        const cicloActivoSpan = document.getElementById('ciclo_activo');
-
-                        // Mostrar el ciclo activo en el DOM
-                        cicloActivoSpan.textContent = `Ciclo: ${cicloActivo.inicio_ciclo} - ${cicloActivo.fin_ciclo}`; // Muestra el ciclo activo
-                    } else {
-                        console.error('Error al obtener el ciclo escolar activo.');
-                    }
-                  
-                    // Hacer petición al servidor para obtener los grados del profesor
-                    const responseGrados = await fetch('/obtener-grados-profesor', {
-                        headers: {
-                            'Authorization': `Bearer ${token}` // Envía el token en los headers
-                        }
-                    });
-
-                    if (responseGrados.ok) {
-                        const grados = await responseGrados.json(); // Obtiene los grados en formato JSON
-                        const selectGrados = document.getElementById('grados');
-
-                        // Llenar el dropdown de grados
-                        grados.forEach(grado => {
-                            const option = document.createElement('option');
-                            option.value = grado.id; // Usa el ID del grado como valor
-                            option.textContent = grado.descripcion; // Usa la descripción del grado como texto
-                            selectGrados.appendChild(option); // Añadir opción al select
-                        });
-                    } else {
-                        console.error('Error al obtener los grados.');
-                    }
-                  
-                     // Listener para el cambio en el dropdown
-                    document.getElementById('grados').addEventListener('change', async (event) => {
-                        const gradoId = event.target.value; // Obtén el ID del grado seleccionado
-
-                        // Verifica que se haya seleccionado un grado
-                        if (gradoId) {
-                            console.log("ya seleccionó grupo");
-                            console.log(gradoId);
-                            try {
-                                const response = await fetch(`/obtener-materias-profesor-grado?grado_id=${gradoId}`, {
-                                    headers: {
-                                        'Authorization': `Bearer ${token}` // Envía el token en los headers
-                                    }
-                                });
-
-                                if (response.ok) {
-                                    const materias = await response.json(); // Obtén las materias en formato JSON
-                                    const selectMaterias = document.getElementById('materias');
-                                    selectMaterias.innerHTML = '';
-                                  
-                                    // Agregar la opción por defecto
-                                    const defaultOption = document.createElement('option');
-                                    defaultOption.value = ''; // O '0' si deseas un valor por defecto
-                                    defaultOption.textContent = 'Selecciona una materia';
-                                    defaultOption.disabled = true; // Deshabilitar opción por defecto
-                                    defaultOption.selected = true; // Seleccionarla como la opción por defecto
-                                    selectMaterias.appendChild(defaultOption); // Añadir la opción por defecto
-
-                                    // Llenar el dropdown de ciclos
-                                    materias.forEach(materia => {
-                                        const option = document.createElement('option');
-                                        option.value = materia.materia_id; // Usa el ID del ciclo como valor
-                                        option.textContent = materia.materia_nombre; // Usa el rango como texto
-                                        selectMaterias.appendChild(option); // Añadir opción al select
-                                    });
-                                } else {
-                                    console.error('Error al obtener materias:', response.statusText);
-                                }
-                            } catch (err) {
-                                console.error('Error en la solicitud:', err);
-                            }
-                        } else {
-                            console.log('Por favor, selecciona un grado.');
-                        }
-                    });
-
-                } catch (error) {
-                    console.error('Error al decodificar el token o al obtener grados:', error);
-                }
-            } else {
-                // Si no hay token, redirige al usuario al login u otra acción
-                window.location.href = '/login.html'; // Redirige a la página de login
-            }
-        };
-      
-        // Función para crear un dropdown con las calificaciones
-        function createCalificacionDropdown(calificacion, tiempos, tiempoIndex, currentDateTime) {
-            const select = document.createElement('select');
-            select.classList.add('calificacion-dropdown');
-
-            // Obtén el tiempo correspondiente
-            const tiempo = tiempos[tiempoIndex];
-
-            // Habilitar o deshabilitar el dropdown según la vigencia
-            if (tiempo && currentDateTime >= new Date(tiempo.fecha_inicio) && currentDateTime <= new Date(tiempo.fecha_fin)) {
-                select.disabled = false; // Habilitar
-            } else {
-                select.disabled = true; // Deshabilitar
-            }
-
-            for (let i = 0; i <= 10; i++) {
-                const option = document.createElement('option');
-                option.value = i; // Valor de la opción
-                option.textContent = i; // Texto que se mostrará
-                if (calificacion === i) {
-                    option.selected = true; // Marca como seleccionado si coincide con la calificación
-                } else if (!calificacion && i === 0) {
-                    option.selected = true; // Selecciona 0 si no hay calificación
-                }
-                select.appendChild(option); // Agrega la opción al dropdown
-            }
-
-            return select; // Devuelve el elemento select creado
-        }
-
-
-
-
-        async function cargarTiempos(cicloId, token) {
-            const response = await fetch(`/obtener-fechas-ciclo?ciclo_id=${cicloId}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}` // Envía el token en los headers
-                }
+            // Hacer petición al servidor para obtener el ciclo escolar activo
+            const responseCiclo = await fetch("/obtener-ciclos-escolares", {
+              headers: {
+                Authorization: `Bearer ${token}`, // Envía el token en los headers
+              },
             });
 
-            if (response.ok) {
-                return await response.json(); // Devuelve los tiempos en formato JSON
+            if (responseCiclo.ok) {
+              const cicloActivo = await responseCiclo.json(); // Obtiene el ciclo activo en formato JSON
+
+              // Asegúrate de que el elemento span para el ciclo activo esté presente
+              const cicloActivoSpan = document.getElementById("ciclo_activo");
+
+              // Mostrar el ciclo activo en el DOM
+              cicloActivoSpan.textContent = `Ciclo: ${cicloActivo.inicio_ciclo} - ${cicloActivo.fin_ciclo}`; // Muestra el ciclo activo
             } else {
-                console.error('Error al obtener los tiempos escolares.');
-                return []; // Retorna un arreglo vacío en caso de error
+              console.error("Error al obtener el ciclo escolar activo.");
             }
-        }
 
-        // Función para cargar los alumnos según el grado y ciclo escolar seleccionados
-        async function cargarAlumnos() {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const gradoId = document.getElementById('grados').value; // Obtener el ID del grado seleccionado
-                    const cicloId = document.getElementById('ciclos').value; // Obtener el ID del ciclo seleccionado
-                    const profesorId = decodedToken.profesor_id; // Obtener el ID del profesor desde el token
+            // Hacer petición al servidor para obtener los grados del profesor
+            const responseGrados = await fetch("/obtener-grados-profesor", {
+              headers: {
+                Authorization: `Bearer ${token}`, // Envía el token en los headers
+              },
+            });
 
-                    // Verificar que ambos valores están seleccionados
-                    if (!gradoId || !cicloId) {
-                        console.error('Por favor selecciona un grado y un ciclo escolar.');
-                        return;
-                    }
+            if (responseGrados.ok) {
+              const grados = await responseGrados.json(); // Obtiene los grados en formato JSON
+              const selectGrados = document.getElementById("grados");
 
-                    // Obtener los tiempos para el ciclo seleccionado
-                    const tiempos = await cargarTiempos(cicloId, token); // Llamar a la función para obtener tiempos
-                    console.log(tiempos);
-                    const response = await fetch(`/obtener-alumnos-grados?profesor_id=${profesorId}&grado_id=${gradoId}&ciclo_id=${cicloId}`, {
+              // Llenar el dropdown de grados
+              grados.forEach((grado) => {
+                const option = document.createElement("option");
+                option.value = grado.id; // Usa el ID del grado como valor
+                option.textContent = grado.descripcion; // Usa la descripción del grado como texto
+                selectGrados.appendChild(option); // Añadir opción al select
+              });
+            } else {
+              console.error("Error al obtener los grados.");
+            }
+
+            // Listener para el cambio en el dropdown
+            document
+              .getElementById("grados")
+              .addEventListener("change", async (event) => {
+                const gradoId = event.target.value; // Obtén el ID del grado seleccionado
+
+                // Verifica que se haya seleccionado un grado
+                if (gradoId) {
+                  console.log("ya seleccionó grupo");
+                  console.log(gradoId);
+                  try {
+                    const response = await fetch(
+                      `/obtener-materias-profesor-grado?grado_id=${gradoId}`,
+                      {
                         headers: {
-                            'Authorization': `Bearer ${token}` // Envía el token en los headers
-                        }
-                    });
+                          Authorization: `Bearer ${token}`, // Envía el token en los headers
+                        },
+                      }
+                    );
 
                     if (response.ok) {
-                        const alumnos = await response.json(); // Obtiene los alumnos en formato JSON
-                        console.log("Alumnos:", alumnos); // Verifica que los alumnos se obtengan correctamente
+                      const materias = await response.json(); // Obtén las materias en formato JSON
+                      const selectMaterias =
+                        document.getElementById("materias");
+                      selectMaterias.innerHTML = "";
 
-                        // Limpiar tabla antes de llenarla
-                        const tbody = document.getElementById('alumnos-table').querySelector('tbody');
-                        tbody.innerHTML = ''; // Limpiar contenido anterior
+                      // Agregar la opción por defecto
+                      const defaultOption = document.createElement("option");
+                      defaultOption.value = ""; // O '0' si deseas un valor por defecto
+                      defaultOption.textContent = "Selecciona una materia";
+                      defaultOption.disabled = true; // Deshabilitar opción por defecto
+                      defaultOption.selected = true; // Seleccionarla como la opción por defecto
+                      selectMaterias.appendChild(defaultOption); // Añadir la opción por defecto
 
-                        // Obtener la fecha actual
-                        const currentDateTime = new Date();
+                      // Llenar el dropdown de ciclos
+                      materias.forEach((materia) => {
+                        const option = document.createElement("option");
+                        option.value = materia.materia_id; // Usa el ID del ciclo como valor
+                        option.textContent = materia.materia_nombre; // Usa el rango como texto
+                        selectMaterias.appendChild(option); // Añadir opción al select
+                      });
+                    } else {
+                      console.error(
+                        "Error al obtener materias:",
+                        response.statusText
+                      );
+                    }
+                  } catch (err) {
+                    console.error("Error en la solicitud:", err);
+                  }
+                } else {
+                  console.log("Por favor, selecciona un grado.");
+                }
+              });
+          } catch (error) {
+            console.error(
+              "Error al decodificar el token o al obtener grados:",
+              error
+            );
+          }
+        } else {
+          // Si no hay token, redirige al usuario al login u otra acción
+          window.location.href = "/login.html"; // Redirige a la página de login
+        }
+      };
 
-                        // Llenar la tabla con los datos de los alumnos
-                        alumnos.forEach(alumno => {
-                            const row = document.createElement('tr'); // Crear una nueva fila
+      // Función para crear un dropdown con las calificaciones
+      function createCalificacionDropdown(
+        calificacion,
+        tiempos,
+        tiempoIndex,
+        currentDateTime
+      ) {
+        const select = document.createElement("select");
+        select.classList.add("calificacion-dropdown");
 
-                            row.innerHTML = `
+        // Obtén el tiempo correspondiente
+        const tiempo = tiempos[tiempoIndex];
+
+        // Habilitar o deshabilitar el dropdown según la vigencia
+        if (
+          tiempo &&
+          currentDateTime >= new Date(tiempo.fecha_inicio) &&
+          currentDateTime <= new Date(tiempo.fecha_fin)
+        ) {
+          select.disabled = false; // Habilitar
+        } else {
+          select.disabled = true; // Deshabilitar
+        }
+
+        for (let i = 0; i <= 10; i++) {
+          const option = document.createElement("option");
+          option.value = i; // Valor de la opción
+          option.textContent = i; // Texto que se mostrará
+          if (calificacion === i) {
+            option.selected = true; // Marca como seleccionado si coincide con la calificación
+          } else if (!calificacion && i === 0) {
+            option.selected = true; // Selecciona 0 si no hay calificación
+          }
+          select.appendChild(option); // Agrega la opción al dropdown
+        }
+
+        return select; // Devuelve el elemento select creado
+      }
+
+      async function cargarTiempos(cicloId, token) {
+        const response = await fetch(
+          `/obtener-fechas-ciclo?ciclo_id=${cicloId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Envía el token en los headers
+            },
+          }
+        );
+
+        if (response.ok) {
+          return await response.json(); // Devuelve los tiempos en formato JSON
+        } else {
+          console.error("Error al obtener los tiempos escolares.");
+          return []; // Retorna un arreglo vacío en caso de error
+        }
+      }
+
+      // Función para cargar los alumnos según el grado y ciclo escolar seleccionados
+      async function cargarAlumnos() {
+        const token = localStorage.getItem("token");
+        if (token) {
+          try {
+            const gradoId = document.getElementById("grados").value; // Obtener el ID del grado seleccionado
+            const cicloId = document.getElementById("ciclos").value; // Obtener el ID del ciclo seleccionado
+            const profesorId = decodedToken.profesor_id; // Obtener el ID del profesor desde el token
+
+            // Verificar que ambos valores están seleccionados
+            if (!gradoId || !cicloId) {
+              console.error(
+                "Por favor selecciona un grado y un ciclo escolar."
+              );
+              return;
+            }
+
+            // Obtener los tiempos para el ciclo seleccionado
+            const tiempos = await cargarTiempos(cicloId, token); // Llamar a la función para obtener tiempos
+            console.log(tiempos);
+            const response = await fetch(
+              `/obtener-alumnos-grados?profesor_id=${profesorId}&grado_id=${gradoId}&ciclo_id=${cicloId}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`, // Envía el token en los headers
+                },
+              }
+            );
+
+            if (response.ok) {
+              const alumnos = await response.json(); // Obtiene los alumnos en formato JSON
+              console.log("Alumnos:", alumnos); // Verifica que los alumnos se obtengan correctamente
+
+              // Limpiar tabla antes de llenarla
+              const tbody = document
+                .getElementById("alumnos-table")
+                .querySelector("tbody");
+              tbody.innerHTML = ""; // Limpiar contenido anterior
+
+              // Obtener la fecha actual
+              const currentDateTime = new Date();
+
+              // Llenar la tabla con los datos de los alumnos
+              alumnos.forEach((alumno) => {
+                const row = document.createElement("tr"); // Crear una nueva fila
+
+                row.innerHTML = `
                                 <td>${alumno.alumno_id}</td>
                                 <td>${alumno.nombre}</td>
                                 <td>${alumno.apellido_paterno}</td>
@@ -216,93 +253,123 @@
                                 <td></td> <!-- Calificacion3 será un dropdown -->
                             `;
 
-                            // Crear y agregar los dropdowns de calificaciones a las celdas correspondientes
-                            const calificacion1Dropdown = createCalificacionDropdown(alumno.calificacion1, tiempos, 0, currentDateTime); // Tiempo 1
-                            const calificacion2Dropdown = createCalificacionDropdown(alumno.calificacion2, tiempos, 1, currentDateTime); // Tiempo 2
-                            const calificacion3Dropdown = createCalificacionDropdown(alumno.calificacion3, tiempos, 2, currentDateTime); // Tiempo 3
+                // Crear y agregar los dropdowns de calificaciones a las celdas correspondientes
+                const calificacion1Dropdown = createCalificacionDropdown(
+                  alumno.calificacion1,
+                  tiempos,
+                  0,
+                  currentDateTime
+                ); // Tiempo 1
+                const calificacion2Dropdown = createCalificacionDropdown(
+                  alumno.calificacion2,
+                  tiempos,
+                  1,
+                  currentDateTime
+                ); // Tiempo 2
+                const calificacion3Dropdown = createCalificacionDropdown(
+                  alumno.calificacion3,
+                  tiempos,
+                  2,
+                  currentDateTime
+                ); // Tiempo 3
 
-                            // Agregar los dropdowns a las celdas correspondientes
-                            row.cells[5].appendChild(calificacion1Dropdown); // Calificacion1
-                            row.cells[6].appendChild(calificacion2Dropdown); // Calificacion2
-                            row.cells[7].appendChild(calificacion3Dropdown); // Calificacion3
+                // Agregar los dropdowns a las celdas correspondientes
+                row.cells[5].appendChild(calificacion1Dropdown); // Calificacion1
+                row.cells[6].appendChild(calificacion2Dropdown); // Calificacion2
+                row.cells[7].appendChild(calificacion3Dropdown); // Calificacion3
 
-                            tbody.appendChild(row); // Añadir la fila a la tabla
-                        });
-                    } else {
-                        console.error('Error al obtener los alumnos.');
-                    }
-                } catch (error) {
-                    console.error('Error al cargar los alumnos:', error);
-                }
+                tbody.appendChild(row); // Añadir la fila a la tabla
+              });
+            } else {
+              console.error("Error al obtener los alumnos.");
             }
+          } catch (error) {
+            console.error("Error al cargar los alumnos:", error);
+          }
         }
+      }
 
-        // Función para manejar el cierre de sesión
-        function logout() {
-            localStorage.removeItem('token'); // Elimina el token de localStorage
-            window.location.href = '/login.html'; // Redirige al usuario a la página de inicio de sesión
+      // Función para manejar el cierre de sesión
+      function logout() {
+        localStorage.removeItem("token"); // Elimina el token de localStorage
+        window.location.href = "/login.html"; // Redirige al usuario a la página de inicio de sesión
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        // Maneja el cierre de sesión
+        const logoutButton = document.getElementById("logout-button");
+        if (logoutButton) {
+          logoutButton.addEventListener("click", logout); // Llama a la función de cierre de sesión
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            // Maneja el cierre de sesión
-            const logoutButton = document.getElementById('logout-button');
-            if (logoutButton) {
-                logoutButton.addEventListener('click', logout); // Llama a la función de cierre de sesión
-            }
-        });
+      });
     </script>
-</head>
-<body>
-      <div id="header" style="display: flex; flex-direction: column; width: 100%;">
-          <!-- Fila 1: Bienvenida, Ciclo Activo y Cerrar Sesión -->
-          <div id="welcome-message" style="display: flex; justify-content: space-between; align-items: center; width: 95%;">
-              <div style="flex: 1; text-align: left;">
-                  Bienvenido, 
-                  <span style="font-weight: bold;" id="nombre_usuario"></span>
-              </div>
-              <div style="flex: 1; text-align: center;">
-                  <span id="ciclo_activo" style="font-weight: bold;"></span> <!-- Aquí se mostrará el ciclo activo -->
-              </div>
-              <div style="flex: 1; text-align: right;">
-                  <button id="logout-button">Cerrar sesión</button> <!-- Botón a la derecha -->
-              </div>
-          </div>
-
-          <!-- Fila 2: Dropdowns de Grado, Materia y Botón Cargar Alumnos -->
-          <div style="display: flex; align-items: center; margin-top: 20px;">
-              <label for="grados" style="margin-right: 10px; font-size: 12px;">Selecciona un grado:</label>
-              <select id="grados" style="margin-right: 20px;">
-                  <option value="" disabled selected>Selecciona un grado</option>
-              </select>
-
-              <label for="materias" style="margin-right: 10px; font-size: 12px;">Selecciona una materia:</label>
-              <select id="materias" style="margin-right: 20px;">
-                  <option value="" disabled selected>Selecciona una materia</option>
-              </select>
-
-              <button id="cargar-alumnos-button" style="margin-left: 20px;">Cargar Alumnos</button>
-          </div>
+  </head>
+  <body>
+    <div id="header" style="display: flex; flex-direction: column; width: 100%">
+      <!-- Fila 1: Bienvenida, Ciclo Activo y Cerrar Sesión -->
+      <div
+        id="welcome-message"
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 95%;
+        "
+      >
+        <div style="flex: 1; text-align: left">
+          Bienvenido,
+          <span style="font-weight: bold" id="nombre_usuario"></span>
+        </div>
+        <div style="flex: 1; text-align: center">
+          <span id="ciclo_activo" style="font-weight: bold"></span>
+          <!-- Aquí se mostrará el ciclo activo -->
+        </div>
+        <div style="flex: 1; text-align: right">
+          <button id="logout-button">Cerrar sesión</button>
+          <!-- Botón a la derecha -->
+        </div>
       </div>
 
+      <!-- Fila 2: Dropdowns de Grado, Materia y Botón Cargar Alumnos -->
+      <div style="display: flex; align-items: center; margin-top: 20px">
+        <label for="grados" style="margin-right: 10px; font-size: 12px"
+          >Selecciona un grado:</label
+        >
+        <select id="grados" style="margin-right: 20px">
+          <option value="" disabled selected>Selecciona un grado</option>
+        </select>
 
-      <div id="content">
-        <table id="alumnos-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Nombre</th>
-                    <th>Apellido Paterno</th>
-                    <th>Apellido Materno</th>
-                    <th>CURP</th>
-                    <th>Tiempo 1</th>
-                    <th>Tiempo 2</th>
-                    <th>Tiempo 3</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Las filas de datos se agregarán aquí dinámicamente -->
-            </tbody>
-        </table>
+        <label for="materias" style="margin-right: 10px; font-size: 12px"
+          >Selecciona una materia:</label
+        >
+        <select id="materias" style="margin-right: 20px">
+          <option value="" disabled selected>Selecciona una materia</option>
+        </select>
+
+        <button id="cargar-alumnos-button" style="margin-left: 20px">
+          Cargar Alumnos
+        </button>
+      </div>
     </div>
-</body>
+
+    <div id="content">
+      <table id="alumnos-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido Paterno</th>
+            <th>Apellido Materno</th>
+            <th>CURP</th>
+            <th>Tiempo 1</th>
+            <th>Tiempo 2</th>
+            <th>Tiempo 3</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Las filas de datos se agregarán aquí dinámicamente -->
+        </tbody>
+      </table>
+    </div>
+  </body>
 </html>
