@@ -1,4 +1,4 @@
-body {
+  font-size:151body {
   position: relative;
   height: 100vh;
   margin: 0;
@@ -33,7 +33,9 @@ body::before {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   text-align: center;
   width: 300px;
-  color: black;
+   font-size:12color: black;
+  font-size:15px;
+  
 }
 
 input {
@@ -161,5 +163,5 @@ button:hover {
 
 /* Cambia el fondo de filas impares para que sea blanco */
 #alumnos-table tr:nth-child(odd) {
-  background-color: #ffffff; /* Fondo blanco para las filas impares */
+  background-color: #ffffff; /* Fondo blanco impares */
 }
