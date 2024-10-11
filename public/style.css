@@ -1,13 +1,24 @@
-  font-size:151body {
-  position: relative;
-  height: 100vh;
-  margin: 0;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: "Roboto", sans-serif;
+html, body {
+    position: relative;
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: "Roboto", sans-serif;
+    background-image: url("https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/LogoLDVFondo.png?v=1728658612450");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.5;
 }
+
+/* Estilo para la página de inicio de sesión */
+body.login-background {
+    background-color: #f0f8ff; /* Cambia esto al color que desees */
+    opacity: 1; /* Asegúrate de que la opacidad sea 1 para el fondo de color */
+}
+
 
 body::before {
   content: "";
@@ -33,9 +44,8 @@ body::before {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   text-align: center;
   width: 300px;
-   font-size:12color: black;
-  font-size:15px;
-  
+  color: black;
+  font-size: 15px;
 }
 
 input {
@@ -63,7 +73,7 @@ button {
 }
 
 button:hover {
-  background-color: #00bfff; /* Color más oscuro al pasar el mouse */
+  background-color: #008cb6; /* Color más oscuro al pasar el mouse */
 }
 
 #header {
@@ -163,5 +173,6 @@ button:hover {
 
 /* Cambia el fondo de filas impares para que sea blanco */
 #alumnos-table tr:nth-child(odd) {
-  background-color: #ffffff; /* Fondo blanco impares */
+  background-color: #ffffff; /* Fondo blanco para las filas impares */
+} impares */
 }
