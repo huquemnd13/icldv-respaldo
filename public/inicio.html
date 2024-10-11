@@ -32,16 +32,26 @@
                         const ciclos = await responseCiclos.json(); // Obtiene los ciclos en formato JSON
                         const selectCiclos = document.getElementById('ciclos');
 
-                        // Llenar el dropdown de ciclos
-                        ciclos.forEach(ciclo => {
+                        // Suponiendo que `ciclos` tiene una propiedad `activo` para indicar si es activo
+                        const cicloActivo = ciclos.find(ciclo => ciclo.activo); // Encuentra el ciclo activo
+
+                        if (cicloActivo) {
+                            // Agrega el ciclo activo al dropdown
                             const option = document.createElement('option');
-                            option.value = ciclo.id; // Usa el ID del ciclo como valor
-                            option.textContent = `${ciclo.inicio_ciclo} - ${ciclo.fin_ciclo}`; // Usa el rango como texto
+                            option.value = cicloActivo.id; // Usa el ID del ciclo como valor
+                            option.textContent = `${cicloActivo.inicio_ciclo} - ${cicloActivo.fin_ciclo}`; // Usa el rango como texto
                             selectCiclos.appendChild(option); // Añadir opción al select
-                        });
+
+                            // Mostrar el ciclo activo en el DOM
+                            const cicloActivoSpan = document.getElementById('ciclo_activo'); // Asegúrate de tener este elemento en tu HTML
+                            cicloActivoSpan.textContent = `${cicloActivo.inicio_ciclo} - ${cicloActivo.fin_ciclo}`; // Muestra el ciclo activo
+                        } else {
+                            console.log('No hay ciclos activos.');
+                        }
                     } else {
                         console.error('Error al obtener los ciclos escolares.');
                     }
+
                   
                     // Hacer petición al servidor para obtener los grados del profesor
                     const responseGrados = await fetch('/obtener-grados-profesor', {
@@ -86,12 +96,12 @@
                                     selectMaterias.innerHTML = '';
                                   
                                     // Agregar la opción por defecto
-    const defaultOption = document.createElement('option');
-    defaultOption.value = ''; // O '0' si deseas un valor por defecto
-    defaultOption.textContent = 'Selecciona una materia';
-    defaultOption.disabled = true; // Deshabilitar opción por defecto
-    defaultOption.selected = true; // Seleccionarla como la opción por defecto
-    selectMaterias.appendChild(defaultOption); // Añadir la opción por defecto
+                                    const defaultOption = document.createElement('option');
+                                    defaultOption.value = ''; // O '0' si deseas un valor por defecto
+                                    defaultOption.textContent = 'Selecciona una materia';
+                                    defaultOption.disabled = true; // Deshabilitar opción por defecto
+                                    defaultOption.selected = true; // Seleccionarla como la opción por defecto
+                                    selectMaterias.appendChild(defaultOption); // Añadir la opción por defecto
 
                                     // Llenar el dropdown de ciclos
                                     materias.forEach(materia => {
@@ -260,16 +270,18 @@
               <div>
                   Bienvenido, 
                   <span style="font-weight: bold;" id="nombre_usuario"></span>
+                  <span id="ciclo_activo" style="margin-left: 10px; font-weight: bold;"></span> <!-- Aquí se mostrará el ciclo activo -->
               </div>
 
               <button id="logout-button" style="margin-left: auto;">Cerrar sesión</button> <!-- Botón a la derecha -->
+
           </div>
 
           <div style="margin-top: 20px; display: flex; align-items: center;">
-              <label for="ciclos" style="margin-right: 10px; font-size: 12px;">Selecciona un ciclo escolar:</label>
+              <!--<label for="ciclos" style="margin-right: 10px; font-size: 12px;">Selecciona un ciclo escolar:</label>
               <select id="ciclos" style="margin-right: 20px;">
                   <option value="" disabled selected>Selecciona un ciclo escolar</option>
-              </select>
+              </select>-->
 
               <label for="grados" style="margin-right: 10px; font-size: 12px;">Selecciona un grado:</label>
               <select id="grados" style="margin-right: 20px;">
