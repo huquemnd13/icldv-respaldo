@@ -86,7 +86,7 @@
                                 if (response.ok) {
                                     const materias = await response.json(); // Obtén las materias en formato JSON
                                     const selectMaterias = document.getElementById('materias');
-                                    console.log(materias); // Procesa y muestra las materias
+                                    selectMaterias.innerHTML = '';
 
                                     // Llenar el dropdown de ciclos
                                     materias.forEach(materia => {
