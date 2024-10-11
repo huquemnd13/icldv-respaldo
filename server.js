@@ -4,8 +4,8 @@ const session = require("express-session");
 const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
 const { createClient } = require("@supabase/supabase-js");
-const path = require("path"); // Importar el módulo path
-const jwt = require("jsonwebtoken"); // Asegúrate de instalar jsonwebtoken con npm
+const path = require("path");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 
@@ -27,9 +27,10 @@ app.use("/styles.css", (req, res, next) => {
 // Servir archivos estáticos desde la carpeta public
 app.use(express.static(path.join(__dirname, "public")));
 
+// Configuración de la sesión
 app.use(
   session({
-    secret: "tu_secreto", // Cambia esto por un secreto más seguro
+    secret: process.env.SESSION_SECRET || "tu_secreto_aqui", // Cambia esto por un secreto más seguro
     resave: false,
     saveUninitialized: true,
     cookie: { secure: true }, // Cambia a true si usas HTTPS
@@ -43,7 +44,7 @@ app.get("/login", (req, res) => {
 
 // Manejo del login
 app.post("/login", async (req, res) => {
-  console.log("Inicio del proceso de login"); // Mensaje inicial
+  console.log("Inicio del proceso de login");
   const { email, password } = req.body;
 
   // Buscar usuario en Supabase
@@ -51,34 +52,31 @@ app.post("/login", async (req, res) => {
     .from("Usuario")
     .select("*")
     .eq("email", email)
-    .single(); // Obtiene un único usuario
+    .single();
 
   if (error) {
-    console.error("Error al buscar usuario:", error); // Log de error
+    console.error("Error al buscar usuario:", error);
     return res.json({ success: false, message: "Error al buscar correo." });
   }
 
   if (usuario) {
-    console.log("Usuario encontrado:", usuario); // Agrega esto para verificar si se encontró el usuario
+    console.log("Usuario encontrado:", usuario);
     // Verificar contraseña
     const passwordMatch = await bcrypt.compare(password, usuario.password);
-    console.log("Contraseña coincide:", passwordMatch); // Log del resultado de comparación
+    console.log("Contraseña coincide:", passwordMatch);
 
     if (passwordMatch) {
       // Buscar el profesor relacionado con el usuario
-      console.log("ID del usuario:", usuario.id); // Agrega esta línea para imprimir el ID del usuario
+      console.log("ID del usuario:", usuario.id);
       const { data: profesor, error: errorProfesor } = await supabase
         .from("Profesor")
         .select("*")
-        .eq("id_usuario", usuario.id) // Suponiendo que id_usuario en Profesor relaciona con id en Usuario
+        .eq("id_usuario", usuario.id)
         .single();
 
       if (errorProfesor) {
         console.error("Error al buscar profesor:", errorProfesor);
-        return res.json({
-          success: false,
-          message: "Error al buscar profesor.",
-        });
+        return res.json({ success: false, message: "Error al buscar profesor." });
       }
 
       if (profesor) {
@@ -91,12 +89,12 @@ app.post("/login", async (req, res) => {
             nombre_completo: nombreCompleto,
             profesor_id: profesor.id,
           },
-          "tu_secreto_aqui",
+          process.env.JWT_SECRET || "tu_secreto_aqui", // Usar variable de entorno para la clave secreta
           { expiresIn: "1h" }
         );
         console.log("ID PROFESOR TABLA", profesor.id);
         // Responder con el token
-        return res.json({ success: true, token }); // Envía el token al cliente
+        return res.json({ success: true, token });
       } else {
         return res.json({ success: false, message: "Profesor no encontrado." });
       }
@@ -107,21 +105,21 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Manejo del usuario
+// Ruta para obtener información del usuario
 app.get("/get-usuario", async (req, res) => {
-  const token = req.headers["authorization"]?.split(" ")[1]; // Asegúrate de obtener el token del encabezado
+  const token = req.headers["authorization"]?.split(" ")[1];
 
   if (!token) {
-    return res.status(401).json({ message: "No autorizado" }); // Si no hay token, responde con un error 401
+    return res.status(401).json({ message: "No autorizado" });
   }
 
   try {
-    const decoded = jwt.verify(token, "tu_secreto_aqui"); // Verifica el token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "tu_secreto_aqui");
     // Obtener el usuario a partir del token decodificado
     const { data: usuario, error: usuarioError } = await supabase
       .from("Usuario")
       .select("*")
-      .eq("id", decoded.id) // Usa el ID del token para obtener el usuario
+      .eq("id", decoded.id)
       .single();
 
     if (usuarioError) {
@@ -130,226 +128,107 @@ app.get("/get-usuario", async (req, res) => {
       // Si se obtuvo el usuario, busca el profesor relacionado
       const { data: profesor, error: profesorError } = await supabase
         .from("Profesor")
-        .select("id") // Selecciona el campo 'id' de la tabla Profesor
-        .eq("id_usuario", usuario.id) // Usa 'id_usuario' para buscar el profesor relacionado
+        .select("id")
+        .eq("id_usuario", usuario.id)
         .single();
 
       if (profesorError) {
         console.error("Error al obtener el profesor:", profesorError);
       } else {
-        const profesorId = profesor.id; // Ahora tienes el ID del profesor
+        const profesorId = profesor.id;
         console.log("ID del profesor:", profesorId);
         // Aquí puedes continuar con la lógica usando profesorId
       }
     }
 
-    return res.json({ nombreUsuario: usuario.nombre_usuario }); // Responde con el nombre de usuario
+    return res.json({ nombreUsuario: usuario.nombre_usuario });
   } catch (err) {
     console.error("Error al verificar el token:", err);
     return res.status(401).json({ message: "Token inválido" });
   }
 });
 
-app.get("/grados", async (req, res) => {
+// Ruta para obtener ciclos escolares activos
+app.get("/ciclos-escolares", async (req, res) => {
   try {
-    const token = req.headers.authorization.split(" ")[1]; // Obtener el token del header
-    const decodedToken = jwt.verify(token, "tu_secreto_aqui"); // Decodificar el token
-    const profesorId = decodedToken.profesor_id; // Obtener el ID del profesor
-    console.log(profesorId);
-    // Obtener los grados y descripciones del nivel escolar para un profesor específico
-    const { data: grados, error } = await supabase.rpc(
-      "obtener_grados_por_profesor",
-      { _id_profesor: profesorId }
-    ); // Llamamos a la función con el ID del profesor
-
-    if (error) {
-      console.error(
-        "Error al ejecutar la función obtener_grados_por_profesor:",
-        error
-      );
-      return res
-        .status(500)
-        .json({
-          message:
-            "Error al obtener los grados y descripciones del nivel escolar.",
-        });
-    }
-
-    // Enviar el resultado en la respuesta
-    res.json(grados);
-  } catch (error) {
-    console.error(error);
-    res.status(401).json({ message: "No autorizado." });
-  }
-});
-
-app.get("/obtener-ciclos-escolares", async (req, res) => {
-  try {
-    const { data, error } = await supabase.rpc("obtener_ciclos_escolares");
+    const { data, error } = await supabase
+      .from("CicloEscolar")
+      .select("*")
+      .eq("activo", true);
 
     if (error) {
       console.error("Error al obtener ciclos escolares:", error);
-      return res
-        .status(500)
-        .json({ message: "Error al obtener ciclos escolares" });
+      return res.status(500).json({ message: "Error al obtener ciclos escolares." });
     }
 
-    // Asegurarte de que data contenga un solo ciclo escolar activo
-    if (data && data.length > 0) {
-      const cicloActivo = data[0]; // Obtener el primer ciclo que es el activo
-      return res.json(cicloActivo); // Enviar el ciclo activo como respuesta
-    } else {
-      return res
-        .status(404)
-        .json({ message: "No hay ciclos escolares activos." }); // Manejo de caso sin ciclos activos
-    }
+    return res.json(data);
   } catch (err) {
-    console.error("Error interno del servidor:", err);
-    return res.status(500).json({ message: "Error interno del servidor" });
+    console.error("Error:", err);
+    return res.status(500).json({ message: "Error interno del servidor." });
   }
 });
 
-// Ruta para obtener alumnos por grado
-app.get("/obtener-alumnos-grados", async (req, res) => {
-  const { profesor_id, grado_id, ciclo_id } = req.query; // Obtener los parámetros de la consulta
-
-  try {
-    const { data: alumnos, error } = await supabase.rpc(
-      "obtener_alumnos_por_grado",
-      {
-        profesor_id: profesor_id,
-        grado_id: grado_id,
-        ciclo_id: ciclo_id,
-      }
-    );
-
-    if (error) {
-      console.error("Error al obtener alumnos:", error);
-      return res
-        .status(500)
-        .json({ success: false, message: "Error al obtener alumnos." });
-    }
-
-    return res.json(alumnos); // Retornar los datos de alumnos
-  } catch (err) {
-    console.error("Error en la consulta:", err);
-    return res
-      .status(500)
-      .json({ success: false, message: "Error en la consulta." });
-  }
-});
-
-// API para obtener fechas del ciclo escolar
-app.get("/obtener-fechas-ciclo", async (req, res) => {
-  const { ciclo_id } = req.query;
-
+// Ruta para obtener grados de un profesor
+app.get("/grados-profesor/:id", async (req, res) => {
+  const { id } = req.params;
   try {
     const { data, error } = await supabase
-      .from("TiempoCicloEscolar")
-      .select("fecha_inicio, fecha_fin, tiempo") // Ahora incluye el campo 'tiempo'
-      .eq("id_ciclo_escolar", ciclo_id)
-      .order("tiempo", { ascending: true }); // Ordenar por 'tiempo' en orden ascendente
+      .from("GradoNivelEscolar")
+      .select("*")
+      .eq("id_profesor", id); // Cambia esto según tu estructura de datos
 
     if (error) {
-      return res
-        .status(500)
-        .json({ error: "Error al obtener las fechas del ciclo escolar." });
+      console.error("Error al obtener grados del profesor:", error);
+      return res.status(500).json({ message: "Error al obtener grados." });
     }
 
-    res.json(data);
-  } catch (error) {
-    console.error("Error al ejecutar la consulta:", error);
-    res.status(500).json({ error: "Error en el servidor." });
-  }
-});
-
-// ESTO LLEVA LA INFORMACION DE LOS GRADOS ASIGNADOS DEL PROFESOR PARA EL DROP DOWN LIST
-app.get("/obtener-grados-profesor", async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1]; // Obtener el token del header
-  const decodedToken = jwt.verify(token, "tu_secreto_aqui"); // Decodificar el token
-  const profesorId = decodedToken.profesor_id; // Obtener el ID del profesor
-  console.log(profesorId);
-
-  if (!profesorId) {
-    return res
-      .status(400)
-      .json({ success: false, message: "Falta el parámetro profesor_id." });
-  }
-
-  try {
-    const { data: grados, error } = await supabase.rpc(
-      "obtener_descripciones_grados_por_profesor",
-      {
-        _id_profesor: profesorId,
-      }
-    );
-
-    if (error) {
-      console.error("Error al obtener grados:", error);
-      return res
-        .status(500)
-        .json({ success: false, message: "Error al obtener grados." });
-    }
-
-    return res.json(grados);
+    return res.json(data);
   } catch (err) {
-    console.error("Error en la consulta:", err);
-    return res
-      .status(500)
-      .json({ success: false, message: "Error en la consulta." });
+    console.error("Error:", err);
+    return res.status(500).json({ message: "Error interno del servidor." });
   }
 });
 
-// ESTO LLEVA LA INFORMACION DE LAS MATERIAS ASIGNADAS AL PROFESOR PARA EL DROP DOWN LIST
-app.get("/obtener-materias-profesor-grado", async (req, res) => {
-  const token = req.headers.authorization.split(" ")[1]; // Obtener el token del header
-
+// Ruta para obtener materias de un grado
+app.get("/materias-grado/:gradoId", async (req, res) => {
+  const { gradoId } = req.params;
   try {
-    const decodedToken = jwt.verify(token, "tu_secreto_aqui"); // Decodificar el token
-    const profesorId = decodedToken.profesor_id; // Obtener el ID del profesor
-    const gradoId = req.query.grado_id; // Obtener el ID del grado desde los parámetros de la consulta
-
-    console.log("Profesor ID:", profesorId);
-    console.log("Grado ID:", gradoId);
-
-    // Verificar que ambos IDs estén presentes
-    if (!profesorId || !gradoId) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Faltan parámetros requeridos: profesor_id o grado_id.",
-        });
-    }
-
-    // Llamar a la función en Supabase
-    const { data: materias, error } = await supabase.rpc(
-      "obtener_materias_por_profesor_y_grado",
-      {
-        _id_profesor: profesorId,
-        _id_grado_nivel_escolar: gradoId, // Pasar el ID del grado desde el dropdown
-      }
-    );
+    const { data, error } = await supabase
+      .from("Materia")
+      .select("*")
+      .eq("grado_id", gradoId); // Cambia esto según tu estructura de datos
 
     if (error) {
-      console.error("Error al obtener materias:", error);
-      return res
-        .status(500)
-        .json({ success: false, message: "Error al obtener materias." });
+      console.error("Error al obtener materias del grado:", error);
+      return res.status(500).json({ message: "Error al obtener materias." });
     }
 
-    return res.json(materias);
+    return res.json(data);
   } catch (err) {
-    console.error("Error en la consulta:", err);
-    return res
-      .status(500)
-      .json({ success: false, message: "Error en la consulta." });
+    console.error("Error:", err);
+    return res.status(500).json({ message: "Error interno del servidor." });
   }
 });
 
-// Redirige a login.html cuando el usuario visita la raíz del sitio (/)
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "/public/login.html"));
+// Ruta para obtener calificaciones de un alumno
+app.get("/calificaciones-alumno/:alumnoId", async (req, res) => {
+  const { alumnoId } = req.params;
+  try {
+    const { data, error } = await supabase
+      .from("Calificacion")
+      .select("*")
+      .eq("alumno_id", alumnoId); // Cambia esto según tu estructura de datos
+
+    if (error) {
+      console.error("Error al obtener calificaciones del alumno:", error);
+      return res.status(500).json({ message: "Error al obtener calificaciones." });
+    }
+
+    return res.json(data);
+  } catch (err) {
+    console.error("Error:", err);
+    return res.status(500).json({ message: "Error interno del servidor." });
+  }
 });
 
 // Iniciar el servidor
