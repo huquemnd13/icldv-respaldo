@@ -227,6 +227,7 @@ app.get('/obtener-fechas-ciclo', async (req, res) => {
     }
 });
 
+// ESTO LLEVA LA INFORMACION DE LOS GRADOS ASIGNADOS DEL PROFESOR PARA EL DROP DOWN LIST
 app.get('/obtener-grados-profesor', async (req, res) => {
   const token = req.headers.authorization.split(' ')[1]; // Obtener el token del header
     const decodedToken = jwt.verify(token, 'tu_secreto_aqui'); // Decodificar el token
@@ -254,6 +255,43 @@ app.get('/obtener-grados-profesor', async (req, res) => {
         return res.status(500).json({ success: false, message: 'Error en la consulta.' });
     }
 });
+
+// ESTO LLEVA LA INFORMACION DE LAS MATERIAS ASIGNADAS AL PROFESOR PARA EL DROP DOWN LIST
+app.get('/obtener-materias-profesor-grado', async (req, res) => {
+    const token = req.headers.authorization.split(' ')[1]; // Obtener el token del header
+
+    try {
+        const decodedToken = jwt.verify(token, 'tu_secreto_aqui'); // Decodificar el token
+        const profesorId = decodedToken.profesor_id; // Obtener el ID del profesor
+        const gradoId = req.query.grado_id; // Obtener el ID del grado desde los parámetros de la consulta
+
+        console.log('Profesor ID:', profesorId);
+        console.log('Grado ID:', gradoId);
+
+        // Verificar que ambos IDs estén presentes
+        if (!profesorId || !gradoId) {
+            return res.status(400).json({ success: false, message: 'Faltan parámetros requeridos: profesor_id o grado_id.' });
+        }
+
+        // Llamar a la función en Supabase
+        const { data: materias, error } = await supabase
+            .rpc('obtener_materias_por_profesor_y_grado', {
+                _id_profesor: profesorId,
+                _id_grado_nivel_escolar: gradoId // Pasar el ID del grado desde el dropdown
+            });
+
+        if (error) {
+            console.error('Error al obtener materias:', error);
+            return res.status(500).json({ success: false, message: 'Error al obtener materias.' });
+        }
+
+        return res.json(materias);
+    } catch (err) {
+        console.error('Error en la consulta:', err);
+        return res.status(500).json({ success: false, message: 'Error en la consulta.' });
+    }
+});
+
 
 
 // Redirige a login.html cuando el usuario visita la raíz del sitio (/)
