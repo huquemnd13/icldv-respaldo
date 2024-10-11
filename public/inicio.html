@@ -82,17 +82,17 @@
                 // Verifica que se haya seleccionado un grado
                 if (gradoId) {
                   try {
-                    const response = await fetch("/obtener-materias-profesor-grado", {
-                        headers: {
-                          Authorization: `Bearer ${token}`, // Envía el token en los headers
-                        },
-                      }
-                    );
+                    const response = await fetch(`/obtener-materias-profesor-grado?grado_id=${gradoId}`, {
+                      headers: {
+                        Authorization: `Bearer ${token}`, // Envía el token en los headers
+                      },
+                    });
 
                     if (response.ok) {
                       const materias = await response.json(); // Obtén las materias en formato JSON
-                      const selectMaterias =
-                        document.getElementById("materias");
+                      // Imprimir las materias en la consola
+                      console.log("Materias recuperadas:", materias);
+                      const selectMaterias = document.getElementById("materias");
                       selectMaterias.innerHTML = "";
 
                       // Agregar la opción por defecto
@@ -102,6 +102,14 @@
                       defaultOption.disabled = true; // Deshabilitar opción por defecto
                       defaultOption.selected = true; // Seleccionarla como la opción por defecto
                       selectMaterias.appendChild(defaultOption); // Añadir la opción por defecto
+                      
+                      // Agregar las materias obtenidas al select
+                      materias.forEach(materia => {
+                        const option = document.createElement("option");
+                        option.value = materia.materia_id; // ID de la materia
+                        option.textContent = materia.materia_nombre; // Nombre de la materia
+                        selectMaterias.appendChild(option); // Añadir la opción al select
+                      });
 
                     } else {
                       console.error(
