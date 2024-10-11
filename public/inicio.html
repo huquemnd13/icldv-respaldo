@@ -81,14 +81,13 @@
                 console.log(gradoId);
                 // Verifica que se haya seleccionado un grado
                 if (gradoId) {
-                 const response = await fetch(
-                  `/obtener-materias-profesor-grado?profesor_id=${profesorId}&grado_id=${gradoId}`, // Modifica aquí
-                  {
-                    headers: {
-                      Authorization: `Bearer ${token}`, // Envía el token en los headers
-                    },
-                  }
-                );
+                  try {
+                    const response = await fetch("/obtener-materias-profesor-grado", {
+                        headers: {
+                          Authorization: `Bearer ${token}`, // Envía el token en los headers
+                        },
+                      }
+                    );
 
                     if (response.ok) {
                       const materias = await response.json(); // Obtén las materias en formato JSON
