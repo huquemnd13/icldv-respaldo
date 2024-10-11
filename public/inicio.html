@@ -20,20 +20,25 @@
                     document.getElementById('nombre_usuario').textContent = nombreProfesor; // Muestra el nombre en el span
 
                     // Hacer petición al servidor para obtener los grados del profesor
-                    const responseGrados = await fetch('/grados', {
+                    const responseGrados = await fetch('/obtener-grados-profesor', {
                         headers: {
                             'Authorization': `Bearer ${token}` // Envía el token en los headers
                         }
                     });
+
                     if (responseGrados.ok) {
+                        console.log("aqui");
                         const grados = await responseGrados.json(); // Obtiene los grados en formato JSON
                         const selectGrados = document.getElementById('grados');
+
+                        // Limpiar el dropdown antes de llenarlo (opcional)
+                        selectGrados.innerHTML = '';
 
                         // Llenar el dropdown de grados
                         grados.forEach(grado => {
                             const option = document.createElement('option');
-                            option.value = grado.id_grado_nivel_escolar; // Usa el ID de la materia como valor
-                            option.textContent = grado.descripcion; // Usa el nombre de la materia como texto
+                            option.value = grado.id; // Usa el ID del grado como valor
+                            option.textContent = grado.descripcion; // Usa la descripción del grado como texto
                             selectGrados.appendChild(option); // Añadir opción al select
                         });
                     } else {

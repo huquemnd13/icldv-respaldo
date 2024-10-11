@@ -167,6 +167,10 @@ app.get('/grados', async (req, res) => {
 
 app.get('/obtener-ciclos-escolares', async (req, res) => {
     try {
+        const token = req.headers.authorization.split(' ')[1]; // Obtener el token del header
+        const decodedToken = jwt.verify(token, 'tu_secreto_aqui'); // Decodificar el token
+        const profesorId = decodedToken.profesor_id; // Obtener el ID del profesor
+      
         const { data, error } = await supabase.rpc('obtener_ciclos_escolares');
 
         if (error) {
@@ -181,29 +185,32 @@ app.get('/obtener-ciclos-escolares', async (req, res) => {
     }
 });
 
-// Ruta para obtener alumnos por grado
-app.get('/obtener-alumnos-grados', async (req, res) => {
-    const { profesor_id, grado_id, ciclo_id } = req.query; // Obtener los parámetros de la consulta
+// Ruta para obtener descripciones de grados por profesor
+app.get('/obtener-grados-profesor', async (req, res) => {
+    const { profesor_id } = req.query; // Obtener el ID del profesor de la consulta
+
+    if (!profesor_id) {
+        return res.status(400).json({ success: false, message: 'Falta el parámetro profesor_id.' });
+    }
 
     try {
-        const { data: alumnos, error } = await supabase
-            .rpc('obtener_alumnos_por_grado', {
-                profesor_id: profesor_id,
-                grado_id: grado_id,
-                ciclo_id: ciclo_id
+        const { data: grados, error } = await supabase
+            .rpc('obtener_descripciones_grados_por_profesor', {
+                _id_profesor: profesor_id  // Pasar el ID del profesor a la función
             });
 
         if (error) {
-            console.error('Error al obtener alumnos:', error);
-            return res.status(500).json({ success: false, message: 'Error al obtener alumnos.' });
+            console.error('Error al obtener grados:', error);
+            return res.status(500).json({ success: false, message: 'Error al obtener grados.' });
         }
 
-        return res.json(alumnos); // Retornar los datos de alumnos
+        return res.json(grados); // Retornar los datos de los grados
     } catch (err) {
         console.error('Error en la consulta:', err);
         return res.status(500).json({ success: false, message: 'Error en la consulta.' });
     }
 });
+
 
 // API para obtener fechas del ciclo escolar
 app.get('/obtener-fechas-ciclo', async (req, res) => {
