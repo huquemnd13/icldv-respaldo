@@ -22,36 +22,24 @@
                     // Añadir event listener para cargar alumnos al hacer clic en el botón
                     document.getElementById('cargar-alumnos-button').addEventListener('click', cargarAlumnos);
                   
-                    // Hacer petición al servidor para obtener los ciclos escolares
-                    const responseCiclos = await fetch('/obtener-ciclos-escolares', {
+                    // Hacer petición al servidor para obtener el ciclo escolar activo
+                    const responseCiclo = await fetch('/obtener-ciclos-escolares', {
                         headers: {
                             'Authorization': `Bearer ${token}` // Envía el token en los headers
                         }
                     });
-                    if (responseCiclos.ok) {
-                        const ciclos = await responseCiclos.json(); // Obtiene los ciclos en formato JSON
-                        const selectCiclos = document.getElementById('ciclos');
 
-                        // Suponiendo que `ciclos` tiene una propiedad `activo` para indicar si es activo
-                        const cicloActivo = ciclos.find(ciclo => ciclo.activo); // Encuentra el ciclo activo
+                    if (responseCiclo.ok) {
+                        const cicloActivo = await responseCiclo.json(); // Obtiene el ciclo activo en formato JSON
 
-                        if (cicloActivo) {
-                            // Agrega el ciclo activo al dropdown
-                            const option = document.createElement('option');
-                            option.value = cicloActivo.id; // Usa el ID del ciclo como valor
-                            option.textContent = `${cicloActivo.inicio_ciclo} - ${cicloActivo.fin_ciclo}`; // Usa el rango como texto
-                            selectCiclos.appendChild(option); // Añadir opción al select
+                        // Asegúrate de que el elemento span para el ciclo activo esté presente
+                        const cicloActivoSpan = document.getElementById('ciclo_activo');
 
-                            // Mostrar el ciclo activo en el DOM
-                            const cicloActivoSpan = document.getElementById('ciclo_activo'); // Asegúrate de tener este elemento en tu HTML
-                            cicloActivoSpan.textContent = `${cicloActivo.inicio_ciclo} - ${cicloActivo.fin_ciclo}`; // Muestra el ciclo activo
-                        } else {
-                            console.log('No hay ciclos activos.');
-                        }
+                        // Mostrar el ciclo activo en el DOM
+                        cicloActivoSpan.textContent = `Ciclo: ${cicloActivo.inicio_ciclo} - ${cicloActivo.fin_ciclo}`; // Muestra el ciclo activo
                     } else {
-                        console.error('Error al obtener los ciclos escolares.');
+                        console.error('Error al obtener el ciclo escolar activo.');
                     }
-
                   
                     // Hacer petición al servidor para obtener los grados del profesor
                     const responseGrados = await fetch('/obtener-grados-profesor', {
@@ -265,24 +253,23 @@
     </script>
 </head>
 <body>
-    <div id="header">
-          <div id="welcome-message" style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px;">
-              <div>
+      <div id="header" style="display: flex; flex-direction: column; width: 100%;">
+          <!-- Fila 1: Bienvenida, Ciclo Activo y Cerrar Sesión -->
+          <div id="welcome-message" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+              <div style="flex: 1; text-align: left;">
                   Bienvenido, 
                   <span style="font-weight: bold;" id="nombre_usuario"></span>
-                  <span id="ciclo_activo" style="margin-left: 10px; font-weight: bold;"></span> <!-- Aquí se mostrará el ciclo activo -->
               </div>
-
-              <button id="logout-button" style="margin-left: auto;">Cerrar sesión</button> <!-- Botón a la derecha -->
-
+              <div style="flex: 1; text-align: center;">
+                  <span id="ciclo_activo" style="font-weight: bold;"></span> <!-- Aquí se mostrará el ciclo activo -->
+              </div>
+              <div style="flex: 1; text-align: right;">
+                  <button id="logout-button">Cerrar sesión</button> <!-- Botón a la derecha -->
+              </div>
           </div>
 
-          <div style="margin-top: 20px; display: flex; align-items: center;">
-              <!--<label for="ciclos" style="margin-right: 10px; font-size: 12px;">Selecciona un ciclo escolar:</label>
-              <select id="ciclos" style="margin-right: 20px;">
-                  <option value="" disabled selected>Selecciona un ciclo escolar</option>
-              </select>-->
-
+          <!-- Fila 2: Dropdowns de Grado, Materia y Botón Cargar Alumnos -->
+          <div style="display: flex; align-items: center; margin-top: 20px;">
               <label for="grados" style="margin-right: 10px; font-size: 12px;">Selecciona un grado:</label>
               <select id="grados" style="margin-right: 20px;">
                   <option value="" disabled selected>Selecciona un grado</option>
@@ -295,9 +282,9 @@
 
               <button id="cargar-alumnos-button" style="margin-left: 20px;">Cargar Alumnos</button>
           </div>
-
-
       </div>
+
+
       <div id="content">
         <table id="alumnos-table">
             <thead>

@@ -174,16 +174,18 @@ app.get('/obtener-ciclos-escolares', async (req, res) => {
             return res.status(500).json({ message: 'Error al obtener ciclos escolares' });
         }
 
-        // Filtrar los ciclos escolares para que solo se incluyan aquellos con estatus true
-        const ciclosActivos = data.filter(ciclo => ciclo.estatus === true);
-
-        return res.json(ciclosActivos); // Enviar solo los ciclos activos como respuesta
+        // Asegurarte de que data contenga un solo ciclo escolar activo
+        if (data && data.length > 0) {
+            const cicloActivo = data[0]; // Obtener el primer ciclo que es el activo
+            return res.json(cicloActivo); // Enviar el ciclo activo como respuesta
+        } else {
+            return res.status(404).json({ message: 'No hay ciclos escolares activos.' }); // Manejo de caso sin ciclos activos
+        }
     } catch (err) {
         console.error('Error interno del servidor:', err);
         return res.status(500).json({ message: 'Error interno del servidor' });
     }
 });
-
 
 // Ruta para obtener alumnos por grado
 app.get('/obtener-alumnos-grados', async (req, res) => {
