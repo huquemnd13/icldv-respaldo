@@ -61,7 +61,7 @@
             if (responseGrados.ok) {
               const grados = await responseGrados.json(); // Obtiene los grados en formato JSON
               const selectGrados = document.getElementById("grados");
-
+              
               // Llenar el dropdown de grados
               grados.forEach((grado) => {
                 const option = document.createElement("option");
@@ -78,18 +78,17 @@
               .getElementById("grados")
               .addEventListener("change", async (event) => {
                 const gradoId = event.target.value; // Obtén el ID del grado seleccionado
-
+                console.log(gradoId);
                 // Verifica que se haya seleccionado un grado
                 if (gradoId) {
-                  try {
-                    const response = await fetch(
-                      `/obtener-materias-profesor-grado?grado_id=${gradoId}`,
-                      {
-                        headers: {
-                          Authorization: `Bearer ${token}`, // Envía el token en los headers
-                        },
-                      }
-                    );
+                 const response = await fetch(
+                  `/obtener-materias-profesor-grado?profesor_id=${profesorId}&grado_id=${gradoId}`, // Modifica aquí
+                  {
+                    headers: {
+                      Authorization: `Bearer ${token}`, // Envía el token en los headers
+                    },
+                  }
+                );
 
                     if (response.ok) {
                       const materias = await response.json(); // Obtén las materias en formato JSON
