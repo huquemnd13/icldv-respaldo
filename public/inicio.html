@@ -18,7 +18,28 @@
                     decodedToken = jwt_decode(token); // Decodifica el token y asigna a la variable global
                     const nombreProfesor = decodedToken.nombre_completo || "Campo nombre_completo no encontrado"; 
                     document.getElementById('nombre_usuario').textContent = nombreProfesor; // Muestra el nombre en el span
+                  
+                    // Hacer petición al servidor para obtener los ciclos escolares
+                    const responseCiclos = await fetch('/obtener-ciclos-escolares', {
+                        headers: {
+                            'Authorization': `Bearer ${token}` // Envía el token en los headers
+                        }
+                    });
+                    if (responseCiclos.ok) {
+                        const ciclos = await responseCiclos.json(); // Obtiene los ciclos en formato JSON
+                        const selectCiclos = document.getElementById('ciclos');
 
+                        // Llenar el dropdown de ciclos
+                        ciclos.forEach(ciclo => {
+                            const option = document.createElement('option');
+                            option.value = ciclo.id; // Usa el ID del ciclo como valor
+                            option.textContent = `${ciclo.inicio_ciclo} - ${ciclo.fin_ciclo}`; // Usa el rango como texto
+                            selectCiclos.appendChild(option); // Añadir opción al select
+                        });
+                    } else {
+                        console.error('Error al obtener los ciclos escolares.');
+                    }
+                  
                     // Hacer petición al servidor para obtener los grados del profesor
                     const responseGrados = await fetch('/obtener-grados-profesor', {
                         headers: {
@@ -45,27 +66,32 @@
                         console.error('Error al obtener los grados.');
                     }
                   
-                    
+                    // Listener para el cambio en el dropdown
+                  document.getElementById('grados').addEventListener('change', async (event) => {
+                    const gradoId = event.target.value; // Obtén el ID del grado seleccionado
 
-                    // Hacer petición al servidor para obtener los ciclos escolares
-                    const responseCiclos = await fetch('/obtener-ciclos-escolares', {
-                        headers: {
-                            'Authorization': `Bearer ${token}` // Envía el token en los headers
+                    // Verifica que se haya seleccionado un grado
+                    if (gradoId) {
+                        try {
+                            const response = await fetch(`/obtener-materias-profesor-grado?grado_id=${gradoId}`, {
+                                headers: {
+                                    'Authorization': `Bearer ${token}` // Envía el token en los headers
+                                }
+                            });
+
+                            if (response.ok) {
+                                const materias = await response.json(); // Obtén las materias en formato JSON
+                                console.log(materias); // Procesa y muestra las materias
+
+                                // Aquí puedes actualizar el DOM o mostrar las materias en la interfaz de usuario
+                            } else {
+                                console.error('Error al obtener materias:', response.statusText);
+                            }
+                        } catch (err) {
+                            console.error('Error en la solicitud:', err);
                         }
-                    });
-                    if (responseCiclos.ok) {
-                        const ciclos = await responseCiclos.json(); // Obtiene los ciclos en formato JSON
-                        const selectCiclos = document.getElementById('ciclos');
-
-                        // Llenar el dropdown de ciclos
-                        ciclos.forEach(ciclo => {
-                            const option = document.createElement('option');
-                            option.value = ciclo.id; // Usa el ID del ciclo como valor
-                            option.textContent = `${ciclo.inicio_ciclo} - ${ciclo.fin_ciclo}`; // Usa el rango como texto
-                            selectCiclos.appendChild(option); // Añadir opción al select
-                        });
                     } else {
-                        console.error('Error al obtener los ciclos escolares.');
+                        console.log('Por favor, selecciona un grado.');
                     }
 
                     // Añadir event listener para cargar alumnos al hacer clic en el botón
