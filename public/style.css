@@ -6,20 +6,15 @@ html, body {
     justify-content: center;
     align-items: center;
     font-family: "Roboto", sans-serif;
-    background-image: url("https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/LogoLDVFondo.png?v=1728658612450");
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity: 0.5;
 }
 
 /* Estilo para la página de inicio de sesión */
 body.login-background {
-    background-color: #f0f8ff; /* Cambia esto al color que desees */
+    background-color: #fafafa; /* Cambia esto al color que desees */
     opacity: 1; /* Asegúrate de que la opacidad sea 1 para el fondo de color */
 }
 
-
+/* Fondo de las otras páginas */
 body::before {
   content: "";
   position: absolute;
@@ -35,6 +30,11 @@ body::before {
   z-index: -1;
 }
 
+/* Esta regla oculta el pseudoelemento en el login */
+body.no-background::before {
+    display: none; /* Esto ocultará el pseudoelemento en el login */
+}
+
 #login-forms {
   position: relative;
   z-index: 1;
@@ -43,20 +43,22 @@ body::before {
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   text-align: center;
-  width: 300px;
+  width: 350px;
   color: black;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 input {
   width: 100%;
-  padding: 10px;
-  margin: 10px 0;
+  padding: 8px; /* Reduce el padding para hacerlos más pequeños */
+  margin: 8px 0; /* Reduce el margen para compactar el espacio */
   border: 1px solid #cccccc;
   border-radius: 5px;
   font-family: "Roboto", sans-serif;
   box-sizing: border-box;
+  font-size: 14px; /* Ajusta el tamaño de fuente para que sea más pequeño */
 }
+
 
 button {
   padding: 10px 20px;
@@ -173,6 +175,5 @@ button:hover {
 
 /* Cambia el fondo de filas impares para que sea blanco */
 #alumnos-table tr:nth-child(odd) {
-  background-color: #ffffff; /* Fondo blanco para las filas impares */
-} impares */
+  background-color: #ffffff; /* Fondo blanco para las filas imparesimpares */
 }
