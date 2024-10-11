@@ -19,6 +19,9 @@
                     const nombreProfesor = decodedToken.nombre_completo || "Campo nombre_completo no encontrado"; 
                     document.getElementById('nombre_usuario').textContent = nombreProfesor; // Muestra el nombre en el span
                   
+                    // Añadir event listener para cargar alumnos al hacer clic en el botón
+                    document.getElementById('cargar-alumnos-button').addEventListener('click', cargarAlumnos);
+                  
                     // Hacer petición al servidor para obtener los ciclos escolares
                     const responseCiclos = await fetch('/obtener-ciclos-escolares', {
                         headers: {
@@ -48,7 +51,6 @@
                     });
 
                     if (responseGrados.ok) {
-                        console.log("aqui");
                         const grados = await responseGrados.json(); // Obtiene los grados en formato JSON
                         const selectGrados = document.getElementById('grados');
 
@@ -66,36 +68,43 @@
                         console.error('Error al obtener los grados.');
                     }
                   
-                    // Listener para el cambio en el dropdown
-                  document.getElementById('grados').addEventListener('change', async (event) => {
-                    const gradoId = event.target.value; // Obtén el ID del grado seleccionado
+                     // Listener para el cambio en el dropdown
+                    document.getElementById('grados').addEventListener('change', async (event) => {
+                        const gradoId = event.target.value; // Obtén el ID del grado seleccionado
 
-                    // Verifica que se haya seleccionado un grado
-                    if (gradoId) {
-                        try {
-                            const response = await fetch(`/obtener-materias-profesor-grado?grado_id=${gradoId}`, {
-                                headers: {
-                                    'Authorization': `Bearer ${token}` // Envía el token en los headers
+                        // Verifica que se haya seleccionado un grado
+                        if (gradoId) {
+                            console.log("ya seleccionó grupo");
+                            console.log(gradoId);
+                            try {
+                                const response = await fetch(`/obtener-materias-profesor-grado?grado_id=${gradoId}`, {
+                                    headers: {
+                                        'Authorization': `Bearer ${token}` // Envía el token en los headers
+                                    }
+                                });
+
+                                if (response.ok) {
+                                    const materias = await response.json(); // Obtén las materias en formato JSON
+                                    const selectMaterias = document.getElementById('ciclos');
+                                    console.log(materias); // Procesa y muestra las materias
+
+                                    // Llenar el dropdown de ciclos
+                                    materias.forEach(materia => {
+                                        const option = document.createElement('option');
+                                        option.value = materia.id; // Usa el ID del ciclo como valor
+                                        option.textContent = materia.nombre; // Usa el rango como texto
+                                        selectCiclos.appendChild(option); // Añadir opción al select
+                                    });
+                                } else {
+                                    console.error('Error al obtener materias:', response.statusText);
                                 }
-                            });
-
-                            if (response.ok) {
-                                const materias = await response.json(); // Obtén las materias en formato JSON
-                                console.log(materias); // Procesa y muestra las materias
-
-                                // Aquí puedes actualizar el DOM o mostrar las materias en la interfaz de usuario
-                            } else {
-                                console.error('Error al obtener materias:', response.statusText);
+                            } catch (err) {
+                                console.error('Error en la solicitud:', err);
                             }
-                        } catch (err) {
-                            console.error('Error en la solicitud:', err);
+                        } else {
+                            console.log('Por favor, selecciona un grado.');
                         }
-                    } else {
-                        console.log('Por favor, selecciona un grado.');
-                    }
-
-                    // Añadir event listener para cargar alumnos al hacer clic en el botón
-                    document.getElementById('cargar-alumnos-button').addEventListener('click', cargarAlumnos);
+                    });
 
                 } catch (error) {
                     console.error('Error al decodificar el token o al obtener grados:', error);
