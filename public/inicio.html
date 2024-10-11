@@ -85,15 +85,15 @@
 
                                 if (response.ok) {
                                     const materias = await response.json(); // Obtén las materias en formato JSON
-                                    const selectMaterias = document.getElementById('ciclos');
+                                    const selectMaterias = document.getElementById('materias');
                                     console.log(materias); // Procesa y muestra las materias
 
                                     // Llenar el dropdown de ciclos
                                     materias.forEach(materia => {
                                         const option = document.createElement('option');
-                                        option.value = materia.id; // Usa el ID del ciclo como valor
-                                        option.textContent = materia.nombre; // Usa el rango como texto
-                                        selectCiclos.appendChild(option); // Añadir opción al select
+                                        option.value = materia.materia_id; // Usa el ID del ciclo como valor
+                                        option.textContent = materia.materia_nombre; // Usa el rango como texto
+                                        selectMaterias.appendChild(option); // Añadir opción al select
                                     });
                                 } else {
                                     console.error('Error al obtener materias:', response.statusText);
@@ -272,7 +272,7 @@
               </select>
 
               <label for="materias" style="margin-right: 10px; font-size: 12px;">Selecciona una materia:</label>
-              <select id="materias">
+              <select id="materias" style="margin-right: 20px;">
                   <option value="" disabled selected>Selecciona una materia</option>
               </select>
 
