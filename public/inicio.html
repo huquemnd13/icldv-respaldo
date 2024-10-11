@@ -81,8 +81,6 @@
 
                 // Verifica que se haya seleccionado un grado
                 if (gradoId) {
-                  console.log("ya seleccionó grupo");
-                  console.log(gradoId);
                   try {
                     const response = await fetch(
                       `/obtener-materias-profesor-grado?grado_id=${gradoId}`,
@@ -107,13 +105,6 @@
                       defaultOption.selected = true; // Seleccionarla como la opción por defecto
                       selectMaterias.appendChild(defaultOption); // Añadir la opción por defecto
 
-                      // Llenar el dropdown de ciclos
-                      materias.forEach((materia) => {
-                        const option = document.createElement("option");
-                        option.value = materia.materia_id; // Usa el ID del ciclo como valor
-                        option.textContent = materia.materia_nombre; // Usa el rango como texto
-                        selectMaterias.appendChild(option); // Añadir opción al select
-                      });
                     } else {
                       console.error(
                         "Error al obtener materias:",
