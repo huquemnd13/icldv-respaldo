@@ -185,6 +185,7 @@ app.get("/grados", async (req, res) => {
   }
 });
 
+// API PARA LLENAR EL CICLO ESCOLAR DEL HEADER EN INICIO
 app.get("/obtener-ciclos-escolares", async (req, res) => {
   try {
     const { data, error } = await supabase.rpc("obtener_ciclos_escolares");
@@ -241,6 +242,7 @@ app.get("/obtener-alumnos-grados", async (req, res) => {
   }
 });
 
+/*DESUSO
 // API para obtener fechas del ciclo escolar
 app.get("/obtener-fechas-ciclo", async (req, res) => {
   const { ciclo_id } = req.query;
@@ -263,7 +265,7 @@ app.get("/obtener-fechas-ciclo", async (req, res) => {
     console.error("Error al ejecutar la consulta:", error);
     res.status(500).json({ error: "Error en el servidor." });
   }
-});
+});*/
 
 // ESTO LLEVA LA INFORMACION DE LOS GRADOS ASIGNADOS DEL PROFESOR PARA EL DROP DOWN LIST
 app.get("/obtener-grados-profesor", async (req, res) => {
