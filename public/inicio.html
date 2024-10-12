@@ -14,6 +14,8 @@
     <script defer>
       let decodedToken; // Declara la variable en el ámbito global
       let cicloActivoGlobal; // Declara una variable global para el ciclo activo
+      let materiaSeleccionadaId; // Variable global para el ID de la materia seleccionada
+
 
       // Decodificar el token y mostrar el nombre del profesor
       window.onload = async function () {
@@ -112,6 +114,12 @@
                         option.textContent = materia.materia_nombre; // Nombre de la materia
                         selectMaterias.appendChild(option); // Añadir la opción al select
                       });
+                      
+                      // Listener para capturar la materia seleccionada
+                      document.getElementById("materias").addEventListener("change", (event) => {
+                        materiaSeleccionadaId = event.target.value; // Guarda el ID de la materia seleccionada
+                        console.log("Materia seleccionada ID:", materiaSeleccionadaId); // Para verificar el ID en consola
+                      });
 
                     } else {
                       console.error(
@@ -203,11 +211,12 @@
             console.log("aqui")
             const gradoId = document.getElementById("grados").value; // Obtener el ID del grado seleccionado
             console.log("aqui")
-            const cicloId = document.getElementById("ciclos").value; // Obtener el ID del ciclo seleccionado
-            console.log("aqui")
+            const cicloId = cicloActivoGlobal.id; // Asigna el ciclo activo a la variable global; // Obtener el ID del ciclo seleccionado
+            console.log("ciclo id", cicloId)
             const profesorId = decodedToken.profesor_id; // Obtener el ID del profesor desde el token
             console.log("aqui")
             console.log("Grado ID ", gradoId);
+            console.log("Materia ID ", materiaSeleccionadaId);
             // Verificar que ambos valores están seleccionados
             if (!gradoId || !profesorId) {
               console.error(
