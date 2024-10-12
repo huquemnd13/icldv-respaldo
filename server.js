@@ -351,6 +351,41 @@ app.get("/obtener-materias-profesor-grado", async (req, res) => {
   }
 });
 
+// Endpoint para obtener detalles de calificaciones
+app.get('/calificaciones', async (req, res) => {
+    const { id_ciclo_escolar, id_grado_nivel_escolar, id_profesor, id_materia } = req.query;
+
+    // Valida que se hayan pasado todos los parámetros
+    if (!id_ciclo_escolar || !id_grado_nivel_escolar || !id_profesor || !id_materia) {
+        return res.status(400).json({ error: 'Faltan parámetros requeridos.' });
+    }
+
+    try {
+        // Llama a la función de la base de datos
+        const { data, error } = await supabase.rpc(
+            'obtener_detalle_calificaciones',
+            {
+                id_ciclo_escolar,
+                id_grado_nivel_escolar,
+                id_profesor,
+                id_materia
+            }
+        );
+
+        if (error) {
+            console.error('Error al obtener las calificaciones:', error);
+            return res.status(500).json({ error: 'Error al obtener las calificaciones.' });
+        }
+
+        // Devuelve los resultados como respuesta
+        res.status(200).json(data);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Error interno del servidor.' });
+    }
+});
+
+
 // Redirige a login.html cuando el usuario visita la raíz del sitio (/)
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "/public/login.html"));
