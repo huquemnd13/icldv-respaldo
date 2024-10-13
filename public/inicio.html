@@ -244,6 +244,7 @@
             );
 
             if (response.ok) {
+                console.log("calificaciones encontradas");
                 const calificaciones = await response.json(); // Obtiene los detalles de las calificaciones en formato JSON
                 console.log("Calificaciones:", calificaciones); // Verifica que las calificaciones se obtengan correctamente
 
@@ -380,22 +381,19 @@
     </div>
 
     <div id="content">
+     <!-- La tabla en el HTML -->
       <table id="alumnos-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Apellido Paterno</th>
-            <th>Apellido Materno</th>
-            <th>CURP</th>
-            <th>Tiempo 1</th>
-            <th>Tiempo 2</th>
-            <th>Tiempo 3</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Las filas de datos se agregarán aquí dinámicamente -->
-        </tbody>
+          <thead>
+              <tr>
+                  <th>ID Calificación</th>
+                  <th>ID Alumno</th>
+                  <th>Nombre Completo</th>
+                  <th>Calificación P1</th>
+                  <th>Calificación P2</th>
+                  <th>Calificación P3</th>
+              </tr>
+          </thead>
+          <tbody></tbody> <!-- El cuerpo de la tabla se llenará dinámicamente -->
       </table>
     </div>
   </body>
