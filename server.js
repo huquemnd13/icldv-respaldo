@@ -361,14 +361,21 @@ app.get('/calificaciones', async (req, res) => {
     }
 
     try {
+        console.log('Parámetros recibidos:', {
+            id_ciclo_escolar, 
+            id_grado_nivel_escolar, 
+            id_profesor, 
+            id_materia
+        });
+
         // Llama a la función de la base de datos
         const { data, error } = await supabase.rpc(
             'obtener_detalle_calificaciones',
             {
-                id_ciclo_escolar,
-                id_grado_nivel_escolar,
-                id_profesor,
-                id_materia
+                _id_ciclo_escolar: parseInt(id_ciclo_escolar),
+                _id_grado_nivel_escolar: parseInt(id_grado_nivel_escolar),
+                _id_profesor: parseInt(id_profesor),
+                _id_materia: parseInt(id_materia)
             }
         );
 
@@ -377,14 +384,15 @@ app.get('/calificaciones', async (req, res) => {
             return res.status(500).json({ error: 'Error al obtener las calificaciones.' });
         }
 
+        console.log('Datos obtenidos:', data);
+
         // Devuelve los resultados como respuesta
         res.status(200).json(data);
     } catch (err) {
-        console.error(err);
+        console.error('Error en la solicitud al servidor:', err);
         res.status(500).json({ error: 'Error interno del servidor.' });
     }
 });
-
 
 // Redirige a login.html cuando el usuario visita la raíz del sitio (/)
 app.get("/", (req, res) => {

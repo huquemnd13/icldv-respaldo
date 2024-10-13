@@ -227,14 +227,15 @@
               );
               return;
             }
-            
+            /*
             // Obtener los tiempos para el ciclo seleccionado
             const tiempos = await cargarTiempos(cicloId, token); // Llamar a la función para obtener tiempos
             console.log(tiempos);
-
+            */
+            console.log("va a obtener calificaciones");
             // Obtener detalles de las calificaciones desde el nuevo endpoint
             const response = await fetch(
-              `/calificaciones?id_ciclo_escolar=${cicloId}&id_grado_nivel_escolar=${gradoId}&id_profesor=${profesorId}&id_materia=${materiaId}`,
+              `/calificaciones?id_ciclo_escolar=${cicloId}&id_grado_nivel_escolar=${gradoId}&id_profesor=${profesorId}&id_materia=${materiaSeleccionadaId}`,
               {
                 headers: {
                   Authorization: `Bearer ${token}`, // Envía el token en los headers
