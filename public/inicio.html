@@ -241,18 +241,10 @@
 
             if (response.ok) {
                 const cicloId = cicloActivoGlobal.id; // Asigna el ciclo activo a la variable global; // Obtener el ID del ciclo seleccionado
-                const data = await response.json();
-                console.log('Datos de calificaciones recibidos:', data); // Verifica la respuesta
+                const calificaciones = await response.json();
+                console.log('Datos de calificaciones recibidos:', calificaciones); // Verifica la respuesta
                 // Aquí puedes continuar con la lógica para procesar los datos
-            } else {
-                console.error('Error al cargar calificaciones:', response.statusText);
-            }
-            console.log('ejecuto calificaciones')
-            if (response.ok) {
-                console.log("calificaciones encontradas");
-                const calificaciones = await response.json(); // Obtiene los detalles de las calificaciones en formato JSON
-                console.log("Calificaciones:", calificaciones); // Verifica que las calificaciones se obtengan correctamente
-
+              
                 // Limpiar tabla antes de llenarla
                 const tbody = document
                     .getElementById("alumnos-table")
