@@ -273,20 +273,20 @@
 
                     // Crear y agregar los dropdowns de calificaciones a las celdas correspondientes
                     const calificacion1Dropdown = createCalificacionDropdown(
-                        calificacion.calificacion1,
-                        tiempos,
+                        calificacion.p1, // Asignar calificación del primer periodo
+                        null, // No es necesario el tiempo, se puede adaptar según tu lógica
                         0,
                         currentDateTime
                     ); // Tiempo 1
                     const calificacion2Dropdown = createCalificacionDropdown(
-                        calificacion.calificacion2,
-                        tiempos,
+                        calificacion.p2, // Asignar calificación del segundo periodo
+                        null, // No es necesario el tiempo, se puede adaptar según tu lógica
                         1,
                         currentDateTime
                     ); // Tiempo 2
                     const calificacion3Dropdown = createCalificacionDropdown(
-                        calificacion.calificacion3,
-                        tiempos,
+                        calificacion.p3, // Asignar calificación del tercer periodo
+                        null, // No es necesario el tiempo, se puede adaptar según tu lógica
                         2,
                         currentDateTime
                     ); // Tiempo 3
@@ -298,6 +298,8 @@
 
                     tbody.appendChild(row); // Añadir la fila a la tabla
                 });
+
+
             } else {
                 console.error("Error al obtener las calificaciones.");
             }
