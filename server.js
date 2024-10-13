@@ -362,20 +362,20 @@ app.get('/calificaciones', async (req, res) => {
 
     try {
         console.log('Parámetros recibidos:', {
-            cicloId, 
-            gradoId, 
+            id_ciclo_escolar, 
+            id_grado_nivel_escolar, 
             id_profesor, 
-            materiaSeleccionadaId
+            id_materia
         });
 
         // Llama a la función de la base de datos
         const { data, error } = await supabase.rpc(
             'obtener_calificaciones',
             {
-                id_ciclo_escolar: parseInt(id_ciclo_escolar),  // Asegúrate de que estos valores son correctos
-                id_grado_nivel_escolar: parseInt(id_grado_nivel_escolar),
-                id_profesor: parseInt(id_profesor),
-                id_materia: parseInt(id_materia)
+                ciclo_id: parseInt(id_ciclo_escolar),  // Asegúrate de que estos valores son correctos
+                profesor_id: parseInt(id_profesor),
+                grado_id: parseInt(id_grado_nivel_escolar),
+                materia_id: parseInt(id_materia)
             }
         );
 

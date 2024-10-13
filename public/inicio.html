@@ -240,6 +240,7 @@
             );
 
             if (response.ok) {
+                const cicloId = cicloActivoGlobal.id; // Asigna el ciclo activo a la variable global; // Obtener el ID del ciclo seleccionado
                 const data = await response.json();
                 console.log('Datos de calificaciones recibidos:', data); // Verifica la respuesta
                 // Aquí puedes continuar con la lógica para procesar los datos
