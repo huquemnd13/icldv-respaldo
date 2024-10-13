@@ -255,11 +255,11 @@
 
                 // Obtener la fecha actual
                 const currentDateTime = new Date();
-
+                console.log("empieza la carga de tabla");
                 // Llenar la tabla con los datos de las calificaciones
                 calificaciones.forEach((calificacion) => {
                     const row = document.createElement("tr"); // Crear una nueva fila
-
+                    
                     row.innerHTML = `
                         <td>${calificacion.alumno_id}</td>
                         <td>${calificacion.nombre}</td>

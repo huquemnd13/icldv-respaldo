@@ -372,7 +372,7 @@ app.get('/calificaciones', async (req, res) => {
         const { data, error } = await supabase.rpc(
             'obtener_detalle_calificaciones',
             {
-                _id_ciclo_escolar: parseInt(id_ciclo_escolar),
+                _id_ciclo_escolar: parseInt(id_ciclo_escolar),  // Asegúrate de que estos valores son correctos
                 _id_grado_nivel_escolar: parseInt(id_grado_nivel_escolar),
                 _id_profesor: parseInt(id_profesor),
                 _id_materia: parseInt(id_materia)
@@ -383,6 +383,7 @@ app.get('/calificaciones', async (req, res) => {
             console.error('Error al obtener las calificaciones:', error);
             return res.status(500).json({ error: 'Error al obtener las calificaciones.' });
         }
+
 
         console.log('Datos obtenidos:', data);
 
