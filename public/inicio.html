@@ -186,7 +186,8 @@
         return select; // Devuelve el elemento select creado
       }
 
-       async function cargarTiempos(cicloId, token) {
+      /* 
+      async function cargarTiempos(cicloId, token) {
         const response = await fetch(
           `/obtener-fechas-ciclo?ciclo_id=${cicloId}`,
           {
@@ -203,7 +204,8 @@
           return []; // Retorna un arreglo vacío en caso de error
         }
       }
-
+  	  */
+      
       // Función para cargar los alumnos según el grado y ciclo escolar seleccionados
       async function cargarAlumnos() {
         const token = localStorage.getItem("token");
@@ -225,7 +227,7 @@
               );
               return;
             }
-
+            
             // Obtener los tiempos para el ciclo seleccionado
             const tiempos = await cargarTiempos(cicloId, token); // Llamar a la función para obtener tiempos
             console.log(tiempos);
