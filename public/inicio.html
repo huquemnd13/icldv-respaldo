@@ -301,11 +301,18 @@
       }
       
       
-      function crearDropdown(calificacionActual) {
+      function crearDropdown(calificacionActual, periodo, periodoNumero) {
           const select = document.createElement('select');
           select.onchange = function() {
               guardarCalificacion(this);
           };
+
+          // Verificar si el periodo está activo
+          const periodoActivo = esPeriodoActivo(periodo);
+          if (!periodoActivo) {
+              select.disabled = true; // Deshabilitar si el periodo no está activo
+          }
+
           // Definir las calificaciones posibles
           const calificacionesPosibles = [0,1,2,3,4,5,6,7,8,9,10];
           calificacionesPosibles.forEach(calificacion => {
