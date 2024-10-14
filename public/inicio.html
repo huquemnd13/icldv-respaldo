@@ -249,11 +249,11 @@
 
                           // Crear las celdas
                           const cellCalificacionId = document.createElement("td");
-                          cellCalificacionId.textContent = calificacion.calificacion_id;
+                          cellCalificacionId.textContent = calificacion.id_calificacion;
                           row.appendChild(cellCalificacionId);
 
                           const cellAlumnoId = document.createElement("td");
-                          cellAlumnoId.textContent = calificacion.alumno_id;
+                          cellAlumnoId.textContent = calificacion.id_alumno;
                           row.appendChild(cellAlumnoId);
 
                           const cellNombreCompleto = document.createElement("td");
@@ -261,15 +261,15 @@
                           row.appendChild(cellNombreCompleto);
 
                           const cellP1 = document.createElement("td");
-                          cellP1.textContent = calificacion.p1; // Asegúrate de que este campo existe
+                          cellP1.textContent = calificacion.periodo_1; // Asegúrate de que este campo existe
                           row.appendChild(cellP1);
 
                           const cellP2 = document.createElement("td");
-                          cellP2.textContent = calificacion.p2; // Asegúrate de que este campo existe
+                          cellP2.textContent = calificacion.periodo_2; // Asegúrate de que este campo existe
                           row.appendChild(cellP2);
 
                           const cellP3 = document.createElement("td");
-                          cellP3.textContent = calificacion.p3; // Asegúrate de que este campo existe
+                          cellP3.textContent = calificacion.periodo_3; // Asegúrate de que este campo existe
                           row.appendChild(cellP3);
 
                           // Agregar la fila al cuerpo de la tabla
@@ -363,9 +363,9 @@
                   <th>ID Calificación</th>
                   <th>ID Alumno</th>
                   <th>Nombre Completo</th>
-                  <th>Calificación P1</th>
-                  <th>Calificación P2</th>
-                  <th>Calificación P3</th>
+                  <th>Periodo 1</th>
+                  <th>Periodo 2</th>
+                  <th>Periodo 3</th>
               </tr>
           </thead>
           <tbody></tbody> <!-- El cuerpo de la tabla se llenará dinámicamente -->

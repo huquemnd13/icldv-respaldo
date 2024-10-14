@@ -160,6 +160,9 @@ button:hover {
   background-color: #87ceeb; /* Cambia a azul celeste claro para encabezados */
   color: white;
   text-transform: uppercase;
+  position: sticky; /* Fija el encabezado */
+  top: 0; /* Fija el encabezado en la parte superior al hacer scroll */
+  z-index: 100; /* Asegura que el encabezado esté por encima del contenido */
 }
 
 #alumnos-table tr:nth-child(even) {
@@ -177,5 +180,61 @@ button:hover {
 
 /* Cambia el fondo de filas impares para que sea blanco */
 #alumnos-table tr:nth-child(odd) {
-  background-color: #ffffff; /* Fondo blanco para las filas imparesimpares */
+  background-color: #ffffff; /* Fondo blanco para las filas impares */
 }
+
+/* Hacer que el cuerpo de la tabla sea desplazable si es muy largo */
+tbody {
+  display: block;
+  max-height: 400px; /* Define la altura máxima del cuerpo de la tabla */
+  overflow-y: auto; /* Permite el desplazamiento vertical */
+  width: 100%;
+}
+
+thead, tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+/* Especificar anchos para las columnas */
+#alumnos-table th:nth-child(1),
+#alumnos-table td:nth-child(1) {
+  width: 10%; /* Primera columna más estrecha */
+}
+
+#alumnos-table th:nth-child(2),
+#alumnos-table td:nth-child(2) {
+  width: 10%; /* Segunda columna más estrecha */
+}
+
+#alumnos-table th:nth-child(3),
+#alumnos-table td:nth-child(3) {
+  width: 40%; /* Tercera columna más ancha */
+}
+
+/* Las otras columnas ocuparán el espacio restante */
+#alumnos-table th:nth-child(4),
+#alumnos-table td:nth-child(4),
+#alumnos-table th:nth-child(5),
+#alumnos-table td:nth-child(5),
+#alumnos-table th:nth-child(6),
+#alumnos-table td:nth-child(6) {
+  width: auto; /* Distribuir el ancho restante de manera equitativa */
+}
+
+
+/* Hacer que el cuerpo de la tabla sea desplazable si es muy largo */
+tbody {
+  display: block;
+  max-height: 400px; /* Define la altura máxima del cuerpo de la tabla */
+  overflow-y: auto; /* Permite el desplazamiento vertical */
+  width: 100%;
+}
+
+thead, tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
