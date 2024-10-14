@@ -169,12 +169,10 @@ app.get("/grados", async (req, res) => {
         "Error al ejecutar la función obtener_grados_por_profesor:",
         error
       );
-      return res
-        .status(500)
-        .json({
-          message:
-            "Error al obtener los grados y descripciones del nivel escolar.",
-        });
+      return res.status(500).json({
+        message:
+          "Error al obtener los grados y descripciones del nivel escolar.",
+      });
     }
 
     // Enviar el resultado en la respuesta
@@ -186,7 +184,7 @@ app.get("/grados", async (req, res) => {
 });
 
 // API PARA LLENAR EL CICLO ESCOLAR DEL HEADER EN INICIO
-  app.get("/obtener-ciclos-escolares", async (req, res) => {
+app.get("/obtener-ciclos-escolares", async (req, res) => {
   try {
     const { data, error } = await supabase.rpc("obtener_ciclos_escolares");
 
@@ -318,12 +316,10 @@ app.get("/obtener-materias-profesor-grado", async (req, res) => {
 
     // Verificar que ambos IDs estén presentes
     if (!profesorId || !gradoId) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Faltan parámetros requeridos: profesor_id o grado_id.",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Faltan parámetros requeridos: profesor_id o grado_id.",
+      });
     }
 
     // Llamar a la función en Supabase
@@ -352,47 +348,102 @@ app.get("/obtener-materias-profesor-grado", async (req, res) => {
 });
 
 // Endpoint para obtener detalles de calificaciones
-app.get('/calificaciones', async (req, res) => {
-    const { id_ciclo_escolar, id_grado_nivel_escolar, id_profesor, id_materia } = req.query;
+app.get("/calificaciones", async (req, res) => {
+  const { id_ciclo_escolar, id_grado_nivel_escolar, id_profesor, id_materia } =
+    req.query;
 
-    // Valida que se hayan pasado todos los parámetros
-    if (!id_ciclo_escolar || !id_grado_nivel_escolar || !id_profesor || !id_materia) {
-        return res.status(400).json({ error: 'Faltan parámetros requeridos.' });
+  // Valida que se hayan pasado todos los parámetros
+  if (
+    !id_ciclo_escolar ||
+    !id_grado_nivel_escolar ||
+    !id_profesor ||
+    !id_materia
+  ) {
+    return res.status(400).json({ error: "Faltan parámetros requeridos." });
+  }
+
+  try {
+    console.log("Parámetros recibidos:", {
+      id_ciclo_escolar,
+      id_grado_nivel_escolar,
+      id_profesor,
+      id_materia,
+    });
+
+    // Llama a la función de la base de datos
+    const { data, error } = await supabase.rpc("obtener_calificaciones", {
+      ciclo_id: parseInt(id_ciclo_escolar), // Asegúrate de que estos valores son correctos
+      profesor_id: parseInt(id_profesor),
+      grado_id: parseInt(id_grado_nivel_escolar),
+      materia_id: parseInt(id_materia),
+    });
+
+    if (error) {
+      console.error("Error al obtener las calificaciones:", error);
+      return res
+        .status(500)
+        .json({ error: "Error al obtener las calificaciones." });
     }
 
-    try {
-        console.log('Parámetros recibidos:', {
-            id_ciclo_escolar, 
-            id_grado_nivel_escolar, 
-            id_profesor, 
-            id_materia
+    console.log("Datos obtenidos:", data);
+
+    // Devuelve los resultados como respuesta
+    res.status(200).json(data);
+  } catch (err) {
+    console.error("Error en la solicitud al servidor:", err);
+    res.status(500).json({ error: "Error interno del servidor." });
+  }
+});
+
+// Endpoint para obtener los periodos de un ciclo escolar por su ID
+app.get("/periodos", async (req, res) => {
+  const { id_ciclo_escolar } = req.query; // Obtener el parámetro id_ciclo_escolar de la query
+
+  if (!id_ciclo_escolar) {
+    return res
+      .status(400)
+      .json({
+        success: false,
+        message: "Falta el parámetro id_ciclo_escolar.",
+      });
+  }
+
+  try {
+    // Realizar la consulta a la tabla PeriodoCicloEscolar
+    const { data: periodos, error } = await supabase
+      .from("PeriodoCicloEscolar")
+      .select("id, fecha_inicio, fecha_fin, periodo")
+      .eq("id_ciclo_escolar", id_ciclo_escolar);
+
+    if (error) {
+      console.error("Error al obtener los periodos:", error);
+      return res
+        .status(500)
+        .json({
+          success: false,
+          message: "Error al obtener los periodos del ciclo escolar.",
         });
-
-        // Llama a la función de la base de datos
-        const { data, error } = await supabase.rpc(
-            'obtener_calificaciones',
-            {
-                ciclo_id: parseInt(id_ciclo_escolar),  // Asegúrate de que estos valores son correctos
-                profesor_id: parseInt(id_profesor),
-                grado_id: parseInt(id_grado_nivel_escolar),
-                materia_id: parseInt(id_materia)
-            }
-        );
-
-        if (error) {
-            console.error('Error al obtener las calificaciones:', error);
-            return res.status(500).json({ error: 'Error al obtener las calificaciones.' });
-        }
-
-
-        console.log('Datos obtenidos:', data);
-
-        // Devuelve los resultados como respuesta
-        res.status(200).json(data);
-    } catch (err) {
-        console.error('Error en la solicitud al servidor:', err);
-        res.status(500).json({ error: 'Error interno del servidor.' });
     }
+
+    // Verificar si se encontraron periodos
+    if (periodos.length === 0) {
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message:
+            "No se encontraron periodos para el ciclo escolar especificado.",
+        });
+    }
+
+    // Retornar los periodos en la respuesta
+    res.json(periodos);
+  } catch (err) {
+    console.error("Error interno del servidor:", err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Error interno del servidor." });
+  }
 });
 
 // Redirige a login.html cuando el usuario visita la raíz del sitio (/)
