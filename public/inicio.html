@@ -346,7 +346,8 @@
       function guardarCalificacion(selectElement) {
           const nuevaCalificacion = selectElement.value; // Valor de la calificación seleccionada
           const idAlumno = selectElement.closest('tr').children[1].textContent; // Obtener el ID del alumno desde la fila
-          const idMateria = selectElement.options[selectElement.selectedIndex].value; // Obtener el ID de la materia seleccionada
+          const idMateria = document.getElementById('materias').value; // Obtener el ID de la materia seleccionada
+
 
           console.log(`Calificación para el alumno ID ${idAlumno} cambiada a ${nuevaCalificacion}`);
           console.log(`ID de materia seleccionada: ${idMateria}`); // Imprimir el ID de materia en la consola
