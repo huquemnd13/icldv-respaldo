@@ -161,7 +161,7 @@ button:hover {
 
 #alumnos-table td {
   border: 1px solid #dddddd;
-  background-color: #ffffff;
+  
   padding: 8px; /* Reduce el padding para hacer las filas más angostas */
   text-align: left;
 }
@@ -182,11 +182,12 @@ button:hover {
 }
 
 #alumnos-table tr:nth-child(even) {
-  background-color: #f2f2f2; /* Color de fondo para filas pares */
+  background-color: #ffffff; /* Color de fondo para filas pares */
 }
 
 #alumnos-table tr:nth-child(odd) {
-  background-color: #000000; /* Color de fondo para filas impares */
+    background-color: #f6f6f6 !important; /* Color de fondo para filas impares */
+    color: black !important; /* Cambiar el color del texto */
 }
 
 /* Opcional: Añadir un color diferente para el hover */
