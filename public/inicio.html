@@ -259,18 +259,23 @@
                           const cellNombreCompleto = document.createElement("td");
                           cellNombreCompleto.textContent = calificacion.nombre_completo;
                           row.appendChild(cellNombreCompleto);
+                        
+                        // Obtener el periodo correspondiente
+                        const periodoP1 = periodos.find(periodo => periodo.periodo === 1);
+                        const periodoP2 = periodos.find(periodo => periodo.periodo === 2);
+                        const periodoP3 = periodos.find(periodo => periodo.periodo === 3);
 
                           // Aquí reemplazamos el texto de calificación con un dropdown
                           const cellP1 = document.createElement("td");
-                          cellP1.appendChild(crearDropdown(calificacion.periodo_1)); // Llenamos el dropdown con el valor actual
+                          cellP1.appendChild(crearDropdown(calificacion.periodo_1, periodoP1, 1)); // Llenamos el dropdown con el valor actual
                           row.appendChild(cellP1);
 
                           const cellP2 = document.createElement("td");
-                          cellP2.appendChild(crearDropdown(calificacion.periodo_2)); // Llenamos el dropdown con el valor actual
+                          cellP2.appendChild(crearDropdown(calificacion.periodo_2, periodoP2, 2)); // Llenamos el dropdown con el valor actual
                           row.appendChild(cellP2);
 
                           const cellP3 = document.createElement("td");
-                          cellP3.appendChild(crearDropdown(calificacion.periodo_3)); // Llenamos el dropdown con el valor actual
+                          cellP3.appendChild(crearDropdown(calificacion.periodo_3, periodoP3, 3)); // Llenamos el dropdown con el valor actual
                           row.appendChild(cellP3);
 
                           // Agregar la fila al cuerpo de la tabla
