@@ -30,10 +30,10 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.use(
   session({
-    secret: jwtSecret, // Cambia esto por un secreto más seguro
+    secret: jwtSecret,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: true }, // Cambia a true si usas HTTPS
+    cookie: { secure: true }, 
   })
 );
 
