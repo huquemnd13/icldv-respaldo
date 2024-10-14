@@ -22,7 +22,6 @@
         const token = localStorage.getItem("token"); // Obtén el token del localStorage
 
         if (token) {
-          console.log(token);
           try {
             decodedToken = jwt_decode(token); // Decodifica el token y asigna a la variable global
             const nombreProfesor =
@@ -296,8 +295,6 @@
           select.onchange = function() {
               guardarCalificacion(this);
           };
-          console.log("Periodo numero", periodoNumero);
-        console.log("Periodo numero", periodo);
           // Verificar si el periodo está activo
           const periodoActivo = esPeriodoActivo(periodo);
           if (!periodoActivo) {

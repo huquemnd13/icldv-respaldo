@@ -163,8 +163,14 @@ button:hover {
 #alumnos-table th,
 #alumnos-table td {
   border: 1px solid #dddddd;
-  padding: 12px;
+  padding: 8px; /* Reduce el padding para hacer las filas más angostas */
   text-align: left;
+}
+
+/* Cambia el tamaño de la letra aquí */
+#alumnos-table th,
+#alumnos-table td {
+  font-size: 12px; /* Tamaño de letra más pequeño */
 }
 
 #alumnos-table th {
@@ -184,12 +190,12 @@ button:hover {
   background-color: #e9e9e9; /* Color de fondo al pasar el mouse */
 }
 
+/* Asegúrate de que todas las celdas tengan fondo blanco */
 #alumnos-table td {
-  font-size: 14px;
-  background-color: #ffffff; /* Asegúrate de que todas las celdas tengan fondo blanco */
+  background-color: #ffffff; 
 }
 
-/* Cambia el fondo de filas impares para que sea blanco */
+/* Cambiar fondo de filas impares a blanco */
 #alumnos-table tr:nth-child(odd) {
   background-color: #ffffff; /* Fondo blanco para las filas impares */
 }
@@ -219,6 +225,8 @@ button:hover {
 #alumnos-table td:nth-child(6) {
   width: auto; /* Distribuir el ancho restante de manera equitativa */
 }
+
+
 
 .toast-container {
     position: fixed;

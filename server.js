@@ -411,9 +411,11 @@ app.get("/periodos", async (req, res) => {
   try {
     // Realizar la consulta a la tabla PeriodoCicloEscolar
     const { data: periodos, error } = await supabase
-      .from("PeriodoCicloEscolar")
-      .select("id, fecha_inicio, fecha_fin, periodo")
-      .eq("id_ciclo_escolar", id_ciclo_escolar);
+        .from("PeriodoCicloEscolar")
+        .select("id, fecha_inicio, fecha_fin, periodo")
+        .eq("id_ciclo_escolar", id_ciclo_escolar)
+        .order("periodo", { ascending: true }); // Ordenar por la columna 'periodo' en orden ascendente
+
 
     if (error) {
       console.error("Error al obtener los periodos:", error);
