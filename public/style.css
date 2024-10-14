@@ -151,7 +151,6 @@ button:hover {
   flex-direction: column; /* Apila los elementos verticalmente */
 }
 
-
 /* Asegúrate de que el contenido de la tabla también se ajuste bien */
 #alumnos-table {
   width: 100%; /* Asegúrate de que la tabla ocupe el 100% del contenedor */
@@ -160,9 +159,9 @@ button:hover {
   background-color: white;
 }
 
-#alumnos-table th,
 #alumnos-table td {
   border: 1px solid #dddddd;
+  background-color: #ffffff; 
   padding: 8px; /* Reduce el padding para hacer las filas más angostas */
   text-align: left;
 }
@@ -188,11 +187,6 @@ button:hover {
 
 #alumnos-table tr:hover {
   background-color: #e9e9e9; /* Color de fondo al pasar el mouse */
-}
-
-/* Asegúrate de que todas las celdas tengan fondo blanco */
-#alumnos-table td {
-  background-color: #ffffff; 
 }
 
 /* Cambiar fondo de filas impares a blanco */
@@ -225,7 +219,6 @@ button:hover {
 #alumnos-table td:nth-child(6) {
   width: auto; /* Distribuir el ancho restante de manera equitativa */
 }
-
 
 
 .toast-container {
