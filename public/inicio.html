@@ -232,11 +232,11 @@
                   // Buscar el periodo activo
                   const periodoActivo = periodos.find(periodo => esPeriodoActivo(periodo));
                   if (periodoActivo) {
-                      // Mostrar una alerta con las fechas del periodo activo
-                      alert(`Periodo de captura activo: Desde ${new Date(periodoActivo.fecha_inicio).toLocaleDateString()} hasta ${new Date(periodoActivo.fecha_fin).toLocaleDateString()}`);
+                      mostrarToast(`Periodo de captura activo: Desde ${new Date(periodoActivo.fecha_inicio).toLocaleDateString()} hasta ${new Date(periodoActivo.fecha_fin).toLocaleDateString()}`, 'success');
                   } else {
-                      alert("No hay ningún periodo de captura activo en este momento.");
+                      mostrarToast('No hay ningún periodo de captura activo en este momento.', 'warning');
                   }
+
 
                   const tableBody = document.getElementById("alumnos-table").querySelector("tbody");
                   tableBody.innerHTML = ""; // Limpiar el cuerpo de la tabla
@@ -318,6 +318,32 @@
 
           return select;
       }
+      
+      function mostrarToast(mensaje, tipo = 'success') {
+          const toastContainer = document.getElementById("toast-container");
+
+          // Crear el elemento del toast
+          const toast = document.createElement("div");
+          toast.classList.add("toast", tipo);
+          toast.textContent = mensaje;
+
+          // Añadir el toast al contenedor
+          toastContainer.appendChild(toast);
+
+          // Hacer visible el toast
+          setTimeout(() => {
+              toast.classList.add("show");
+          }, 100);  // Pequeño retraso para activar la transición
+
+          // Ocultar el toast después de 5 segundos
+          setTimeout(() => {
+              toast.classList.remove("show");
+              setTimeout(() => {
+                  toast.remove();
+              }, 300);  // Tiempo de transición antes de eliminarlo
+          }, 5000);
+      }
+
 
       function guardarCalificacion(selectElement) {
           const nuevaCalificacion = selectElement.value;
@@ -398,21 +424,22 @@
     </div>
 
     <div class="table-container">
-    <table id="alumnos-table">
-        <thead>
-            <tr>
-                <th>ID Calificacion</th>
-                <th>ID Alumno</th>
-                <th>Nombre</th>
-                <th>Periodo 1</th>
-                <th>Periodo 2</th>
-                <th>Periodo 3</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Aquí van tus filas de datos -->
-        </tbody>
-    </table>
-</div>
+        <table id="alumnos-table">
+            <thead>
+                <tr>
+                    <th>ID Calificacion</th>
+                    <th>ID Alumno</th>
+                    <th>Nombre</th>
+                    <th>Periodo 1</th>
+                    <th>Periodo 2</th>
+                    <th>Periodo 3</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aquí van tus filas de datos -->
+            </tbody>
+        </table>
+    </div>
+    <div id="toast-container" class="toast-container"></div>
   </body>
 </html>
