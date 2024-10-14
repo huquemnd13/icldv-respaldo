@@ -211,34 +211,32 @@
           const token = localStorage.getItem("token");
           if (token) {
               try {
-                  console.log("aqui")
                   const gradoId = document.getElementById("grados").value; // Obtener el ID del grado seleccionado
-                  console.log("aqui")
                   const cicloId = cicloActivoGlobal.id; // Obtener el ID del ciclo seleccionado
-                  console.log("ciclo id", cicloId)
                   const profesorId = decodedToken.profesor_id; // Obtener el ID del profesor desde el token
-                  console.log("Profesor ID", profesorId)
-                  console.log("Grado ID ", gradoId);
-                  console.log("Materia ID ", materiaSeleccionadaId);
 
                   // Verificar que ambos valores están seleccionados
                   if (!gradoId || !profesorId) {
-                      console.error(
-                          "Por favor selecciona un grado y un ciclo escolar."
-                      );
+                      console.error("Por favor selecciona un grado y un ciclo escolar.");
                       return;
                   }
 
-                  console.log("va a obtener calificaciones");
                   // Obtener detalles de las calificaciones desde el nuevo endpoint
-                  const response = await fetch(
-                      `/calificaciones?id_ciclo_escolar=${cicloId}&id_grado_nivel_escolar=${gradoId}&id_profesor=${profesorId}&id_materia=${materiaSeleccionadaId}`
-                  );
-
-                  if (response.ok) {
+                  const response = await fetch(`/calificaciones?id_ciclo_escolar=${cicloId}&id_grado_nivel_escolar=${gradoId}&id_profesor=${profesorId}&id_materia=${materiaSeleccionadaId}`);
                   const calificaciones = await response.json();
+
+                  // Obtener los periodos
                   const responsePeriodos = await fetch(`/periodos?id_ciclo_escolar=${cicloId}`);
                   const periodos = await responsePeriodos.json();
+
+                  // Buscar el periodo activo
+                  const periodoActivo = periodos.find(periodo => esPeriodoActivo(periodo));
+                  if (periodoActivo) {
+                      // Mostrar una alerta con las fechas del periodo activo
+                      alert(`Periodo de captura activo: Desde ${new Date(periodoActivo.fecha_inicio).toLocaleDateString()} hasta ${new Date(periodoActivo.fecha_fin).toLocaleDateString()}`);
+                  } else {
+                      alert("No hay ningún periodo de captura activo en este momento.");
+                  }
 
                   const tableBody = document.getElementById("alumnos-table").querySelector("tbody");
                   tableBody.innerHTML = ""; // Limpiar el cuerpo de la tabla
@@ -260,30 +258,22 @@
                       cellNombreCompleto.textContent = calificacion.nombre_completo;
                       row.appendChild(cellNombreCompleto);
 
-                      // Obtener el periodo correspondiente
-                      const periodoP1 = periodos.find(periodo => periodo.periodo === 1);
-                      const periodoP2 = periodos.find(periodo => periodo.periodo === 2);
-                      const periodoP3 = periodos.find(periodo => periodo.periodo === 3);
-                    
-                      // Crear dropdowns condicionales por cada periodo
+                      // Crear dropdowns de calificación para cada periodo
                       const cellP1 = document.createElement("td");
-                      cellP1.appendChild(crearDropdown(calificacion.periodo_1, periodoP1, 1)); // Pasar periodo 1
+                      cellP1.appendChild(crearDropdown(calificacion.periodo_1, periodos[0], 1)); // Pasar periodo 1
                       row.appendChild(cellP1);
 
                       const cellP2 = document.createElement("td");
-                      cellP2.appendChild(crearDropdown(calificacion.periodo_2, periodoP2, 2)); // Pasar periodo 2
+                      cellP2.appendChild(crearDropdown(calificacion.periodo_2, periodos[1], 2)); // Pasar periodo 2
                       row.appendChild(cellP2);
 
                       const cellP3 = document.createElement("td");
-                      cellP3.appendChild(crearDropdown(calificacion.periodo_3, periodoP3, 3)); // Pasar periodo 3
+                      cellP3.appendChild(crearDropdown(calificacion.periodo_3, periodos[2], 3)); // Pasar periodo 3
                       row.appendChild(cellP3);
 
                       // Agregar fila al cuerpo de la tabla
                       tableBody.appendChild(row);
                   });
-              } else {
-                  console.error("Error al obtener las calificaciones.");
-              }
               } catch (error) {
                   console.error("Error al cargar los alumnos:", error);
               }
