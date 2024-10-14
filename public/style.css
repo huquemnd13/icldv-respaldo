@@ -141,7 +141,7 @@ button:hover {
 /* Contenedor que envuelve la tabla */
 .table-container {
   width: 800px; /* Ancho fijo para el contenedor */
-  height: 600px; /* Altura fija para el contenedor */
+  height: 400px; /* Altura fija para el contenedor */
   overflow-y: auto; /* Permite el desplazamiento vertical si la tabla es muy alta */
   margin: 20px auto; /* Centra el contenedor horizontalmente */
   border: 1px solid #dddddd; /* Borde para el contenedor */

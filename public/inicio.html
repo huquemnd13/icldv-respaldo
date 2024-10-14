@@ -260,16 +260,17 @@
                           cellNombreCompleto.textContent = calificacion.nombre_completo;
                           row.appendChild(cellNombreCompleto);
 
+                          // Aquí reemplazamos el texto de calificación con un dropdown
                           const cellP1 = document.createElement("td");
-                          cellP1.textContent = calificacion.periodo_1; // Asegúrate de que este campo existe
+                          cellP1.appendChild(crearDropdown(calificacion.periodo_1)); // Llenamos el dropdown con el valor actual
                           row.appendChild(cellP1);
 
                           const cellP2 = document.createElement("td");
-                          cellP2.textContent = calificacion.periodo_2; // Asegúrate de que este campo existe
+                          cellP2.appendChild(crearDropdown(calificacion.periodo_2)); // Llenamos el dropdown con el valor actual
                           row.appendChild(cellP2);
 
                           const cellP3 = document.createElement("td");
-                          cellP3.textContent = calificacion.periodo_3; // Asegúrate de que este campo existe
+                          cellP3.appendChild(crearDropdown(calificacion.periodo_3)); // Llenamos el dropdown con el valor actual
                           row.appendChild(cellP3);
 
                           // Agregar la fila al cuerpo de la tabla
@@ -282,6 +283,33 @@
                   console.error("Error al cargar los alumnos:", error);
               }
           }
+      }
+      
+      function crearDropdown(calificacionActual) {
+          const select = document.createElement('select');
+          select.onchange = function() {
+              guardarCalificacion(this);
+          };
+
+          calificacionesPosibles.forEach(calificacion => {
+              const option = document.createElement('option');
+              option.value = calificacion;
+              option.textContent = calificacion;
+              // Si la calificación actual coincide, la seleccionamos
+              if (calificacion === calificacionActual) {
+                  option.selected = true;
+              }
+              select.appendChild(option);
+          });
+
+          return select;
+      }
+
+      function guardarCalificacion(selectElement) {
+          const nuevaCalificacion = selectElement.value;
+          const idAlumno = selectElement.closest('tr').children[1].textContent; // Obtener el ID del alumno desde la fila
+          console.log(`Calificación para el alumno ID ${idAlumno} cambiada a ${nuevaCalificacion}`);
+          // Aquí puedes agregar la lógica para enviar la nueva calificación al servidor
       }
 
 
