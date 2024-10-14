@@ -348,10 +348,14 @@
           const idAlumno = selectElement.closest('tr').children[1].textContent; // Obtener el ID del alumno desde la fila
           const idMateria = document.getElementById('materias').value; // Obtener el ID de la materia seleccionada
           const fila = selectElement.closest('tr'); // Obtener la fila actual
+          // Obtener la celda en la que está el select y su índice de columna
+          const celda = selectElement.closest('td'); // Obtener la celda donde está el select
+          const numeroColumna = celda.cellIndex; // Obtener el índice de la columna
 
           console.log(`Calificación para el alumno ID ${idAlumno} cambiada a ${nuevaCalificacion}`);
           console.log(`ID de materia seleccionada: ${idMateria}`); // Imprimir el ID de materia en la consola
           console.log("fila seleciconada: ", fila);
+          console.log(`Número de columna: ${numeroColumna}`); // Imprimir el número de columna en la consola
           // Aquí puedes agregar la lógica para enviar la nueva calificación al servidor
       }
 
@@ -433,6 +437,7 @@
                 <tr>
                     <th>ID Calificacion</th>
                     <th>ID Alumno</th>
+                    <th>Materia</th>
                     <th>Nombre</th>
                     <th>Periodo 1</th>
                     <th>Periodo 2</th>
