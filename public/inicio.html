@@ -252,6 +252,12 @@
                       const cellAlumnoId = document.createElement("td");
                       cellAlumnoId.textContent = calificacion.id_alumno;
                       row.appendChild(cellAlumnoId);
+                    
+                      const cellMateria = document.createElement("td");
+                      const selectMateria = document.getElementById('materias'); // Obtener el elemento select
+                      const textoMateria = selectMateria.options[selectMateria.selectedIndex].text; // Obtener el texto de la opción seleccionada
+                      cellMateria.textContent = textoMateria;
+                      row.appendChild(cellMateria);
 
                       const cellNombreCompleto = document.createElement("td");
                       cellNombreCompleto.textContent = calificacion.nombre_completo;
@@ -347,6 +353,7 @@
           const nuevaCalificacion = selectElement.value; // Valor de la calificación seleccionada
           const idAlumno = selectElement.closest('tr').children[1].textContent; // Obtener el ID del alumno desde la fila
           const idMateria = document.getElementById('materias').value; // Obtener el ID de la materia seleccionada
+          const textoMateria = selectMateria.options[selectMateria.selectedIndex].text; // Obtener el texto de la opción seleccionada
           const fila = selectElement.closest('tr'); // Obtener la fila actual
           // Obtener la celda en la que está el select y su índice de columna
           const celda = selectElement.closest('td'); // Obtener la celda donde está el select
