@@ -296,7 +296,8 @@
           select.onchange = function() {
               guardarCalificacion(this);
           };
-
+          console.log("Periodo numero", periodoNumero);
+        console.log("Periodo numero", periodo);
           // Verificar si el periodo está activo
           const periodoActivo = esPeriodoActivo(periodo);
           if (!periodoActivo) {
