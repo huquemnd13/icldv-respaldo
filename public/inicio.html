@@ -236,59 +236,70 @@
                   );
 
                   if (response.ok) {
-                      const calificaciones = await response.json();
-                      console.log('Datos de calificaciones recibidos:', calificaciones); // Verifica la respuesta
+                  const calificaciones = await response.json();
+                  const responsePeriodos = await fetch(`/periodos?id_ciclo_escolar=${cicloId}`);
+                  const periodos = await responsePeriodos.json();
 
-                      // Aquí puedes continuar con la lógica para llenar la tabla
-                      const tableBody = document.getElementById("alumnos-table").querySelector("tbody");
-                      tableBody.innerHTML = ""; // Limpiar el cuerpo de la tabla antes de llenarla
+                  const tableBody = document.getElementById("alumnos-table").querySelector("tbody");
+                  tableBody.innerHTML = ""; // Limpiar el cuerpo de la tabla
 
-                      calificaciones.forEach(calificacion => {
-                          // Crear una nueva fila para cada calificación
-                          const row = document.createElement("tr");
+                  // Para cada calificación recibida
+                  calificaciones.forEach(calificacion => {
+                      const row = document.createElement("tr");
 
-                          // Crear las celdas
-                          const cellCalificacionId = document.createElement("td");
-                          cellCalificacionId.textContent = calificacion.id_calificacion;
-                          row.appendChild(cellCalificacionId);
+                      // Celdas de calificación, alumno y nombre
+                      const cellCalificacionId = document.createElement("td");
+                      cellCalificacionId.textContent = calificacion.id_calificacion;
+                      row.appendChild(cellCalificacionId);
 
-                          const cellAlumnoId = document.createElement("td");
-                          cellAlumnoId.textContent = calificacion.id_alumno;
-                          row.appendChild(cellAlumnoId);
+                      const cellAlumnoId = document.createElement("td");
+                      cellAlumnoId.textContent = calificacion.id_alumno;
+                      row.appendChild(cellAlumnoId);
 
-                          const cellNombreCompleto = document.createElement("td");
-                          cellNombreCompleto.textContent = calificacion.nombre_completo;
-                          row.appendChild(cellNombreCompleto);
-                        
-                        // Obtener el periodo correspondiente
-                        const periodoP1 = periodos.find(periodo => periodo.periodo === 1);
-                        const periodoP2 = periodos.find(periodo => periodo.periodo === 2);
-                        const periodoP3 = periodos.find(periodo => periodo.periodo === 3);
+                      const cellNombreCompleto = document.createElement("td");
+                      cellNombreCompleto.textContent = calificacion.nombre_completo;
+                      row.appendChild(cellNombreCompleto);
 
-                          // Aquí reemplazamos el texto de calificación con un dropdown
-                          const cellP1 = document.createElement("td");
-                          cellP1.appendChild(crearDropdown(calificacion.periodo_1, periodoP1, 1)); // Llenamos el dropdown con el valor actual
-                          row.appendChild(cellP1);
+                      // Obtener el periodo correspondiente
+                      const periodoP1 = periodos.find(periodo => periodo.periodo === 1);
+                      const periodoP2 = periodos.find(periodo => periodo.periodo === 2);
+                      const periodoP3 = periodos.find(periodo => periodo.periodo === 3);
 
-                          const cellP2 = document.createElement("td");
-                          cellP2.appendChild(crearDropdown(calificacion.periodo_2, periodoP2, 2)); // Llenamos el dropdown con el valor actual
-                          row.appendChild(cellP2);
+                      // Crear dropdowns condicionales por cada periodo
+                      const cellP1 = document.createElement("td");
+                      cellP1.appendChild(crearDropdown(calificacion.periodo_1, periodoP1, 1)); // Pasar periodo 1
+                      row.appendChild(cellP1);
 
-                          const cellP3 = document.createElement("td");
-                          cellP3.appendChild(crearDropdown(calificacion.periodo_3, periodoP3, 3)); // Llenamos el dropdown con el valor actual
-                          row.appendChild(cellP3);
+                      const cellP2 = document.createElement("td");
+                      cellP2.appendChild(crearDropdown(calificacion.periodo_2, periodoP2, 2)); // Pasar periodo 2
+                      row.appendChild(cellP2);
 
-                          // Agregar la fila al cuerpo de la tabla
-                          tableBody.appendChild(row);
-                      });
-                  } else {
-                      console.error("Error al obtener las calificaciones.");
-                  }
+                      const cellP3 = document.createElement("td");
+                      cellP3.appendChild(crearDropdown(calificacion.periodo_3, periodoP3, 3)); // Pasar periodo 3
+                      row.appendChild(cellP3);
+
+                      // Agregar fila al cuerpo de la tabla
+                      tableBody.appendChild(row);
+                  });
+              } else {
+                  console.error("Error al obtener las calificaciones.");
+              }
               } catch (error) {
                   console.error("Error al cargar los alumnos:", error);
               }
           }
       }
+      
+      //Verificar si un periodo está activo
+      function esPeriodoActivo(periodo) {
+          const fechaActual = new Date();
+          const fechaInicio = new Date(periodo.fecha_inicio);
+          const fechaFin = new Date(periodo.fecha_fin);
+
+          // Si la fecha actual está dentro del rango del periodo, está activo
+          return fechaActual >= fechaInicio && fechaActual <= fechaFin;
+      }
+      
       
       function crearDropdown(calificacionActual) {
           const select = document.createElement('select');
