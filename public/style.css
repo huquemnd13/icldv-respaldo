@@ -161,7 +161,7 @@ button:hover {
 
 #alumnos-table td {
   border: 1px solid #dddddd;
-  
+  font-size: 12px; /* Tamaño de letra más pequeño */
   padding: 8px; /* Reduce el padding para hacer las filas más angostas */
   text-align: left;
 }
@@ -175,6 +175,7 @@ button:hover {
 #alumnos-table th {
   background-color: #01c5ff; /* Cambia a azul celeste claro para encabezados */
   color: white;
+  font-size: 12px; /* Tamaño de letra más pequeño */
   text-transform: uppercase;
   position: sticky; /* Fija el encabezado */
   top: 0; /* Fija el encabezado en la parte superior al hacer scroll */
