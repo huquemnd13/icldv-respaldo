@@ -141,8 +141,10 @@ button:hover {
 
 #alumnos-table {
   width: 100%;
+  max-width: 1200px; /* Establece un ancho máximo para la tabla */
+  margin: 0 auto; /* Centra la tabla horizontalmente */
   border-collapse: collapse;
-  margin: 20px 0;
+  margin-top: 20px;
   border-radius: 8px;
   overflow: hidden;
   background-color: white; /* Fondo blanco para la tabla */
@@ -223,18 +225,4 @@ thead, tbody tr {
   width: auto; /* Distribuir el ancho restante de manera equitativa */
 }
 
-
-/* Hacer que el cuerpo de la tabla sea desplazable si es muy largo */
-tbody {
-  display: block;
-  max-height: 400px; /* Define la altura máxima del cuerpo de la tabla */
-  overflow-y: auto; /* Permite el desplazamiento vertical */
-  width: 100%;
-}
-
-thead, tbody tr {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-}
 
