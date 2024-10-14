@@ -1,52 +1,53 @@
-html, body {
-    height: 100%;
-    margin: 0;
-    display: flex;
-    justify-content: center; /* Centra horizontalmente */
-    align-items: center; /* Centra verticalmente */
-    font-family: "Roboto", sans-serif;
+html,
+body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+  align-items: center; /* Centra verticalmente */
+  font-family: "Roboto", sans-serif;
 }
 
 /* Fondo de las otras páginas */
 body::before {
-    content: "";
-    position: fixed; /* Cambia a 'fixed' para que cubra toda la pantalla */
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image: url("https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/LogoLDVFondo.png?v=1728658612450");
-    background-size: cover; /* Asegura que la imagen cubra todo el fondo */
-    background-position: center;
-    background-repeat: no-repeat;
-    opacity: 0.2; /* Mantén la opacidad deseada */
-    z-index: -1; /* Asegúrate de que el fondo esté detrás de otros elementos */
+  content: "";
+  position: fixed; /* Cambia a 'fixed' para que cubra toda la pantalla */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/LogoLDVFondo.png?v=1728658612450");
+  background-size: cover; /* Asegura que la imagen cubra todo el fondo */
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.2; /* Mantén la opacidad deseada */
+  z-index: -1; /* Asegúrate de que el fondo esté detrás de otros elementos */
 }
 
 /* Estilo para la página de inicio de sesión */
 body.login-background {
-    background-color: #fafafa; /* Cambia esto al color que desees */
-    opacity: 1; /* Asegúrate de que la opacidad sea 1 para el fondo de color */
+  background-color: #fafafa; /* Cambia esto al color que desees */
+  opacity: 1; /* Asegúrate de que la opacidad sea 1 para el fondo de color */
 }
 
 #login-forms {
-    position: relative;
-    z-index: 1; /* Asegúrate de que el formulario esté por delante */
-    padding: 20px;
-    background-color: rgba(255, 255, 255, 1);
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    width: 350px;
-    height: 300px; /* Mantén la altura definida */
-  
-    display: flex; /* Habilita flexbox */
-    flex-direction: column; /* Apila los elementos verticalmente */
-    justify-content: center; /* Centra verticalmente */
-    align-items: center; /* Centra horizontalmente */
-  
-    color: black;
-    font-size: 14px;
+  position: relative;
+  z-index: 1; /* Asegúrate de que el formulario esté por delante */
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 1);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  width: 350px;
+  height: 300px; /* Mantén la altura definida */
+
+  display: flex; /* Habilita flexbox */
+  flex-direction: column; /* Apila los elementos verticalmente */
+  justify-content: center; /* Centra verticalmente */
+  align-items: center; /* Centra horizontalmente */
+
+  color: black;
+  font-size: 14px;
 }
 
 input {
@@ -59,7 +60,6 @@ input {
   box-sizing: border-box;
   font-size: 14px; /* Ajusta el tamaño de fuente para que sea más pequeño */
 }
-
 
 button {
   padding: 10px 20px;
@@ -161,7 +161,7 @@ button:hover {
 
 #alumnos-table td {
   border: 1px solid #dddddd;
-  background-color: #ffffff; 
+  background-color: #ffffff;
   padding: 8px; /* Reduce el padding para hacer las filas más angostas */
   text-align: left;
 }
@@ -219,37 +219,40 @@ button:hover {
 #alumnos-table td:nth-child(6) {
   width: auto; /* Distribuir el ancho restante de manera equitativa */
 }
-
+/* Oculta la segunda columna (columna 2) */
+#alumnos-table td:nth-child(2),
+#alumnos-table th:nth-child(2) {
+  display: none;
+}
 
 .toast-container {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
 }
 
 .toast {
-    background-color: #333333;
-    color: #ffffff;
-    padding: 15px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    opacity: 0;
-    transform: translateY(-20px);
-    transition: all 0.3s ease-in-out;
+  background-color: #333333;
+  color: #ffffff;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease-in-out;
 }
 
 .toast.show {
-    opacity: 1;
-    transform: translateY(0);
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .toast.success {
-    background-color: #28a745;
+  background-color: #28a745;
 }
 
 .toast.warning {
-    background-color: #ffc107;
+  background-color: #ffc107;
 }
-
