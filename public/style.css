@@ -1,10 +1,9 @@
 html, body {
-    position: relative;
     height: 100%;
     margin: 0;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
     font-family: "Roboto", sans-serif;
 }
 
@@ -141,19 +140,24 @@ button:hover {
 
 /* Contenedor que envuelve la tabla */
 .table-container {
-  max-height: 400px; /* Define la altura máxima del contenedor */
-  overflow-y: auto; /* Permite el desplazamiento vertical */
-  margin: 0 auto; /* Centra la tabla */
-  width: 100%;
-  max-width: 1200px; /* Ancho máximo de la tabla */
+  width: 800px; /* Ancho fijo para el contenedor */
+  height: 600px; /* Altura fija para el contenedor */
+  overflow-y: auto; /* Permite el desplazamiento vertical si la tabla es muy alta */
+  margin: 20px auto; /* Centra el contenedor horizontalmente */
   border: 1px solid #dddddd; /* Borde para el contenedor */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Sombra para el contenedor */
+  background-color: white; /* Fondo blanco para el contenedor */
+  display: flex; /* Para centrar el contenido dentro del contenedor */
+  flex-direction: column; /* Apila los elementos verticalmente */
 }
 
+
+/* Asegúrate de que el contenido de la tabla también se ajuste bien */
 #alumnos-table {
-  width: 100%;
+  width: 100%; /* Asegúrate de que la tabla ocupe el 100% del contenedor */
+  max-width: 1200px; /* Máximo ancho de la tabla */
   border-collapse: collapse;
-  background-color: white; /* Fondo blanco para la tabla */
+  background-color: white;
 }
 
 #alumnos-table th,
