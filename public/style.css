@@ -185,20 +185,6 @@ button:hover {
   background-color: #ffffff; /* Fondo blanco para las filas impares */
 }
 
-/* Hacer que el cuerpo de la tabla sea desplazable si es muy largo */
-tbody {
-  display: block;
-  max-height: 400px; /* Define la altura máxima del cuerpo de la tabla */
-  overflow-y: auto; /* Permite el desplazamiento vertical */
-  width: 100%;
-}
-
-thead, tbody tr {
-  display: table;
-  width: 100%;
-  table-layout: fixed;
-}
-
 /* Especificar anchos para las columnas */
 #alumnos-table th:nth-child(1),
 #alumnos-table td:nth-child(1) {
@@ -225,4 +211,22 @@ thead, tbody tr {
   width: auto; /* Distribuir el ancho restante de manera equitativa */
 }
 
+/* Asegurar que el cuerpo de la tabla sea desplazable si es muy largo */
+tbody {
+  display: block;
+  max-height: 400px; /* Define la altura máxima del cuerpo de la tabla */
+  overflow-y: auto; /* Permite el desplazamiento vertical */
+  width: 100%;
+}
 
+tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+thead, tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
