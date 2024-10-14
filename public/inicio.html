@@ -162,26 +162,27 @@
       }
 
       function actualizarTablaAlumnos(calificaciones, periodos) {
-        const tableBody = document.getElementById("alumnos-table").querySelector("tbody");
-        tableBody.innerHTML = "";
+          const tableBody = document.getElementById("alumnos-table").querySelector("tbody");
+          tableBody.innerHTML = "";
 
-        calificaciones.forEach((calificacion) => {
-          const row = document.createElement("tr");
+          calificaciones.forEach((calificacion) => {
+              const row = document.createElement("tr");
 
-          row.innerHTML = `
-            <td>${calificacion.id_calificacion}</td>
-            <td>${calificacion.id_alumno}</td>
-            <td>${document.getElementById("materias").selectedOptions[0].text}</td>
-            <td>${calificacion.nombre_completo}</td>
-          `;
+              row.innerHTML = `
+                  <td>${calificacion.id_calificacion}</td>
+                  <td>${calificacion.id_alumno}</td>
+                  <td>${document.getElementById("materias").selectedOptions[0].text}</td>
+                  <td>${calificacion.nombre_completo}</td>
+              `;
 
-          row.appendChild(crearCeldaDropdown(calificacion.periodo_1, periodos[0], 1));
-          row.appendChild(crearCeldaDropdown(calificacion.periodo_2, periodos[1], 2));
-          row.appendChild(crearCeldaDropdown(calificacion.periodo_3, periodos[2], 3));
+              row.appendChild(crearCeldaDropdown(calificacion.periodo_1, periodos[0], 1));
+              row.appendChild(crearCeldaDropdown(calificacion.periodo_2, periodos[1], 2));
+              row.appendChild(crearCeldaDropdown(calificacion.periodo_3, periodos[2], 3));
 
-          tableBody.appendChild(row);
-        });
+              tableBody.appendChild(row);
+          });
       }
+
 
       function crearCeldaDropdown(calificacionActual, periodo, periodoNumero) {
         const cell = document.createElement("td");

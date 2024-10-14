@@ -140,7 +140,7 @@ button:hover {
 
 /* Contenedor que envuelve la tabla */
 .table-container {
-  width: 800px; /* Ancho fijo para el contenedor */
+  width: 900px; /* Ancho fijo para el contenedor */
   height: 400px; /* Altura fija para el contenedor */
   overflow-y: auto; /* Permite el desplazamiento vertical si la tabla es muy alta */
   margin: 20px auto; /* Centra el contenedor horizontalmente */
@@ -182,22 +182,23 @@ button:hover {
 }
 
 #alumnos-table tr:nth-child(even) {
-  background-color: #f2f2f2; /* Color de fondo alterno para filas */
+  background-color: #f2f2f2; /* Color de fondo para filas pares */
 }
 
+#alumnos-table tr:nth-child(odd) {
+  background-color: #000000; /* Color de fondo para filas impares */
+}
+
+/* Opcional: Añadir un color diferente para el hover */
 #alumnos-table tr:hover {
   background-color: #e9e9e9; /* Color de fondo al pasar el mouse */
-}
-
-/* Cambiar fondo de filas impares a blanco */
-#alumnos-table tr:nth-child(odd) {
-  background-color: #ffffff; /* Fondo blanco para las filas impares */
 }
 
 /* Especificar anchos para las columnas */
 #alumnos-table th:nth-child(1),
 #alumnos-table td:nth-child(1) {
   width: 10%; /* Primera columna más estrecha */
+  display: none; /* Oculta la segunda columna */
 }
 
 #alumnos-table th:nth-child(2),
@@ -208,7 +209,11 @@ button:hover {
 
 #alumnos-table th:nth-child(3),
 #alumnos-table td:nth-child(3) {
-  width: 40%; /* Tercera columna más ancha */
+  width: 30%; /* Tercera columna más ancha */
+}
+#alumnos-table th:nth-child(4),
+#alumnos-table td:nth-child(4) {
+  width: 20%; /* Tercera columna más ancha */
 }
 
 /* Las otras columnas ocuparán el espacio restante */
