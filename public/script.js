@@ -5,11 +5,12 @@ let materiaSeleccionadaId;
 window.onload = async function () { 
   const token = getCookie("token"); // Necesitas crear una función para obtener cookies
 
-  if (!token) {
-    /*window.location.href = "/login.html";*/
-    console.log(token);
-    return;
-  }
+  if (req.session && req.session.userId) {
+        // La sesión es válida, continúa a la siguiente función
+        return next();
+    }
+    // La sesión no es válida, redirige al login
+    res.redirect('/login.html');
 
   try {
     mostrarNombreProfesor(decodedToken);
