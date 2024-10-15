@@ -5,11 +5,12 @@ let materiaSeleccionadaId;
 window.onload = async function () { 
   const sessionId = getCookie('connect.sid'); // Cambia 'connect.sid' por el nombre de tu cookie si lo has personalizado
   console.log('ID de sesión:', sessionId);
+  const nombreCompletoProfesor = getCookie("nombreCompleto"); // Debes implementar getCookie para obtener la cookie
 
   try {
-    mostrarNombreProfesor(decodedToken);
+    document.getElementById("nombre_usuario").textContent = nombreCompletoProfesor;
     await cargarCicloActivo();
-    await cargarGrados(token);
+    await cargarGrados();
   } catch (error) {
     console.error("Error al decodificar el token o cargar datos:", error); // Muestra el error en la consola
   }
@@ -26,12 +27,6 @@ function getCookie(name) {
    if (parts.length === 2) return parts.pop().split(';').shift();
 }  
 
-function mostrarNombreProfesor(tokenDecodificado) {
-  const nombreProfesor =
-    tokenDecodificado.nombre_completo || "Campo nombre_completo no encontrado";
-  document.getElementById("nombre_usuario").textContent = nombreProfesor;
-}
-
 async function cargarCicloActivo() {
   const responseCiclo = await fetch("/obtener-ciclos-escolares");
 
@@ -44,12 +39,8 @@ async function cargarCicloActivo() {
   }
 }
 
-async function cargarGrados(token) {
-  const responseGrados = await fetch("/obtener-grados-profesor", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+async function cargarGrados() {
+  const responseGrados = await fetch("/obtener-grados-profesor");
 
   if (responseGrados.ok) {
     const grados = await responseGrados.json();
@@ -73,11 +64,21 @@ async function cargarGrados(token) {
     selectGrados.addEventListener("change", async (event) => {
       const gradoId = event.target.value;
       if (gradoId) {
-        await cargarMaterias(token, gradoId);
+        await cargarMaterias(gradoId);
       }
     });
+  } else {
+    // Manejo de errores
+    if (responseGrados.status === 401) {
+      console.error("No autorizado, redirigiendo a login...");
+      window.location.href = "/login.html"; // Redirigir a la página de login si no está autenticado
+    } else {
+      const errorData = await responseGrados.json();
+      console.error("Error al cargar grados:", errorData.message);
+    }
   }
 }
+
 
 async function cargarMaterias(token, gradoId) {
   const response = await fetch(
