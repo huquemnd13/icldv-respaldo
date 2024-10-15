@@ -26,10 +26,7 @@
             decodedToken = jwt_decode(token);
             mostrarNombreProfesor(decodedToken);
             await cargarCicloActivo(token);
-            console.log("aqui");
-            console.log(token);
             await cargarGrados(token);
-            console.log("aqui");
         } catch (error) {
             console.error("Error al decodificar el token o cargar datos:", error); // Muestra el error en la consola
         }
@@ -70,10 +67,8 @@
           if (responseGrados.ok) {
               const grados = await responseGrados.json();
               const selectGrados = document.getElementById("grados");
-
               // Limpiar las opciones anteriores
               selectGrados.innerHTML = "";
-
               // Agregar opción por defecto
               const defaultOption = document.createElement("option");
               defaultOption.value = "";  // Valor vacío
@@ -81,7 +76,6 @@
               defaultOption.disabled = true; // Deshabilitar la selección
               defaultOption.selected = true; // Seleccionada por defecto
               selectGrados.appendChild(defaultOption);
-
               // Agregar las opciones dinámicas de los grados
               grados.forEach((grado) => {
                   const option = document.createElement("option");
@@ -89,14 +83,12 @@
                   option.textContent = grado.descripcion;
                   selectGrados.appendChild(option);
               });
-
               selectGrados.addEventListener("change", async (event) => {
                   const gradoId = event.target.value;
                   if (gradoId) {
                       await cargarMaterias(token, gradoId);
                   }
               });
-
               // Limpiar cualquier mensaje de error anterior
               errorMessage.textContent = ""; 
           } else {
