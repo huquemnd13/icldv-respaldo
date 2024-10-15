@@ -7,6 +7,7 @@ const { createClient } = require("@supabase/supabase-js");
 const path = require("path"); // Importar el módulo path
 const jwt = require("jsonwebtoken"); // Asegúrate de instalar jsonwebtoken con npm
 const jwtSecret = process.env.JWT_SECRET;
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
@@ -28,12 +29,17 @@ app.use("/styles.css", (req, res, next) => {
 // Servir archivos estáticos desde la carpeta public
 app.use(express.static(path.join(__dirname, "public")));
 
+// Configuración de la sesión con cookies httpOnly
 app.use(
   session({
     secret: jwtSecret,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: true }, 
+    cookie: {
+      httpOnly: true, // La cookie no es accesible desde JavaScript
+      secure: process.env.NODE_ENV === 'production', // Usa 'secure' solo en producción
+      maxAge: 3600000 // Duración de la cookie en milisegundos (1 hora)
+    }
   })
 );
 
