@@ -3,17 +3,12 @@ let cicloActivoGlobal;
 let materiaSeleccionadaId;
 
 window.onload = async function () { 
-  const token = getCookie("token"); // Necesitas crear una función para obtener cookies
-
-  if (!token) {
-    /*window.location.href = "/login.html";*/
-    console.log(token);
-    return;
-  }
+  const sessionId = getCookie('connect.sid'); // Cambia 'connect.sid' por el nombre de tu cookie si lo has personalizado
+  console.log('ID de sesión:', sessionId);
 
   try {
     mostrarNombreProfesor(decodedToken);
-    await cargarCicloActivo(token);
+    await cargarCicloActivo();
     await cargarGrados(token);
   } catch (error) {
     console.error("Error al decodificar el token o cargar datos:", error); // Muestra el error en la consola
@@ -37,17 +32,15 @@ function mostrarNombreProfesor(tokenDecodificado) {
   document.getElementById("nombre_usuario").textContent = nombreProfesor;
 }
 
-async function cargarCicloActivo(token) {
-  const responseCiclo = await fetch("/obtener-ciclos-escolares", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+async function cargarCicloActivo() {
+  const responseCiclo = await fetch("/obtener-ciclos-escolares");
 
   if (responseCiclo.ok) {
-    cicloActivoGlobal = await responseCiclo.json();
+    const cicloActivoGlobal = await responseCiclo.json();
     const cicloActivoSpan = document.getElementById("ciclo_activo");
     cicloActivoSpan.textContent = `Ciclo: ${cicloActivoGlobal.inicio_ciclo} - ${cicloActivoGlobal.fin_ciclo}`;
+  } else {
+    console.error("Error al cargar ciclos escolares:", responseCiclo.statusText);
   }
 }
 
