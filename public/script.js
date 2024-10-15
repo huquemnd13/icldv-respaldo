@@ -11,7 +11,6 @@ window.onload = async function () {
   }
 
   try {
-    decodedToken = jwt_decode(token);
     mostrarNombreProfesor(decodedToken);
     await cargarCicloActivo(token);
     await cargarGrados(token);

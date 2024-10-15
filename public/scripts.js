@@ -41,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (data.success) {
-                    localStorage.setItem('token', data.token); // Guarda el token en localStorage
                     showNotification('Inicio de sesión exitoso.', false);
                     setTimeout(() => {
                         window.location.href = '/inicio.html'; // Redirige a la página de inicio

@@ -92,19 +92,12 @@ app.post("/login", async (req, res) => {
         // Generar el nombre completo del profesor
         const nombreCompleto = `${profesor.nombre} ${profesor.apellido_paterno} ${profesor.apellido_materno}`;
 
-        // Generar un token JWT con el nombre completo del profesor
-        const token = jwt.sign(
-          {
-            id: usuario.id,
-            nombre_completo: nombreCompleto,
-            profesor_id: profesor.id,
-          },
-          jwtSecret,
-          { expiresIn: "1h" }
-        );
-        console.log("ID PROFESOR TABLA", profesor.id);
-        // Responder con el token
-        return res.json({ success: true, token }); // Envía el token al cliente
+          // Almacenar el ID del usuario, nombre completo y ID del profesor en la sesión
+          req.session.userId = usuario.id; // Almacena el ID del usuario
+          req.session.nombreCompleto = nombreCompleto; // Almacena el nombre completo
+          req.session.profesorId = profesor.id; // Almacena el ID del profesor
+
+          res.json({ message: 'Inicio de sesión exitoso' });
       } else {
         return res.json({ success: false, message: "Profesor no encontrado." });
       }
