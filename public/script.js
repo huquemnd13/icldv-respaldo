@@ -2,17 +2,19 @@ let decodedToken;
 let cicloActivoGlobal;
 let materiaSeleccionadaId;
 
-window.onload = async function () { 
-  const nombreCompletoProfesor = getCookie("nombreCompleto");
-  console.log(nombreCompletoProfesor); // Muestra el nombre completo del profesor
+window.onload = async function () {
+  const token = localStorage.getItem("token");
 
-  const sessionId = getCookie('connect.sid'); // Cambia 'connect.sid' por el nombre de tu cookie si lo has personalizado
-  console.log('ID de sesión:', sessionId);
+  if (!token) {
+    window.location.href = "/login.html";
+    return;
+  }
 
   try {
-    document.getElementById("nombre_usuario").textContent = nombreCompletoProfesor;
-    await cargarCicloActivo();
-    await cargarGrados();
+    decodedToken = jwt_decode(token);
+    mostrarNombreProfesor(decodedToken);
+    await cargarCicloActivo(token);
+    await cargarGrados(token);
   } catch (error) {
     console.error("Error al decodificar el token o cargar datos:", error); // Muestra el error en la consola
   }
@@ -22,27 +24,32 @@ window.onload = async function () {
     .addEventListener("click", cargarAlumnos);
 };
 
-// Función para obtener el valor de una cookie
-function getCookie(name) {
-   const value = `; ${document.cookie}`;
-   const parts = value.split(`; ${name}=`);
-   if (parts.length === 2) return parts.pop().split(';').shift();
-}  
+function mostrarNombreProfesor(tokenDecodificado) {
+  const nombreProfesor =
+    tokenDecodificado.nombre_completo || "Campo nombre_completo no encontrado";
+  document.getElementById("nombre_usuario").textContent = nombreProfesor;
+}
 
-async function cargarCicloActivo() {
-  const responseCiclo = await fetch("/obtener-ciclos-escolares");
+async function cargarCicloActivo(token) {
+  const responseCiclo = await fetch("/obtener-ciclos-escolares", {
+    headers: {
+      Authorization: Bearer ${token},
+    },
+  });
 
   if (responseCiclo.ok) {
-    const cicloActivoGlobal = await responseCiclo.json();
+    cicloActivoGlobal = await responseCiclo.json();
     const cicloActivoSpan = document.getElementById("ciclo_activo");
-    cicloActivoSpan.textContent = `Ciclo: ${cicloActivoGlobal.inicio_ciclo} - ${cicloActivoGlobal.fin_ciclo}`;
-  } else {
-    console.error("Error al cargar ciclos escolares:", responseCiclo.statusText);
+    cicloActivoSpan.textContent = Ciclo: ${cicloActivoGlobal.inicio_ciclo} - ${cicloActivoGlobal.fin_ciclo};
   }
 }
 
-async function cargarGrados() {
-  const responseGrados = await fetch("/obtener-grados-profesor");
+async function cargarGrados(token) {
+  const responseGrados = await fetch("/obtener-grados-profesor", {
+    headers: {
+      Authorization: Bearer ${token},
+    },
+  });
 
   if (responseGrados.ok) {
     const grados = await responseGrados.json();
@@ -66,28 +73,18 @@ async function cargarGrados() {
     selectGrados.addEventListener("change", async (event) => {
       const gradoId = event.target.value;
       if (gradoId) {
-        await cargarMaterias(gradoId);
+        await cargarMaterias(token, gradoId);
       }
     });
-  } else {
-    // Manejo de errores
-    if (responseGrados.status === 401) {
-      console.error("No autorizado, redirigiendo a login...");
-      window.location.href = "/login.html"; // Redirigir a la página de login si no está autenticado
-    } else {
-      const errorData = await responseGrados.json();
-      console.error("Error al cargar grados:", errorData.message);
-    }
   }
 }
 
-
 async function cargarMaterias(token, gradoId) {
   const response = await fetch(
-    `/obtener-materias-profesor-grado?grado_id=${gradoId}`,
+    /obtener-materias-profesor-grado?grado_id=${gradoId},
     {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: Bearer ${token},
       },
     }
   );
@@ -138,11 +135,11 @@ async function cargarAlumnos() {
 
     if (periodoActivo) {
       mostrarToast(
-        `Periodo de captura activo: Desde ${new Date(
+        Periodo de captura activo: Desde ${new Date(
           periodoActivo.fecha_inicio
         ).toLocaleDateString()} hasta ${new Date(
           periodoActivo.fecha_fin
-        ).toLocaleDateString()}`,
+        ).toLocaleDateString()},
         "success"
       );
     } else {
@@ -160,13 +157,13 @@ async function cargarAlumnos() {
 
 async function obtenerCalificaciones(cicloId, gradoId, profesorId) {
   const response = await fetch(
-    `/calificaciones?id_ciclo_escolar=${cicloId}&id_grado_nivel_escolar=${gradoId}&id_profesor=${profesorId}&id_materia=${materiaSeleccionadaId}`
+    /calificaciones?id_ciclo_escolar=${cicloId}&id_grado_nivel_escolar=${gradoId}&id_profesor=${profesorId}&id_materia=${materiaSeleccionadaId}
   );
   return response.json();
 }
 
 async function obtenerPeriodos(cicloId) {
-  const response = await fetch(`/periodos?id_ciclo_escolar=${cicloId}`);
+  const response = await fetch(/periodos?id_ciclo_escolar=${cicloId});
   return response.json();
 }
 
@@ -179,14 +176,14 @@ function actualizarTablaAlumnos(calificaciones, periodos) {
   calificaciones.forEach((calificacion) => {
     const row = document.createElement("tr");
 
-    row.innerHTML = `
+    row.innerHTML = 
                   <td>${calificacion.id_calificacion}</td>
                   <td>${calificacion.id_alumno}</td>
                   <td>${
                     document.getElementById("materias").selectedOptions[0].text
                   }</td>
                   <td>${calificacion.nombre_completo}</td>
-              `;
+              ;
 
     row.appendChild(crearCeldaDropdown(calificacion.periodo_1, periodos[0], 1));
     row.appendChild(crearCeldaDropdown(calificacion.periodo_2, periodos[1], 2));

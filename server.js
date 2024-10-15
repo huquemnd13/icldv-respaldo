@@ -79,7 +79,6 @@ app.post("/login", async (req, res) => {
       if (profesor) {
         // Generar el nombre completo del profesor
         const nombreCompleto = `${profesor.nombre} ${profesor.apellido_paterno} ${profesor.apellido_materno}`;
-
         // Generar un token JWT con el nombre completo del profesor
         const token = jwt.sign(
           {
