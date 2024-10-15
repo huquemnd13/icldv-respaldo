@@ -21,6 +21,10 @@
           window.location.href = "/login.html";
           return;
         }
+        else
+          {
+            console.log(token);
+          }
 
         try {
             decodedToken = jwt_decode(token);
@@ -37,18 +41,21 @@
           .addEventListener("click", cargarAlumnos);
       };
 
-      function mostrarNombreProfesor(tokenDecodificado) {
+      function mostrarNombreProfesor(decodedToken) {
         const nombreProfesor =
           tokenDecodificado.nombre_completo || "Campo nombre_completo no encontrado";
         document.getElementById("nombre_usuario").textContent = nombreProfesor;
       }
 
       async function cargarCicloActivo(token) {
-        const responseCiclo = await fetch("/obtener-ciclos-escolares", {
-          headers: {
-            Authorization: Bearer ${token},
-          },
-        });
+          const responseCiclo = await fetch("/obtener-ciclos-escolares", {
+              headers: {
+                  Authorization: `Bearer ${token}`, // Usar backticks para la interpolación
+              },
+          });
+          // Continuar con el manejo de la respuesta
+      }
+
 
         if (responseCiclo.ok) {
           cicloActivoGlobal = await responseCiclo.json();
@@ -60,7 +67,7 @@
       async function cargarGrados(token) {
     const responseGrados = await fetch("/obtener-grados-profesor", {
         headers: {
-            Authorization: Bearer ${token},
+            Authorization: 'Bearer ${token}',
         },
     });
 
