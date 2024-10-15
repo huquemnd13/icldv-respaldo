@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (data.success) {
+                    localStorage.setItem("token", data.token); // Guarda el token en localStorage
                     showNotification('Inicio de sesión exitoso.', false);
                     setTimeout(() => {
                         window.location.href = '/inicio.html'; // Redirige a la página de inicio
@@ -48,6 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     showNotification(data.message, true);
                 }
+
             } catch (error) {
                 console.error('Error:', error);
                 showNotification('Ocurrió un error en el inicio de sesión. Intenta de nuevo.', true);
