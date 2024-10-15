@@ -350,24 +350,44 @@
           const idUsuario = decodedToken.id || "Campo nombre_completo no encontrado";
           const nuevaCalificacion = selectElement.value; // Valor de la calificación seleccionada
           const idAlumno = selectElement.closest('tr').children[1].textContent; // Obtener el ID del alumno desde la fila
-          const idCalificacion = selectElement.closest('tr').children[0].textContent; // Obtener el ID del alumno desde la fila
-          console.log("id usuario", idUsuario);
-          console.log("id calificacion ", idCalificacion);
-          console.log("id alumno ",idAlumno);
+          const idCalificacion = selectElement.closest('tr').children[0].textContent; // Obtener el ID de calificación desde la fila
           const idMateria = document.getElementById('materias').value; // Obtener el ID de la materia seleccionada
-          const selectMateria = document.getElementById('materias'); // Obtener el dropdown de materias (antes no estaba definido)
-          const textoMateria = selectMateria.options[selectMateria.selectedIndex].text; // Obtener el texto de la opción seleccionada
-          const fila = selectElement.closest('tr'); // Obtener la fila actual
-          // Obtener la celda en la que está el select y su índice de columna
-          const celda = selectElement.closest('td'); // Obtener la celda donde está el select
-          const numeroColumna = celda.cellIndex; // Obtener el índice de la columna
+          const token = localStorage.getItem("token");
 
-          console.log(`Calificación para el alumno ID ${idAlumno} cambiada a ${nuevaCalificacion}`);
+          console.log("id usuario", idUsuario);
+          console.log("id calificacion", idCalificacion);
+          console.log("id alumno", idAlumno);
           console.log(`ID de materia seleccionada: ${idMateria}`); // Imprimir el ID de materia en la consola
-          console.log("fila seleciconada: ", fila);
-          console.log(`Número de columna: ${numeroColumna}`); // Imprimir el número de columna en la consola
-          // Aquí puedes agregar la lógica para enviar la nueva calificación al servidor
+
+          fetch('/actualizar-calificaciones', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}` // Asegúrate de incluir el token de autorización aquí
+              },
+              body: JSON.stringify({
+                  id_calificacion: idCalificacion,
+                  campo: 'p1', // Cambia esto según el campo que deseas actualizar (p1, p2, p3)
+                  nuevo_valor: nuevaCalificacion
+              })
+          })
+          .then(response => {
+              if (!response.ok) {
+                  throw new Error('Error al actualizar la calificación');
+              }
+              return response.json();
+          })
+          .then(data => {
+              console.log('Respuesta del servidor:', data);
+              mostrarToast('Calificación actualizada correctamente.'); // Muestra un toast de éxito
+          })
+          .catch(error => {
+              console.error('Error:', error);
+              mostrarToast('Error al actualizar la calificación.', 'error'); // Muestra un toast de error
+          });
       }
+
+
 
 
 
