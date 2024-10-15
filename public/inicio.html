@@ -66,13 +66,23 @@
                   Authorization: `Bearer ${token}`,
               },
           });
+
           if (responseGrados.ok) {
               const grados = await responseGrados.json();
               const selectGrados = document.getElementById("grados");
-              console.log("aqui");
-              // Limpiar las opciones anteriores
-              selectGrados.innerHTML = ""; 
 
+              // Limpiar las opciones anteriores
+              selectGrados.innerHTML = "";
+
+              // Agregar opción por defecto
+              const defaultOption = document.createElement("option");
+              defaultOption.value = "";  // Valor vacío
+              defaultOption.textContent = "Seleccione un grado"; // Texto por defecto
+              defaultOption.disabled = true; // Deshabilitar la selección
+              defaultOption.selected = true; // Seleccionada por defecto
+              selectGrados.appendChild(defaultOption);
+
+              // Agregar las opciones dinámicas de los grados
               grados.forEach((grado) => {
                   const option = document.createElement("option");
                   option.value = grado.id;
@@ -94,6 +104,7 @@
               errorMessage.textContent = "Error al cargar los grados: " + errorText; // Mostrar el error en la interfaz
           }
       }
+
 
 
       async function cargarMaterias(token, gradoId) {
