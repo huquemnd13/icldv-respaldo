@@ -26,7 +26,9 @@
             decodedToken = jwt_decode(token);
             mostrarNombreProfesor(decodedToken);
             await cargarCicloActivo(token);
+            console.log("aqui");
             await cargarGrados(token);
+            console.log("aqui");
         } catch (error) {
             console.error("Error al decodificar el token o cargar datos:", error); // Muestra el error en la consola
         }
@@ -58,35 +60,40 @@
       }
 
       async function cargarGrados(token) {
-        const responseGrados = await fetch("/obtener-grados-profesor", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (responseGrados.ok) {
-          const grados = await responseGrados.json();
-          const selectGrados = document.getElementById("grados");
-
-          grados.forEach((grado) => {
-            const option = document.createElement("option");
-            option.value = grado.id;
-            option.textContent = grado.descripcion;
-            selectGrados.appendChild(option);
+          const responseGrados = await fetch("/obtener-grados-profesor", {
+              headers: {
+                  Authorization: `Bearer ${token}`,
+              },
           });
+          if (responseGrados.ok) {
+              const grados = await responseGrados.json();
+              const selectGrados = document.getElementById("grados");
+              console.log("aqui");
+              // Limpiar las opciones anteriores
+              selectGrados.innerHTML = ""; 
 
-          selectGrados.addEventListener("change", async (event) => {
-            const gradoId = event.target.value;
-            if (gradoId) {
-              await cargarMaterias(token, gradoId);
-            }
-          });
-        }
-        else
-          {
-            //aqui poner el error
+              grados.forEach((grado) => {
+                  const option = document.createElement("option");
+                  option.value = grado.id;
+                  option.textContent = grado.descripcion;
+                  selectGrados.appendChild(option);
+              });
+
+              selectGrados.addEventListener("change", async (event) => {
+                  const gradoId = event.target.value;
+                  if (gradoId) {
+                      await cargarMaterias(token, gradoId);
+                  }
+              });
+
+              // Limpiar cualquier mensaje de error anterior
+              errorMessage.textContent = ""; 
+          } else {
+              const errorText = await responseGrados.text(); // Obtener el texto del error
+              errorMessage.textContent = "Error al cargar los grados: " + errorText; // Mostrar el error en la interfaz
           }
       }
+
 
       async function cargarMaterias(token, gradoId) {
         const response = await fetch(`/obtener-materias-profesor-grado?grado_id=${gradoId}`, {

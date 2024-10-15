@@ -255,7 +255,7 @@ app.get("/obtener-grados-profesor", async (req, res) => {
       .from("GradoNivelEscolar")
       .select("id, descripcion")
       .eq("id_profesor", profesorId); // Filtrar por ID del profesor
-
+    
     if (error) {
       return res.status(500).json({ error: "Error al obtener grados." });
     }
