@@ -248,19 +248,20 @@ app.get("/obtener-grados-profesor", async (req, res) => {
   const token = req.headers.authorization.split(" ")[1]; // Obtener el token del header
   const decodedToken = jwt.verify(token, jwtSecret); // Decodificar el token
   const profesorId = decodedToken.profesor_id; // Obtener el ID del profesor
-
+  console.log("aqui");
   try {
     // Obtener los grados para el profesor
     const { data: grados, error } = await supabase
       .from("ProfesorGradoNivelEscolarMateria") // Tabla de asociación
       .select("GradoNivelEscolar(id, descripcion)") // Seleccionar los campos deseados
       .eq("id_profesor", profesorId) // Filtrar por ID del profesor
-      .single(); // Asegurarse de obtener un solo objeto por cada profesor
-
+      .distinct("id"); // Evitar duplicados basado en el ID del grado
+    
     if (error) {
+      console.log(error);
       return res.status(500).json({ error: "Error al obtener grados." });
     }
-
+    console.log(grados);
     return res.json(grados); // Devolver los grados en formato JSON
   } catch (error) {
     res.status(500).json({ error: "Error en el servidor." });
