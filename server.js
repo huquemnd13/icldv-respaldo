@@ -7,7 +7,6 @@ const { createClient } = require("@supabase/supabase-js");
 const path = require("path"); // Importar el módulo path
 const jwt = require("jsonwebtoken"); // Asegúrate de instalar jsonwebtoken con npm
 const jwtSecret = process.env.JWT_SECRET;
-const cookieParser = require('cookie-parser');
 
 const app = express();
 
@@ -448,6 +447,46 @@ app.get("/periodos", async (req, res) => {
       .json({ success: false, message: "Error interno del servidor." });
   }
 });
+
+// Endpoint para actualizar calificaciones
+app.post('/actualizar-calificaciones', async (req, res) => {
+    const token = req.headers["authorization"]?.split(" ")[1]; // Asegúrate de obtener el token del encabezado
+
+    if (!token) {
+        return res.status(401).json({ message: "No autorizado" }); // Si no hay token, responde con un error 401
+    }
+
+    const { id_calificacion, campo, nuevo_valor } = req.body;
+
+    // Validar que todos los parámetros necesarios estén presentes
+    if (!id_calificacion || !campo || nuevo_valor === undefined) {
+        return res.status(400).json({ mensaje: 'Datos incompletos' });
+    }
+
+    try {
+        // Verificar el token y obtener la información del usuario
+        const { data: { user }, error: authError } = await supabase.auth.api.getUser(token);
+        
+        if (authError || !user) {
+            return res.status(401).json({ message: "Token no válido" });
+        }
+
+        const id_usuario = user.id; // Obtener el ID del usuario desde el token
+
+        // Llamar a la función actualizar_calificacion en Supabase
+        const { data, error } = await supabase.rpc('actualizar_calificacion', [id_calificacion, campo, nuevo_valor, id_usuario]);
+
+        if (error) {
+            throw error; // Lanza el error si hay un problema al llamar a la función
+        }
+
+        res.status(200).json({ mensaje: 'Calificación actualizada correctamente', data });
+    } catch (err) {
+        console.error('Error actualizando calificación:', err);
+        res.status(500).json({ mensaje: 'Error actualizando calificación' });
+    }
+});
+
 
 // Redirige a login.html cuando el usuario visita la raíz del sitio (/)
 app.get("/", (req, res) => {
