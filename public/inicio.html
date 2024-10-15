@@ -23,13 +23,14 @@
         }
 
         try {
-          decodedToken = jwt_decode(token);
-          mostrarNombreProfesor(decodedToken);
-          await cargarCicloActivo(token);
-          await cargarGrados(token);
+            decodedToken = jwt_decode(token);
+            mostrarNombreProfesor(decodedToken);
+            await cargarCicloActivo(token);
+            await cargarGrados(token);
         } catch (error) {
-          // Manejar error de decodificación o carga
+            console.error("Error al decodificar el token o cargar datos:", error); // Muestra el error en la consola
         }
+
 
         document
           .getElementById("cargar-alumnos-button")
@@ -81,6 +82,10 @@
             }
           });
         }
+        else
+          {
+            //aqui poner el error
+          }
       }
 
       async function cargarMaterias(token, gradoId) {
