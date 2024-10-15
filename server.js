@@ -97,7 +97,7 @@ app.post("/login", async (req, res) => {
           req.session.nombreCompleto = nombreCompleto; // Almacena el nombre completo
           req.session.profesorId = profesor.id; // Almacena el ID del profesor
 
-          res.json({ message: 'Inicio de sesión exitoso' });
+          return res.json({ success: true, message: 'Inicio de sesión exitoso' });
       } else {
         return res.json({ success: false, message: "Profesor no encontrado." });
       }

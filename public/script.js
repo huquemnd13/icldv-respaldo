@@ -2,11 +2,12 @@ let decodedToken;
 let cicloActivoGlobal;
 let materiaSeleccionadaId;
 
-window.onload = async function () {
-  const token = localStorage.getItem("token");
+window.onload = async function () { 
+  const token = getCookie("token"); // Necesitas crear una función para obtener cookies
 
   if (!token) {
-    window.location.href = "/login.html";
+    /*window.location.href = "/login.html";*/
+    console.log(token);
     return;
   }
 
@@ -22,6 +23,13 @@ window.onload = async function () {
     .getElementById("cargar-alumnos-button")
     .addEventListener("click", cargarAlumnos);
 };
+
+// Función para obtener el valor de una cookie
+function getCookie(name) {
+   const value = `; ${document.cookie}`;
+   const parts = value.split(`; ${name}=`);
+   if (parts.length === 2) return parts.pop().split(';').shift();
+}  
 
 function mostrarNombreProfesor(tokenDecodificado) {
   const nombreProfesor =
