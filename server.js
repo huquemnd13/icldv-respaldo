@@ -87,6 +87,10 @@ app.post("/login", async (req, res) => {
           message: "Error al buscar profesor.",
         });
       }
+      else
+        {
+          console.log(profesor);
+        }
 
       if (profesor) {
         // Generar el nombre completo del profesor
@@ -96,7 +100,13 @@ app.post("/login", async (req, res) => {
           req.session.userId = usuario.id; // Almacena el ID del usuario
           req.session.nombreCompleto = nombreCompleto; // Almacena el nombre completo
           req.session.profesorId = profesor.id; // Almacena el ID del profesor
-
+          // Crear una cookie para el nombre completo del profesor
+          res.cookie("nombreCompleto", nombreCompleto, {
+            httpOnly: true, // Impide el acceso a la cookie desde JavaScript
+            secure: process.env.NODE_ENV === "production", // Usa cookies seguras solo en producción
+            maxAge: 3600000, // Duración de la cookie en milisegundos (1 hora)
+          });  
+        
           return res.json({ success: true, message: 'Inicio de sesión exitoso' });
         
       } else {

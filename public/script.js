@@ -3,9 +3,11 @@ let cicloActivoGlobal;
 let materiaSeleccionadaId;
 
 window.onload = async function () { 
+  const nombreCompletoProfesor = getCookie("nombreCompleto");
+  console.log(nombreCompletoProfesor); // Muestra el nombre completo del profesor
+
   const sessionId = getCookie('connect.sid'); // Cambia 'connect.sid' por el nombre de tu cookie si lo has personalizado
   console.log('ID de sesión:', sessionId);
-  const nombreCompletoProfesor = getCookie("nombreCompleto"); // Debes implementar getCookie para obtener la cookie
 
   try {
     document.getElementById("nombre_usuario").textContent = nombreCompletoProfesor;
