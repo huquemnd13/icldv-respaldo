@@ -185,30 +185,32 @@ app.get("/grados", async (req, res) => {
 
 // API PARA LLENAR EL CICLO ESCOLAR DEL HEADER EN INICIO
 app.get("/obtener-ciclos-escolares", async (req, res) => {
+  // Verificar si el usuario está autenticado
+  if (!req.session.userId) {
+    return res.status(401).json({ message: "No autorizado." }); // Maneja la falta de autenticación
+  }
+
   try {
     const { data, error } = await supabase.rpc("obtener_ciclos_escolares");
 
     if (error) {
       console.error("Error al obtener ciclos escolares:", error);
-      return res
-        .status(500)
-        .json({ message: "Error al obtener ciclos escolares" });
+      return res.status(500).json({ message: "Error al obtener ciclos escolares" });
     }
 
-    // Asegurarte de que data contenga un solo ciclo escolar activo
+    // Asegúrate de que data contenga un solo ciclo escolar activo
     if (data && data.length > 0) {
       const cicloActivo = data[0]; // Obtener el primer ciclo que es el activo
       return res.json(cicloActivo); // Enviar el ciclo activo como respuesta
     } else {
-      return res
-        .status(404)
-        .json({ message: "No hay ciclos escolares activos." }); // Manejo de caso sin ciclos activos
+      return res.status(404).json({ message: "No hay ciclos escolares activos." }); // Manejo de caso sin ciclos activos
     }
   } catch (err) {
     console.error("Error interno del servidor:", err);
     return res.status(500).json({ message: "Error interno del servidor" });
   }
 });
+
 
 // Ruta para obtener alumnos por grado
 app.get("/obtener-alumnos-grados", async (req, res) => {
