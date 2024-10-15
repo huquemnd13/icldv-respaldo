@@ -252,10 +252,11 @@ app.get("/obtener-grados-profesor", async (req, res) => {
   try {
     // Obtener los grados para el profesor
     const { data: grados, error } = await supabase
-      .from("GradoNivelEscolar")
-      .select("id, descripcion")
-      .eq("id_profesor", profesorId); // Filtrar por ID del profesor
-    
+      .from("ProfesorGradoNivelEscolarMateria") // Tabla de asociación
+      .select("GradoNivelEscolar(id, descripcion)") // Seleccionar los campos deseados
+      .eq("id_profesor", profesorId) // Filtrar por ID del profesor
+      .single(); // Asegurarse de obtener un solo objeto por cada profesor
+
     if (error) {
       return res.status(500).json({ error: "Error al obtener grados." });
     }
@@ -265,6 +266,7 @@ app.get("/obtener-grados-profesor", async (req, res) => {
     res.status(500).json({ error: "Error en el servidor." });
   }
 });
+
 
 // API para obtener materias de un grado específico
 app.get("/materias-grado/:gradoId", async (req, res) => {
