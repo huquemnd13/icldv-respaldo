@@ -297,31 +297,28 @@
       
       
       function crearDropdown(calificacionActual, periodo, periodoNumero) {
-          const select = document.createElement('select');
-          select.onchange = function() {
-              guardarCalificacion(this);
-          };
-          // Verificar si el periodo está activo
-          const periodoActivo = esPeriodoActivo(periodo);
-          if (!periodoActivo) {
-              select.disabled = true; // Deshabilitar si el periodo no está activo
-          }
+          const select = document.createElement("select");
 
-          // Definir las calificaciones posibles
-          const calificacionesPosibles = [0,1,2,3,4,5,6,7,8,9,10];
-          calificacionesPosibles.forEach(calificacion => {
-              const option = document.createElement('option');
+          const calificacionesPosibles = [0, 7, 8, 9, 10]; // Opciones posibles para calificación
+          calificacionesPosibles.forEach((calificacion) => {
+              const option = document.createElement("option");
               option.value = calificacion;
               option.textContent = calificacion;
-              // Si la calificación actual coincide, la seleccionamos
-              if (calificacion === calificacionActual) {
-                  option.selected = true;
-              }
+              option.selected = calificacion === calificacionActual;
               select.appendChild(option);
+          });
+
+          // Deshabilitar el select si el periodo no está activo
+          select.disabled = !esPeriodoActivo(periodo);
+
+          // Llamar a guardarCalificacion cuando se cambie la opción seleccionada
+          select.addEventListener("change", function () {
+              guardarCalificacion(this); // Pasar el elemento select modificado a la función guardarCalificacion
           });
 
           return select;
       }
+
       
       function mostrarToast(mensaje, tipo = 'success') {
           const toastContainer = document.getElementById("toast-container");
@@ -353,6 +350,7 @@
           const nuevaCalificacion = selectElement.value; // Valor de la calificación seleccionada
           const idAlumno = selectElement.closest('tr').children[1].textContent; // Obtener el ID del alumno desde la fila
           const idMateria = document.getElementById('materias').value; // Obtener el ID de la materia seleccionada
+          const selectMateria = document.getElementById('materias'); // Obtener el dropdown de materias (antes no estaba definido)
           const textoMateria = selectMateria.options[selectMateria.selectedIndex].text; // Obtener el texto de la opción seleccionada
           const fila = selectElement.closest('tr'); // Obtener la fila actual
           // Obtener la celda en la que está el select y su índice de columna
