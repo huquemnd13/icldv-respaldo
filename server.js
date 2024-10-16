@@ -448,44 +448,50 @@ app.get("/periodos", async (req, res) => {
   }
 });
 
-// Endpoint para actualizar calificaciones
 app.post('/actualizar-calificaciones', async (req, res) => {
-    const token = req.headers["authorization"]?.split(" ")[1]; // Asegúrate de obtener el token del encabezado
+    const { _id_calificacion, _campo, _nuevo_valor, _id_usuario } = req.body; // Obtener id_usuario del cuerpo
 
-    if (!token) {
-        return res.status(401).json({ message: "No autorizado" }); // Si no hay token, responde con un error 401
-    }
-
-    const { id_calificacion, campo, nuevo_valor } = req.body;
-
-    // Validar que todos los parámetros necesarios estén presentes
-    if (!id_calificacion || !campo || nuevo_valor === undefined) {
+    // Validaciones de entrada
+    if (!_id_calificacion || !_campo || _nuevo_valor === undefined || !_id_usuario) {
         return res.status(400).json({ mensaje: 'Datos incompletos' });
     }
 
+    if (!Number.isInteger(_id_calificacion)) {
+        return res.status(400).json({ mensaje: 'El ID de la calificación debe ser un número entero' });
+    }
+
+    if (!['p1', 'p2', 'p3'].includes(_campo)) {
+        return res.status(400).json({ mensaje: 'Campo no válido, debe ser p1, p2 o p3' });
+    }
+
+    if (!Number.isFinite(_nuevo_valor) || _nuevo_valor < 0 || _nuevo_valor > 100) {
+        return res.status(400).json({ mensaje: 'El nuevo valor debe ser un número entre 0 y 100' });
+    }
+
     try {
-        // Verificar el token y obtener la información del usuario
-        const { data: { user }, error: authError } = await supabase.auth.api.getUser(token);
-        
-        if (authError || !user) {
-            return res.status(401).json({ message: "Token no válido" });
-        }
-
-        const id_usuario = user.id; // Obtener el ID del usuario desde el token
-
-        // Llamar a la función actualizar_calificacion en Supabase
-        const { data, error } = await supabase.rpc('actualizar_calificacion', [id_calificacion, campo, nuevo_valor, id_usuario]);
+        // Llamar a la función RPC de Supabase
+        const { data: result, error } = await supabase.rpc('actualizar_calificacion', {
+            _id_calificacion,
+            _campo,
+            _nuevo_valor,
+            _id_usuario
+        });
 
         if (error) {
-            throw error; // Lanza el error si hay un problema al llamar a la función
+            console.error('Error en la función RPC de Supabase:', error); // Log detallado
+            return res.status(500).json({ mensaje: 'Error actualizando calificación', error: error.message });
         }
 
-        res.status(200).json({ mensaje: 'Calificación actualizada correctamente', data });
+        res.status(200).json({ mensaje: 'Calificación actualizada correctamente', data: result });
     } catch (err) {
-        console.error('Error actualizando calificación:', err);
-        res.status(500).json({ mensaje: 'Error actualizando calificación' });
+        console.error('Error general en el servidor:', err.message); // Log detallado
+        res.status(500).json({ mensaje: 'Error actualizando calificación', error: err.message });
     }
 });
+
+
+
+
 
 
 // Redirige a login.html cuando el usuario visita la raíz del sitio (/)
