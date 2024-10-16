@@ -43,6 +43,26 @@ app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html")); // Servir el HTML de login
 });
 
+// Middleware para validar el token JWT
+const validarToken = (req, res, next) => {
+  const token = req.headers["authorization"]?.split(" ")[1]; // Obtener el token del encabezado
+
+  if (!token) {
+    return res.status(401).json({ message: "No autorizado, token no proporcionado" });
+  }
+
+  // Verificar el token
+  jwt.verify(token, jwtSecret, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: "Token no válido", error: err.message });
+    }
+
+    // Si el token es válido, se puede acceder a los datos decodificados
+    req.user = decoded; // Guarda la información del usuario en el objeto de solicitud
+    next(); // Llama al siguiente middleware o ruta
+  });
+};
+
 // Manejo del login
 app.post("/login", async (req, res) => {
   console.log("Inicio del proceso de login"); // Mensaje inicial
@@ -108,49 +128,6 @@ app.post("/login", async (req, res) => {
       console.error("Contraseña incorrecta.");
       return res.json({ success: false, message: "Contraseña incorrecta." });
     }
-  }
-});
-
-// Manejo del usuario
-app.get("/get-usuario", async (req, res) => {
-  const token = req.headers["authorization"]?.split(" ")[1]; // Asegúrate de obtener el token del encabezado
-
-  if (!token) {
-    return res.status(401).json({ message: "No autorizado" }); // Si no hay token, responde con un error 401
-  }
-
-  try {
-    const decoded = jwt.verify(token, jwtSecret); // Verifica el token
-    // Obtener el usuario a partir del token decodificado
-    const { data: usuario, error: usuarioError } = await supabase
-      .from("Usuario")
-      .select("*")
-      .eq("id", decoded.id) // Usa el ID del token para obtener el usuario
-      .single();
-
-    if (usuarioError) {
-      console.error("Error al obtener el usuario:", usuarioError);
-    } else {
-      // Si se obtuvo el usuario, busca el profesor relacionado
-      const { data: profesor, error: profesorError } = await supabase
-        .from("Profesor")
-        .select("id") // Selecciona el campo 'id' de la tabla Profesor
-        .eq("id_usuario", usuario.id) // Usa 'id_usuario' para buscar el profesor relacionado
-        .single();
-
-      if (profesorError) {
-        console.error("Error al obtener el profesor:", profesorError);
-      } else {
-        const profesorId = profesor.id; // Ahora tienes el ID del profesor
-        console.log("ID del profesor:", profesorId);
-        // Aquí puedes continuar con la lógica usando profesorId
-      }
-    }
-
-    return res.json({ nombreUsuario: usuario.nombre_usuario }); // Responde con el nombre de usuario
-  } catch (err) {
-    console.error("Error al verificar el token:", err);
-    return res.status(401).json({ message: "Token inválido" });
   }
 });
 
