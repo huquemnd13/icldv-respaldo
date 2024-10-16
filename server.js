@@ -90,6 +90,7 @@ app.post("/login", async (req, res) => {
         const token = jwt.sign(
           {
             id: usuario.id,
+            id_rol: usuario.id_rol,
             nombre_completo: nombreCompleto,
             profesor_id: profesor.id,
           },
