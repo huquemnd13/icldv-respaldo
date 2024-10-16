@@ -23,6 +23,7 @@
 
         if (token) {
           try {
+            console.log(token);
             decodedToken = jwt_decode(token); // Decodifica el token y asigna a la variable global
             const nombreProfesor =
               decodedToken.nombre_completo ||
