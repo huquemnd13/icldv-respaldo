@@ -86,17 +86,17 @@ app.post("/login", async (req, res) => {
         // Generar el nombre completo del profesor
         const nombreCompleto = `${profesor.nombre} ${profesor.apellido_paterno} ${profesor.apellido_materno}`;
 
-        // Generar un token JWT
+        // Generar un token JWT con el nombre completo del profesor
         const token = jwt.sign(
           {
-            id: usuario.id,               // ID del usuario
-            id_rol: usuario.id_rol,       // Rol del usuario
-            iat: Math.floor(Date.now() / 1000),  // Fecha de emisión
+            id: usuario.id,
+            id_rol: usuario.id_rol,
+            nombre_completo: nombreCompleto,
+            profesor_id: profesor.id,
           },
           jwtSecret,
-          { expiresIn: "1h" }  // Esto maneja la expiración
+          { expiresIn: "1h" }
         );
-
         console.log("ID PROFESOR TABLA", profesor.id);
         // Responder con el token
         return res.json({ success: true, token }); // Envía el token al cliente
