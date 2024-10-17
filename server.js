@@ -497,3 +497,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`); // Usa comillas invertidas para interpolar
 });
+
+app.get("/status", (req, res) => {
+  res.status(200).send("OK");
+});
