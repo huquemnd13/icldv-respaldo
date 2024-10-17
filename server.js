@@ -8,6 +8,9 @@ const { createClient } = require("@supabase/supabase-js");
 const path = require("path"); // Importar el módulo path
 const jwt = require("jsonwebtoken"); // Asegúrate de instalar jsonwebtoken con npm
 const jwtSecret = process.env.JWT_SECRET;
+const redis = require("redis");
+const redisClient = redis.createClient(); // Asegúrate de que Redis está en ejecución
+
 
 const app = express();
 
@@ -38,6 +41,38 @@ app.use(
   })
 );
 
+// Manejo de errores en la conexión de Redis
+redisClient.on("error", (err) => {
+  console.error("Error en Redis:", err);
+});
+
+const loginRateLimit = (req, res, next) => {
+  const { username } = req.body; // Asumimos que estás enviando el nombre de usuario en el body
+
+  // Key única en Redis para cada usuario
+  const redisKey = `login_attempts_${username}`;
+
+  // Verificar cuántos intentos de inicio de sesión fallidos hay actualmente
+  redisClient.get(redisKey, (err, attempts) => {
+    if (err) {
+      console.error("Error al obtener datos de Redis:", err);
+      return res.status(500).json({ message: "Error del servidor" });
+    }
+
+    attempts = attempts ? parseInt(attempts) : 0;
+
+    if (attempts >= 3) {
+      return res.status(429).json({
+        message: "Has excedido el número de intentos. Intenta de nuevo en 20 minutos.",
+      });
+    }
+
+    // Si el usuario no está bloqueado, proceder
+    next();
+  });
+};
+
+/*
 // Ruta para el formulario de login
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html")); // Servir el HTML de login
@@ -62,23 +97,11 @@ const validarToken = (req, res, next) => {
     next(); // Llama al siguiente middleware o ruta
   });
 };
-
-const rateLimit = require('express-rate-limit');
-
-// Configurar el limitador de solicitudes
-const limitador = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 2, // Límite máximo de 100 solicitudes por IP
-  message: {
-    message: "Has excedido el límite de solicitudes. Intenta de nuevo más tarde."
-  },
-  headers: true, // Incluye cabeceras sobre el rate limiting en la respuesta
-});
-
+*/
 
 
 // Manejo del login
-app.post("/login", limitador, async (req, res) => {
+app.post("/login", async (req, res) => {
   console.log("Inicio del proceso de login"); // Mensaje inicial
   const { email, password } = req.body;
 
