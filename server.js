@@ -89,7 +89,17 @@ app.post("/login", async (req, res) => {
 
       
       // Obtener la hora local como objeto moment
-      const ahora = new Date();
+      let ahora = new Date();
+      ahora = ahora.toLocaleString('es-MX', {
+                                                                  timeZone: 'America/Mexico_City',
+                                                                  year: 'numeric',
+                                                                  month: '2-digit',
+                                                                  day: '2-digit',
+                                                                  hour: '2-digit',
+                                                                  minute: '2-digit',
+                                                                  second: '2-digit',
+                                                                  hour12: false
+                                                              });
       
       // Comprobar si el usuario está bloqueado
       const bloqueadoHasta = moment(usuario.bloqueado_hasta);
@@ -145,7 +155,17 @@ app.post("/login", async (req, res) => {
         // Si se supera el límite de intentos, bloquear al usuario
         if (nuevosIntentos >= 3) {
           // Agregar 20 minutos a la hora actual
-          const bloqueadoHasta = ahora.clone().add(20, "minutes").format("YYYY-MM-DDTHH:mm:ssZ");
+          ahora.setMinutes(ahora.getMinutes() + 20);
+          const bloqueadoHasta = ahora.toLocaleString('es-MX', {
+                                                                  timeZone: 'America/Mexico_City',
+                                                                  year: 'numeric',
+                                                                  month: '2-digit',
+                                                                  day: '2-digit',
+                                                                  hour: '2-digit',
+                                                                  minute: '2-digit',
+                                                                  second: '2-digit',
+                                                                  hour12: false
+                                                              });
           console.log("hora aumentada a: ", bloqueadoHasta);
           await supabase
             .from("Usuario")
