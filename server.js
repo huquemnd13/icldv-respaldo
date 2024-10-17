@@ -8,9 +8,6 @@ const { createClient } = require("@supabase/supabase-js");
 const path = require("path"); // Importar el módulo path
 const jwt = require("jsonwebtoken"); // Asegúrate de instalar jsonwebtoken con npm
 const jwtSecret = process.env.JWT_SECRET;
-const redis = require("redis");
-const redisClient = redis.createClient(); // Asegúrate de que Redis está en ejecución
-
 
 const app = express();
 
@@ -41,38 +38,7 @@ app.use(
   })
 );
 
-// Manejo de errores en la conexión de Redis
-redisClient.on("error", (err) => {
-  console.error("Error en Redis:", err);
-});
 
-const loginRateLimit = (req, res, next) => {
-  const { username } = req.body; // Asumimos que estás enviando el nombre de usuario en el body
-
-  // Key única en Redis para cada usuario
-  const redisKey = `login_attempts_${username}`;
-
-  // Verificar cuántos intentos de inicio de sesión fallidos hay actualmente
-  redisClient.get(redisKey, (err, attempts) => {
-    if (err) {
-      console.error("Error al obtener datos de Redis:", err);
-      return res.status(500).json({ message: "Error del servidor" });
-    }
-
-    attempts = attempts ? parseInt(attempts) : 0;
-
-    if (attempts >= 3) {
-      return res.status(429).json({
-        message: "Has excedido el número de intentos. Intenta de nuevo en 20 minutos.",
-      });
-    }
-
-    // Si el usuario no está bloqueado, proceder
-    next();
-  });
-};
-
-/*
 // Ruta para el formulario de login
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html")); // Servir el HTML de login
@@ -97,12 +63,14 @@ const validarToken = (req, res, next) => {
     next(); // Llama al siguiente middleware o ruta
   });
 };
-*/
 
+
+
+const { addMinutes, isAfter } = require('date-fns');
 
 // Manejo del login
 app.post("/login", async (req, res) => {
-  console.log("Inicio del proceso de login"); // Mensaje inicial
+  console.log("Inicio del proceso de login");
   const { email, password } = req.body;
 
   // Buscar usuario en Supabase
@@ -110,34 +78,44 @@ app.post("/login", async (req, res) => {
     .from("Usuario")
     .select("*")
     .eq("email", email)
-    .single(); // Obtiene un único usuario
+    .single();
 
   if (error) {
-    console.error("Error al buscar usuario:", error); // Log de error
+    console.error("Error al buscar usuario:", error);
     return res.json({ success: false, message: "Error al buscar correo." });
   }
 
   if (usuario) {
-    console.log("Usuario encontrado:", usuario); // Agrega esto para verificar si se encontró el usuario
+    console.log("Usuario encontrado:", usuario);
+
+    // Comprobar si el usuario está bloqueado
+    const ahora = new Date();
+    if (usuario.bloqueado_hasta && isAfter(ahora, new Date(usuario.bloqueado_hasta))) {
+      // Usuario bloqueado
+      return res.status(403).json({ success: false, message: "Cuenta bloqueada. Intenta de nuevo más tarde." });
+    }
+
     // Verificar contraseña
     const passwordMatch = await bcrypt.compare(password, usuario.password);
-    console.log("Contraseña coincide:", passwordMatch); // Log del resultado de comparación
+    console.log("Contraseña coincide:", passwordMatch);
 
     if (passwordMatch) {
+      // Reiniciar intentos fallidos
+      await supabase
+        .from("Usuario")
+        .update({ intentos_fallidos: 0, bloqueado_hasta: null }) // Reiniciar contador
+        .eq("id", usuario.id);
+
       // Buscar el profesor relacionado con el usuario
-      console.log("ID del usuario:", usuario.id); // Agrega esta línea para imprimir el ID del usuario
       const { data: profesor, error: errorProfesor } = await supabase
         .from("Profesor")
         .select("*")
-        .eq("id_usuario", usuario.id) // Suponiendo que id_usuario en Profesor relaciona con id en Usuario
+        .eq("id_usuario", usuario.id)
         .single();
 
       if (errorProfesor) {
         console.error("Error al buscar profesor:", errorProfesor);
-        return res.json({
-          success: false,
-          message: "Error al buscar profesor.",
-        });
+        return res.json({ success: false, message: "Error al buscar profesor." });
       }
 
       if (profesor) {
@@ -147,26 +125,45 @@ app.post("/login", async (req, res) => {
         // Generar un token JWT
         const token = jwt.sign(
           {
-            id: usuario.id,               // ID del usuario
-            id_rol: usuario.id_rol,       // Rol del usuario
-            iat: Math.floor(Date.now() / 1000),  // Fecha de emisión
+            id: usuario.id,
+            id_rol: usuario.id_rol,
+            iat: Math.floor(Date.now() / 1000),
           },
           jwtSecret,
-          { expiresIn: "1h" }  // Esto maneja la expiración
+          { expiresIn: "1h" }
         );
 
         console.log("ID PROFESOR TABLA", profesor.id);
-        // Responder con el token
-        return res.json({ success: true, token }); // Envía el token al cliente
+        return res.json({ success: true, token });
       } else {
         return res.json({ success: false, message: "Profesor no encontrado." });
       }
     } else {
       console.error("Contraseña incorrecta.");
+      // Incrementar intentos fallidos
+      const nuevosIntentos = usuario.intentos_fallidos + 1;
+
+      // Comprobar si el usuario ha superado el límite de intentos
+      if (nuevosIntentos >= 3) {
+        const bloqueadoHasta = addMinutes(ahora, 20); // Bloquear por 20 minutos
+        await supabase
+          .from("Usuario")
+          .update({ intentos_fallidos: nuevosIntentos, bloqueado_hasta: bloqueadoHasta })
+          .eq("id", usuario.id);
+      } else {
+        await supabase
+          .from("Usuario")
+          .update({ intentos_fallidos: nuevosIntentos })
+          .eq("id", usuario.id);
+      }
       return res.json({ success: false, message: "Contraseña incorrecta." });
     }
+  } else {
+    return res.json({ success: false, message: "Usuario no encontrado." });
   }
 });
+
+
 
 app.get("/grados", async (req, res) => {
   try {
