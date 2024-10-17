@@ -121,8 +121,6 @@ app.post("/login", async (req, res) => {
         }
 
         if (profesor) {
-          const nombreCompleto = `${profesor.nombre} ${profesor.apellido_paterno} ${profesor.apellido_materno}`;
-
           const token = jwt.sign(
             {
               id: usuario.id,
@@ -144,10 +142,11 @@ app.post("/login", async (req, res) => {
 
         // Si se supera el límite de intentos, bloquear al usuario
         if (nuevosIntentos >= 3) {
-          const bloqueadoHasta = ahora.clone().add(20, "minutes").toDate(); // Agregar 20 minutos
+          // Agregar 20 minutos a la hora actual
+          const bloqueadoHasta = ahora.clone().add(20, "minutes").format("YYYY-MM-DDTHH:mm:ssZ");
           await supabase
             .from("Usuario")
-            .update({ intentos_fallidos: nuevosIntentos, bloqueado_hasta: bloqueadoHasta.toISOString() })
+            .update({ intentos_fallidos: nuevosIntentos, bloqueado_hasta: bloqueadoHasta })
             .eq("id", usuario.id);
         } else {
           await supabase
@@ -166,6 +165,7 @@ app.post("/login", async (req, res) => {
     return res.status(500).json({ success: false, message: "Error interno del servidor." });
   }
 });
+
 
 app.get("/grados", async (req, res) => {
   try {
