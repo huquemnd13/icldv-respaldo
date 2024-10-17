@@ -87,10 +87,10 @@ app.post("/login", async (req, res) => {
     if (usuario) {
       console.log("Usuario encontrado:", usuario);
 
+      
       // Obtener la hora local como objeto moment
-      const ahora = moment.tz("America/Mexico_City");
-      console.log("Hora local:", ahora.format()); // Muestra la hora en la zona horaria correcta
-
+      const ahora = new Date();
+      
       // Comprobar si el usuario está bloqueado
       const bloqueadoHasta = moment(usuario.bloqueado_hasta);
       console.log("Bloqueado hasta: ", bloqueadoHasta.format());
