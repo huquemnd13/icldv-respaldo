@@ -90,12 +90,12 @@ app.post("/login", async (req, res) => {
       
       // Obtener la hora local como objeto moment
       let ahora = new Date();
-      
+      const ahoraMx = moment.tz(ahora, 'America/Mexico_City');
       // Comprobar si el usuario está bloqueado
       const bloqueadoHasta = moment(usuario.bloqueado_hasta);
       console.log("Bloqueado hasta: ", bloqueadoHasta.format());
-      console.log("Ahora", ahora);
-      if (bloqueadoHasta.isAfter(ahora)) {
+      console.log("Ahora", ahoraMx);
+      if (bloqueadoHasta.isAfter(ahoraMx)) {
         return res.status(403).json({ success: false, message: "Cuenta bloqueada. Intenta de nuevo más tarde." });
       }
 
