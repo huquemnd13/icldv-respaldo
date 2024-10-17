@@ -92,7 +92,9 @@ app.post("/login", async (req, res) => {
       console.log("Hora local:", ahora.format()); // Muestra la hora en la zona horaria correcta
 
       // Comprobar si el usuario está bloqueado
-      const bloqueadoHasta = moment(usuario.bloqueado_hasta).tz("America/Mexico_City");
+      const bloqueadoHasta = moment(usuario.bloqueado_hasta);
+      console.log("Bloqueado hasta: ", bloqueadoHasta.format());
+      console.log("Ahora", ahora);
       if (bloqueadoHasta.isAfter(ahora)) {
         return res.status(403).json({ success: false, message: "Cuenta bloqueada. Intenta de nuevo más tarde." });
       }
@@ -137,13 +139,14 @@ app.post("/login", async (req, res) => {
           return res.json({ success: false, message: "Profesor no encontrado." });
         }
       } else {
-        console.error("Contraseña incorrecta.");
+        console.error("Contraseña incorrecta.1");
         const nuevosIntentos = (usuario.intentos_fallidos || 0) + 1;
-
+        console.log(nuevosIntentos);
         // Si se supera el límite de intentos, bloquear al usuario
         if (nuevosIntentos >= 3) {
           // Agregar 20 minutos a la hora actual
           const bloqueadoHasta = ahora.clone().add(20, "minutes").format("YYYY-MM-DDTHH:mm:ssZ");
+          console.log("hora aumentada a: ", bloqueadoHasta);
           await supabase
             .from("Usuario")
             .update({ intentos_fallidos: nuevosIntentos, bloqueado_hasta: bloqueadoHasta })
