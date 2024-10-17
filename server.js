@@ -63,8 +63,22 @@ const validarToken = (req, res, next) => {
   });
 };
 
+const rateLimit = require('express-rate-limit');
+
+// Configurar el limitador de solicitudes
+const limitador = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 2, // Límite máximo de 100 solicitudes por IP
+  message: {
+    message: "Has excedido el límite de solicitudes. Intenta de nuevo más tarde."
+  },
+  headers: true, // Incluye cabeceras sobre el rate limiting en la respuesta
+});
+
+
+
 // Manejo del login
-app.post("/login", async (req, res) => {
+app.post("/login", limitador, async (req, res) => {
   console.log("Inicio del proceso de login"); // Mensaje inicial
   const { email, password } = req.body;
 
