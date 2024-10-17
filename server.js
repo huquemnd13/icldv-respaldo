@@ -9,9 +9,12 @@ const path = require("path"); // Importar el módulo path
 const jwt = require("jsonwebtoken"); // Asegúrate de instalar jsonwebtoken con npm
 const jwtSecret = process.env.JWT_SECRET;
 
+const { addMinutes, isAfter } = require("date-fns");
+const { utcToZonedTime } = require("date-fns-tz");
+
+const timeZone = 'America/Mexico_City';
 const app = express();
 
-// Configurar Supabase
 const supabaseUrl = process.env.SUPABASE_URL; // Cargar URL de Supabase desde la variable de entorno
 const supabaseKey = process.env.SUPABASE_KEY; // Cargar clave de Supabase desde la variable de entorno
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -66,8 +69,6 @@ const validarToken = (req, res, next) => {
 
 
 
-const { addMinutes, isAfter } = require('date-fns');
-
 // Manejo del login
 app.post("/login", async (req, res) => {
   console.log("Inicio del proceso de login");
@@ -89,7 +90,7 @@ app.post("/login", async (req, res) => {
     console.log("Usuario encontrado:", usuario);
 
     // Comprobar si el usuario está bloqueado
-    const ahora = new Date();
+    const ahora = utcToZonedTime(new Date(), timeZone); // Obtener la hora local
     if (usuario.bloqueado_hasta && isAfter(ahora, new Date(usuario.bloqueado_hasta))) {
       // Usuario bloqueado
       return res.status(403).json({ success: false, message: "Cuenta bloqueada. Intenta de nuevo más tarde." });
@@ -100,10 +101,10 @@ app.post("/login", async (req, res) => {
     console.log("Contraseña coincide:", passwordMatch);
 
     if (passwordMatch) {
-      // Reiniciar intentos fallidos
+      // Reiniciar intentos fallidos y bloqueos
       await supabase
         .from("Usuario")
-        .update({ intentos_fallidos: 0, bloqueado_hasta: null }) // Reiniciar contador
+        .update({ intentos_fallidos: 0, bloqueado_hasta: null }) // Reiniciar contador y estado de bloqueo
         .eq("id", usuario.id);
 
       // Buscar el profesor relacionado con el usuario
@@ -141,14 +142,14 @@ app.post("/login", async (req, res) => {
     } else {
       console.error("Contraseña incorrecta.");
       // Incrementar intentos fallidos
-      const nuevosIntentos = usuario.intentos_fallidos + 1;
+      const nuevosIntentos = (usuario.intentos_fallidos || 0) + 1;
 
       // Comprobar si el usuario ha superado el límite de intentos
       if (nuevosIntentos >= 3) {
-        const bloqueadoHasta = addMinutes(ahora, 20); // Bloquear por 20 minutos
+        const bloqueadoHasta = addMinutes(ahora, 20); // Agregar 20 minutos
         await supabase
           .from("Usuario")
-          .update({ intentos_fallidos: nuevosIntentos, bloqueado_hasta: bloqueadoHasta })
+          .update({ intentos_fallidos: nuevosIntentos, bloqueado_hasta: bloqueadoHasta.toISOString() }) // Asegúrate de que sea una cadena ISO
           .eq("id", usuario.id);
       } else {
         await supabase
@@ -156,13 +157,13 @@ app.post("/login", async (req, res) => {
           .update({ intentos_fallidos: nuevosIntentos })
           .eq("id", usuario.id);
       }
+
       return res.json({ success: false, message: "Contraseña incorrecta." });
     }
   } else {
     return res.json({ success: false, message: "Usuario no encontrado." });
   }
 });
-
 
 
 app.get("/grados", async (req, res) => {
