@@ -87,9 +87,10 @@ app.post("/login", async (req, res) => {
     if (usuario) {
       console.log("Usuario encontrado:", usuario);
 
-      // Obtener la hora local
-      const ahora = moment.tz("America/Mexico_City").format(); // Esto te dará la hora en formato ISO 8601
-      console.log(ahora);
+      // Obtener la hora local como objeto Date
+      const ahora = moment.tz("America/Mexico_City").toDate(); // Obtener como objeto Date
+      console.log("Hora local:", ahora);
+
       // Comprobar si el usuario está bloqueado
       if (usuario.bloqueado_hasta && isAfter(ahora, new Date(usuario.bloqueado_hasta))) {
         return res.status(403).json({ success: false, message: "Cuenta bloqueada. Intenta de nuevo más tarde." });
@@ -141,7 +142,7 @@ app.post("/login", async (req, res) => {
         const nuevosIntentos = (usuario.intentos_fallidos || 0) + 1;
 
         if (nuevosIntentos >= 3) {
-          const bloqueadoHasta = addMinutes(ahora, 20);
+          const bloqueadoHasta = moment(ahora).add(20, "minutes").toDate(); // Agregar 20 minutos
           await supabase
             .from("Usuario")
             .update({ intentos_fallidos: nuevosIntentos, bloqueado_hasta: bloqueadoHasta.toISOString() })
