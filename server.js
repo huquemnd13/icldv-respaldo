@@ -9,6 +9,10 @@ const path = require("path"); // Importar el módulo path
 const jwt = require("jsonwebtoken"); // Asegúrate de instalar jsonwebtoken con npm
 const jwtSecret = process.env.JWT_SECRET;
 
+const moment = require('moment-timezone'); // Importa moment-timezone
+
+const { isAfter, addMinutes } = require('date-fns');
+
 const app = express();
 
 const supabaseUrl = process.env.SUPABASE_URL; // Cargar URL de Supabase desde la variable de entorno
@@ -67,8 +71,6 @@ app.post("/login", async (req, res) => {
   try {
     console.log("Inicio del proceso de login");
     const { email, password } = req.body;
-    const { format, addMinutes } = require('date-fns');
-    const ahora = utcToZonedTime(new Date(), 'America/Mexico_City');
 
     // Buscar usuario en Supabase
     const { data: usuario, error } = await supabase
@@ -86,8 +88,8 @@ app.post("/login", async (req, res) => {
       console.log("Usuario encontrado:", usuario);
 
       // Obtener la hora local
-      const ahora = utcToZonedTime(new Date(), 'America/Mexico_City'); // Hora local
-
+      const ahora = moment.tz("America/Mexico_City").format(); // Esto te dará la hora en formato ISO 8601
+      console.log(ahora);
       // Comprobar si el usuario está bloqueado
       if (usuario.bloqueado_hasta && isAfter(ahora, new Date(usuario.bloqueado_hasta))) {
         return res.status(403).json({ success: false, message: "Cuenta bloqueada. Intenta de nuevo más tarde." });
