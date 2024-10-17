@@ -87,12 +87,13 @@ app.post("/login", async (req, res) => {
     if (usuario) {
       console.log("Usuario encontrado:", usuario);
 
-      // Obtener la hora local como objeto Date
-      const ahora = moment.tz("America/Mexico_City").toDate(); // Obtener como objeto Date
-      console.log("Hora local:", ahora);
+      // Obtener la hora local como objeto moment
+      const ahora = moment.tz("America/Mexico_City");
+      console.log("Hora local:", ahora.format()); // Muestra la hora en la zona horaria correcta
 
       // Comprobar si el usuario está bloqueado
-      if (usuario.bloqueado_hasta && isAfter(ahora, new Date(usuario.bloqueado_hasta))) {
+      const bloqueadoHasta = moment(usuario.bloqueado_hasta).tz("America/Mexico_City");
+      if (bloqueadoHasta.isAfter(ahora)) {
         return res.status(403).json({ success: false, message: "Cuenta bloqueada. Intenta de nuevo más tarde." });
       }
 
@@ -141,8 +142,9 @@ app.post("/login", async (req, res) => {
         console.error("Contraseña incorrecta.");
         const nuevosIntentos = (usuario.intentos_fallidos || 0) + 1;
 
+        // Si se supera el límite de intentos, bloquear al usuario
         if (nuevosIntentos >= 3) {
-          const bloqueadoHasta = moment(ahora).add(20, "minutes").toDate(); // Agregar 20 minutos
+          const bloqueadoHasta = ahora.clone().add(20, "minutes").toDate(); // Agregar 20 minutos
           await supabase
             .from("Usuario")
             .update({ intentos_fallidos: nuevosIntentos, bloqueado_hasta: bloqueadoHasta.toISOString() })
@@ -164,7 +166,6 @@ app.post("/login", async (req, res) => {
     return res.status(500).json({ success: false, message: "Error interno del servidor." });
   }
 });
-
 
 app.get("/grados", async (req, res) => {
   try {
