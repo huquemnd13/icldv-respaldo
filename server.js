@@ -163,7 +163,7 @@ app.get("/grados", async (req, res) => {
 });
 
 // API PARA LLENAR EL CICLO ESCOLAR DEL HEADER EN INICIO
-app.get("/obtener-ciclos-escolares", async (req, res) => {
+app.get("/obtener-ciclos-escolares", validarToken, async (req, res) => {
   try {
     const { data, error } = await supabase.rpc("obtener_ciclos_escolares");
 
