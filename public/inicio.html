@@ -267,16 +267,20 @@
 
                       // Crear dropdowns de calificación para cada periodo
                       const cellP1 = document.createElement("td");
+                      cellP1.dataset.periodo = 1; // Establecer data-periodo para el periodo 1
                       cellP1.appendChild(crearDropdown(calificacion.periodo_1, periodos[0], 1)); // Pasar periodo 1
                       row.appendChild(cellP1);
 
                       const cellP2 = document.createElement("td");
+                      cellP2.dataset.periodo = 2; // Establecer data-periodo para el periodo 2
                       cellP2.appendChild(crearDropdown(calificacion.periodo_2, periodos[1], 2)); // Pasar periodo 2
                       row.appendChild(cellP2);
 
                       const cellP3 = document.createElement("td");
+                      cellP3.dataset.periodo = 3; // Establecer data-periodo para el periodo 3
                       cellP3.appendChild(crearDropdown(calificacion.periodo_3, periodos[2], 3)); // Pasar periodo 3
                       row.appendChild(cellP3);
+
 
                       // Agregar fila al cuerpo de la tabla
                       tableBody.appendChild(row);
