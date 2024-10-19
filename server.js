@@ -100,32 +100,38 @@ app.post("/login", async (req, res) => {
     console.log("Contraseña coincide:", passwordMatch);
 
     if (passwordMatch) {
-      // Reiniciar intentos fallidos y activar estatus
-      await supabase
-        .from("Usuario")
-        .update({ intentos_fallidos: 0, estatus: true })
-        .eq("id", usuario.id);
+        // Reiniciar intentos fallidos y activar estatus
+        await supabase
+          .from("Usuario")
+          .update({ intentos_fallidos: 0, estatus: true })
+          .eq("id", usuario.id);
 
-      // Buscar el profesor relacionado con el usuario
-      const { data: profesor, error: errorProfesor } = await supabase
-        .from("Profesor")
-        .select("*")
-        .eq("id_usuario", usuario.id)
-        .single();
+        // Buscar el profesor relacionado con el usuario
+            const { data: profesor, error: errorProfesor } = await supabase
+              .from("Profesor")
+              .select("*")
+              .eq("id_usuario", usuario.id)  // Relación Usuario-Profesor
+              .single();
 
-      if (errorProfesor || !profesor) {
-        console.error("Error al buscar profesor:", errorProfesor);
-        return res.status(500).json({ success: false, message: "Error al buscar profesor." });
-      }
+            if (errorProfesor || !profesor) {
+              console.error("Error al buscar profesor:", errorProfesor);
+              return res.status(500).json({ success: false, message: "Error al buscar profesor." });
+            }
 
-      const token = jwt.sign(
-        {
-          id: usuario.id,
-          id_rol: usuario.id_rol,
-        },
-        jwtSecret,
-        { expiresIn: "1h" }
-      );
+            // Construir el nombre completo del profesor
+            const nombreCompleto = `${profesor.nombre} ${profesor.apellido_paterno} ${profesor.apellido_materno}`.trim();
+
+            // Generar el token con el nombre completo del profesor
+            const token = jwt.sign(
+              {
+                id: usuario.id,             // ID del usuario
+                id_rol: usuario.id_rol,     // Rol del usuario
+                nombre_completo: nombreCompleto // Nombre completo del profesor
+              },
+              jwtSecret,
+              { expiresIn: "1h" } // Expiración del token en 1 hora
+            );
+
 
       console.log("ID PROFESOR TABLA", profesor.id);
       return res.json({ success: true, token });

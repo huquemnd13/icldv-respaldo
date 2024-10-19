@@ -25,6 +25,7 @@
           try {
             console.log(token);
             decodedToken = jwt_decode(token); // Decodifica el token y asigna a la variable global
+            console.log(decodedToken.nombre_completo);
             const nombreProfesor =
               decodedToken.nombre_completo ||
               "Campo nombre_completo no encontrado";
