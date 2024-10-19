@@ -317,7 +317,6 @@
           select.addEventListener("change", function () {
               guardarCalificacion(this); // Pasar el elemento select modificado a la función guardarCalificacion
           });
-
           return select;
       }
 
@@ -386,7 +385,7 @@
           })
           .catch(error => {
               console.error('Error:', error);
-              mostrarToast('Error al actualizar la calificación.', 'error'); // Muestra un toast de error
+              mostrarToast('Error al actualizar la calificación.'); // Muestra un toast de error
           });
       }
 

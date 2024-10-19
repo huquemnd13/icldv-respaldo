@@ -469,7 +469,7 @@ app.get("/periodos", async (req, res) => {
 
 app.post('/actualizar-calificaciones', async (req, res) => {
     const { _id_calificacion, _campo, _nuevo_valor, _id_usuario } = req.body; // Obtener id_usuario del cuerpo
-
+    console.log()
     // Validaciones de entrada
     if (!_id_calificacion || !_campo || _nuevo_valor === undefined || !_id_usuario) {
         return res.status(400).json({ mensaje: 'Datos incompletos' });
