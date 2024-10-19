@@ -91,7 +91,7 @@ app.post("/login", async (req, res) => {
     console.log("Usuario encontrado:", usuario);
 
     // Comprobar si el usuario está bloqueado
-    if (usuario.intentos_fallidos >= 3) {
+    if (usuario.intentos_fallidos >= 3 || usuario.estatus === false) {
       return res.status(403).json({ success: false, message: "Cuenta bloqueada. Contacta al administrador." });
     }
 
@@ -100,10 +100,10 @@ app.post("/login", async (req, res) => {
     console.log("Contraseña coincide:", passwordMatch);
 
     if (passwordMatch) {
-      // Reiniciar intentos fallidos
+      // Reiniciar intentos fallidos y activar estatus
       await supabase
         .from("Usuario")
-        .update({ intentos_fallidos: 0 })
+        .update({ intentos_fallidos: 0, estatus: true })
         .eq("id", usuario.id);
 
       // Buscar el profesor relacionado con el usuario
@@ -122,7 +122,6 @@ app.post("/login", async (req, res) => {
         {
           id: usuario.id,
           id_rol: usuario.id_rol,
-          iat: Math.floor(Date.now() / 1000),
         },
         jwtSecret,
         { expiresIn: "1h" }
@@ -136,11 +135,11 @@ app.post("/login", async (req, res) => {
       const nuevosIntentos = (usuario.intentos_fallidos || 0) + 1;
       console.log("Intentos fallidos:", nuevosIntentos);
 
-      // Bloquear usuario después de 3 intentos fallidos
+      // Bloquear usuario después de 3 intentos fallidos y actualizar estatus
       if (nuevosIntentos >= 3) {
         await supabase
           .from("Usuario")
-          .update({ intentos_fallidos: nuevosIntentos })
+          .update({ intentos_fallidos: nuevosIntentos, estatus: false })  // Bloquea al usuario
           .eq("id", usuario.id);
         return res.status(403).json({ success: false, message: "Cuenta bloqueada. Contacta al administrador." });
       } else {
@@ -153,9 +152,10 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ success: false, message: "Contraseña incorrecta." });
     }
   } catch (err) {
-    console.error("Error en el
-
-
+    console.error("Error en el proceso de login:", err);
+    return res.status(500).json({ success: false, message: "Error interno del servidor." });
+  }
+});
 
 app.get("/grados", async (req, res) => {
   try {
