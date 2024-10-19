@@ -117,6 +117,10 @@ app.post("/login", async (req, res) => {
               console.error("Error al buscar profesor:", errorProfesor);
               return res.status(500).json({ success: false, message: "Error al buscar profesor." });
             }
+      
+            // Construir el id del profesor
+      
+            const profesorId = profesor.id;
 
             // Construir el nombre completo del profesor
             const nombreCompleto = `${profesor.nombre} ${profesor.apellido_paterno} ${profesor.apellido_materno}`.trim();
@@ -126,6 +130,7 @@ app.post("/login", async (req, res) => {
               {
                 id: usuario.id,             // ID del usuario
                 id_rol: usuario.id_rol,     // Rol del usuario
+                id_profesor: profesorId,
                 nombre_completo: nombreCompleto // Nombre completo del profesor
               },
               jwtSecret,
@@ -167,7 +172,7 @@ app.get("/grados", async (req, res) => {
   try {
     const token = req.headers.authorization.split(" ")[1]; // Obtener el token del header
     const decodedToken = jwt.verify(token, jwtSecret); // Decodificar el token
-    const profesorId = decodedToken.profesor_id; // Obtener el ID del profesor
+    const profesorId = decodedToken.id_profesor; // Obtener el ID del profesor
     console.log(profesorId);
     // Obtener los grados y descripciones del nivel escolar para un profesor específico
     const { data: grados, error } = await supabase.rpc(
@@ -279,8 +284,11 @@ app.get("/obtener-fechas-ciclo", async (req, res) => {
 // ESTO LLEVA LA INFORMACION DE LOS GRADOS ASIGNADOS DEL PROFESOR PARA EL DROP DOWN LIST
 app.get("/obtener-grados-profesor", async (req, res) => {
   const token = req.headers.authorization.split(" ")[1]; // Obtener el token del header
+  console.log("11111");
   const decodedToken = jwt.verify(token, jwtSecret); // Decodificar el token
-  const profesorId = decodedToken.profesor_id; // Obtener el ID del profesor
+  console.log("22222");
+  const profesorId = decodedToken.id_profesor; // Obtener el ID del profesor
+  console.log("33333");
   console.log(profesorId);
 
   if (!profesorId) {
@@ -319,7 +327,7 @@ app.get("/obtener-materias-profesor-grado", async (req, res) => {
 
   try {
     const decodedToken = jwt.verify(token, jwtSecret); // Decodificar el token
-    const profesorId = decodedToken.profesor_id; // Obtener el ID del profesor
+    const profesorId = decodedToken.id_profesor; // Obtener el ID del profesor
     const gradoId = req.query.grado_id; // Obtener el ID del grado desde los parámetros de la consulta
 
     console.log("Profesor ID:", profesorId);
