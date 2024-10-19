@@ -349,9 +349,9 @@
 
       function guardarCalificacion(selectElement) {
           const idUsuario = decodedToken.id || "Campo nombre_completo no encontrado";
-          const nuevaCalificacion = selectElement.value; // Valor de la calificación seleccionada
+          const nuevaCalificacion = parseInt(selectElement.value); // Valor de la calificación seleccionada
           const idAlumno = selectElement.closest('tr').children[1].textContent; // Obtener el ID del alumno desde la fila
-          const idCalificacion = selectElement.closest('tr').children[0].textContent; // Obtener el ID de calificación desde la fila
+          const idCalificacion = parseInt(selectElement.closest('tr').children[0].textContent); // Obtener el ID de calificación desde la fila
           const idMateria = document.getElementById('materias').value; // Obtener el ID de la materia seleccionada
           const token = localStorage.getItem("token");
 
