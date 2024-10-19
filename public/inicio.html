@@ -353,12 +353,14 @@
           const idAlumno = selectElement.closest('tr').children[1].textContent; // Obtener el ID del alumno desde la fila
           const idCalificacion = parseInt(selectElement.closest('tr').children[0].textContent); // Obtener el ID de calificación desde la fila
           const idMateria = document.getElementById('materias').value; // Obtener el ID de la materia seleccionada
+          const periodo = selectElement.parentElement.dataset.periodo; // Obtener el periodo desde el atributo data-periodo
           const token = localStorage.getItem("token");
-
+          const campo = `p${periodo}`; // Determinar el campo dinámicamente
           console.log("id usuario", idUsuario);
           console.log("id calificacion", idCalificacion);
           console.log("id alumno", idAlumno);
           console.log(`ID de materia seleccionada: ${idMateria}`); // Imprimir el ID de materia en la consola
+          console.log("Campo a actualizar: ", campo);
 
           fetch('/actualizar-calificaciones', {
               method: 'POST',
@@ -368,7 +370,7 @@
               },
               body: JSON.stringify({
                   _id_calificacion: idCalificacion, // Cambia 'id_calificacion' por '_id_calificacion'
-                  _campo: 'p1', // Cambia esto según el campo que deseas actualizar (p1, p2, p3)
+                  _campo: campo, // Cambia esto según el campo que deseas actualizar (p1, p2, p3)
                   _nuevo_valor: nuevaCalificacion, // Cambia 'nuevo_valor' por '_nuevo_valor'
                   _id_usuario: idUsuario // Asegúrate de incluir el id_usuario (puedes obtenerlo del token o de otra fuente)
               })
