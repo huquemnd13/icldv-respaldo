@@ -81,96 +81,80 @@ app.post("/login", async (req, res) => {
 
     if (error) {
       console.error("Error al buscar usuario:", error);
-      return res.json({ success: false, message: "Error al buscar correo." });
+      return res.status(500).json({ success: false, message: "Error al buscar correo." });
     }
 
-    if (usuario) {
-      console.log("Usuario encontrado:", usuario);
+    if (!usuario) {
+      return res.status(404).json({ success: false, message: "Usuario no encontrado." });
+    }
 
-      
-      // Obtener la hora local como objeto moment
-      let ahora = new Date();
-      const ahoraMx = moment.tz(ahora, 'America/Mexico_City');
-      // Comprobar si el usuario está bloqueado
-      const bloqueadoHasta = moment(usuario.bloqueado_hasta);
-      console.log("Bloqueado hasta: ", bloqueadoHasta.format());
-      console.log("Ahora", ahoraMx);
-      if (bloqueadoHasta.isAfter(ahoraMx)) {
-        return res.status(403).json({ success: false, message: "Cuenta bloqueada. Intenta de nuevo más tarde." });
+    console.log("Usuario encontrado:", usuario);
+
+    // Comprobar si el usuario está bloqueado
+    if (usuario.intentos_fallidos >= 3) {
+      return res.status(403).json({ success: false, message: "Cuenta bloqueada. Contacta al administrador." });
+    }
+
+    // Verificar contraseña
+    const passwordMatch = await bcrypt.compare(password, usuario.password);
+    console.log("Contraseña coincide:", passwordMatch);
+
+    if (passwordMatch) {
+      // Reiniciar intentos fallidos
+      await supabase
+        .from("Usuario")
+        .update({ intentos_fallidos: 0 })
+        .eq("id", usuario.id);
+
+      // Buscar el profesor relacionado con el usuario
+      const { data: profesor, error: errorProfesor } = await supabase
+        .from("Profesor")
+        .select("*")
+        .eq("id_usuario", usuario.id)
+        .single();
+
+      if (errorProfesor || !profesor) {
+        console.error("Error al buscar profesor:", errorProfesor);
+        return res.status(500).json({ success: false, message: "Error al buscar profesor." });
       }
 
-      // Verificar contraseña
-      const passwordMatch = await bcrypt.compare(password, usuario.password);
-      console.log("Contraseña coincide:", passwordMatch);
+      const token = jwt.sign(
+        {
+          id: usuario.id,
+          id_rol: usuario.id_rol,
+          iat: Math.floor(Date.now() / 1000),
+        },
+        jwtSecret,
+        { expiresIn: "1h" }
+      );
 
-      if (passwordMatch) {
-        // Reiniciar intentos fallidos y bloqueos
+      console.log("ID PROFESOR TABLA", profesor.id);
+      return res.json({ success: true, token });
+    } else {
+      // Contraseña incorrecta
+      console.error("Contraseña incorrecta.");
+      const nuevosIntentos = (usuario.intentos_fallidos || 0) + 1;
+      console.log("Intentos fallidos:", nuevosIntentos);
+
+      // Bloquear usuario después de 3 intentos fallidos
+      if (nuevosIntentos >= 3) {
         await supabase
           .from("Usuario")
-          .update({ intentos_fallidos: 0, bloqueado_hasta: null })
+          .update({ intentos_fallidos: nuevosIntentos })
           .eq("id", usuario.id);
-
-        // Buscar el profesor relacionado con el usuario
-        const { data: profesor, error: errorProfesor } = await supabase
-          .from("Profesor")
-          .select("*")
-          .eq("id_usuario", usuario.id)
-          .single();
-
-        if (errorProfesor) {
-          console.error("Error al buscar profesor:", errorProfesor);
-          return res.json({ success: false, message: "Error al buscar profesor." });
-        }
-
-        if (profesor) {
-          const token = jwt.sign(
-            {
-              id: usuario.id,
-              id_rol: usuario.id_rol,
-              iat: Math.floor(Date.now() / 1000),
-            },
-            jwtSecret,
-            { expiresIn: "1h" }
-          );
-
-          console.log("ID PROFESOR TABLA", profesor.id);
-          return res.json({ success: true, token });
-        } else {
-          return res.json({ success: false, message: "Profesor no encontrado." });
-        }
+        return res.status(403).json({ success: false, message: "Cuenta bloqueada. Contacta al administrador." });
       } else {
-        console.error("Contraseña incorrecta.1");
-        const nuevosIntentos = (usuario.intentos_fallidos || 0) + 1;
-        console.log(nuevosIntentos);
-        // Si se supera el límite de intentos, bloquear al usuario
-        if (nuevosIntentos >= 3) {
-          // Agregar 20 minutos a la hora actual
-          console.log("Hora antes de aumentar: ", ahora);
-          ahora.setMinutes(ahora.getMinutes() + 20);
-          console.log("hora aumentada", ahora);
-          const bloqueadoHasta = ahora;
-          console.log("hora aumentada a: ", bloqueadoHasta);
-          await supabase
-            .from("Usuario")
-            .update({ intentos_fallidos: nuevosIntentos, bloqueado_hasta: bloqueadoHasta })
-            .eq("id", usuario.id);
-        } else {
-          await supabase
-            .from("Usuario")
-            .update({ intentos_fallidos: nuevosIntentos })
-            .eq("id", usuario.id);
-        }
-
-        return res.json({ success: false, message: "Contraseña incorrecta." });
+        await supabase
+          .from("Usuario")
+          .update({ intentos_fallidos: nuevosIntentos })
+          .eq("id", usuario.id);
       }
-    } else {
-      return res.json({ success: false, message: "Usuario no encontrado." });
+
+      return res.status(401).json({ success: false, message: "Contraseña incorrecta." });
     }
   } catch (err) {
-    console.error("Error en el proceso de login:", err);
-    return res.status(500).json({ success: false, message: "Error interno del servidor." });
-  }
-});
+    console.error("Error en el
+
 
 
 app.get("/grados", async (req, res) => {
