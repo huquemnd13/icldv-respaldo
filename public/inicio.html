@@ -311,7 +311,20 @@
                         llenarSelectConObservaciones(selectObservacion, observacionesGlobales);
                         cellObservacion.appendChild(selectObservacion);
                         row.appendChild(cellObservacion); // Agregar la celda de observaciones a la fila
-                      
+                        
+                        // Evento para limitar la selección a 2 opciones
+                        selectObservacion.addEventListener("change", function() {
+                            const selectedOptions = Array.from(selectObservacion.selectedOptions);
+                            if (selectedOptions.length > 2) {
+                                // Desmarcar la opción más reciente
+                                const lastSelected = selectedOptions[selectedOptions.length - 1];
+                                lastSelected.selected = false;
+
+                                // Mostrar un mensaje al usuario usando el toast
+                                mostrarToast("Solo puedes seleccionar hasta 2 opciones.", "error"); // Tipo "error" o el que desees
+                            }
+                        });
+                        
                         // Llamar a manejarTooltip para el select de observaciones
                         manejarTooltip(selectObservacion);
 
