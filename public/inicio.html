@@ -454,12 +454,14 @@
 
         }
       
+        // Función para guardar observaciones seleccionadas
         async function guardarObservacionesSeleccionadas(id_calificacion, observaciones) {
             const token = localStorage.getItem("token");
 
             const observacionData = {
-                id_calificacion,  // ID de la calificación correspondiente
-                observaciones     // Array de observaciones seleccionadas
+                _id_calificacion: id_calificacion,  // ID de la calificación correspondiente
+                _observaciones: observaciones,      // Array de observaciones seleccionadas
+                _id_usuario: decodedToken.id_usuario // Asegúrate de que id_usuario esté disponible en tu token
             };
 
             try {
@@ -483,6 +485,39 @@
                 console.error("Error de red:", error);
             }
         }
+
+        // Asegúrate de que este bloque se ejecute cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', () => {
+            // Obtener todos los selects que tienen observaciones
+            const selectElements = document.querySelectorAll('select[id^="selectObservacion"]'); // Asegúrate de que tus selects tengan un ID que empiece con "selectObservacion"
+
+            selectElements.forEach(selectObservacion => {
+                selectObservacion.addEventListener("change", async function () {
+                    const selectedOptions = Array.from(selectObservacion.selectedOptions);
+
+                    // Limitar la selección a 2 opciones
+                    if (selectedOptions.length > 2) {
+                        const lastSelected = selectedOptions[selectedOptions.length - 1];
+                        lastSelected.selected = false; // Desmarcar la opción más reciente
+                        mostrarToast("Solo puedes seleccionar hasta 2 opciones.", "error"); // Mostrar mensaje de error
+                        return; // Salir para evitar guardar observaciones
+                    }
+
+                    // Obtener las observaciones seleccionadas
+                    const observacionesSeleccionadas = selectedOptions.map(option => option.value);
+
+                    // Obtener el ID de calificación directamente del dataset
+                    const id_calificacion = parseInt(selectObservacion.dataset.calificacion); // Asegúrate de que este dato esté disponible
+
+                    console.log("Observaciones seleccionadas: ", observacionesSeleccionadas);
+                    console.log("ID de calificación seleccionada: ", id_calificacion);
+
+                    // Llama a la función para guardar las observaciones seleccionadas
+                    await guardarObservacionesSeleccionadas(id_calificacion, observacionesSeleccionadas);
+                });
+            });
+        });
+
 
 
 
