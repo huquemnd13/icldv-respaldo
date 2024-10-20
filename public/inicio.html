@@ -366,8 +366,10 @@
                       });
 
                       // Evento para limitar la selección a 2 opciones
-                      selectObservacion.addEventListener("change", function() {
+                      selectObservacion.addEventListener("change", async function () {
                           const selectedOptions = Array.from(selectObservacion.selectedOptions);
+
+                          // Limitar la selección a 2 opciones
                           if (selectedOptions.length > 2) {
                               // Desmarcar la opción más reciente
                               const lastSelected = selectedOptions[selectedOptions.length - 1];
@@ -375,18 +377,32 @@
 
                               // Mostrar un mensaje al usuario usando el toast
                               mostrarToast("Solo puedes seleccionar hasta 2 opciones.", "error"); // Tipo "error" o el que desees
+                              return; // Salir para evitar guardar observaciones
                           }
-                          selectObservacion.addEventListener("change", async function () {
-                              const selectedOptions = Array.from(selectObservacion.selectedOptions);
-                              const observacionesSeleccionadas = selectedOptions.map(option => option.value);
-                              calificacionIdSeleccionada = parseInt(selectElement.closest("tr").children[0].textContent)
-                              console.log("Observaciones seleccionadas: ", observacionesSeleccionadas);
-                              console.log("", calificacionIdSeleccionada);
 
-                              // Llama a la función para guardar las observaciones seleccionadas
-                              await guardarObservacionesSeleccionadas(calificacion.id_calificacion, observacionesSeleccionadas);
-                          });
+                          // Obtener el ID de calificación directamente del dataset
+                          calificacionIdSeleccionada = parseInt(selectObservacion.dataset.calificacion); // Asegúrate de que este dato esté disponible
+
+                          // Obtener las observaciones seleccionadas
+                          const observacionesSeleccionadas = selectedOptions.map(option => option.value);
+
+                          console.log("Observaciones seleccionadas: ", observacionesSeleccionadas);
+                          console.log("ID de calificación seleccionada: ", calificacionIdSeleccionada);
+
+                          // Llama a la función para guardar las observaciones seleccionadas solo si hay entre 1 y 2
+                          if (observacionesSeleccionadas.length > 0) {
+                              try {
+                                  await guardarObservacionesSeleccionadas(calificacionIdSeleccionada, observacionesSeleccionadas);
+                                  console.log("Observaciones guardadas exitosamente.");
+                                  mostrarToast("Observaciones guardadas exitosamente.", "success"); // Mensaje de éxito
+                              } catch (error) {
+                                  console.error("Error al guardar observaciones:", error);
+                                  mostrarToast("Error al guardar observaciones.", "error"); // Mensaje de error
+                              }
+                          }
                       });
+
+
 
                       // Llamar a manejarTooltip para el select de observaciones
                       manejarTooltip(selectObservacion);
