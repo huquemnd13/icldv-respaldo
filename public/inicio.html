@@ -356,6 +356,16 @@
                               // Mostrar un mensaje al usuario usando el toast
                               mostrarToast("Solo puedes seleccionar hasta 2 opciones.", "error"); // Tipo "error" o el que desees
                           }
+                          selectObservacion.addEventListener("change", async function () {
+                              const selectedOptions = Array.from(selectObservacion.selectedOptions);
+                              const observacionesSeleccionadas = selectedOptions.map(option => option.value);
+                            
+                              console.log("Observaciones seleccionadas: ", observacionesSeleccionadas);
+                              console.log("");
+
+                              // Llama a la función para guardar las observaciones seleccionadas
+                              await guardarObservacionesSeleccionadas(calificacion.id_calificacion, observacionesSeleccionadas);
+                          });
                       });
 
                       // Llamar a manejarTooltip para el select de observaciones
@@ -407,6 +417,37 @@
             });
 
         }
+      
+        async function guardarObservacionesSeleccionadas(id_calificacion, observaciones) {
+            const token = localStorage.getItem("token");
+
+            const observacionData = {
+                id_calificacion,  // ID de la calificación correspondiente
+                observaciones     // Array de observaciones seleccionadas
+            };
+
+            try {
+                const response = await fetch("/guardar-observaciones", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}` // Asegúrate de agregar el token aquí si es necesario
+                    },
+                    body: JSON.stringify(observacionData)
+                });
+
+                const result = await response.json();
+                if (response.ok) {
+                    console.log("Observaciones guardadas:", result);
+                    // Aquí podrías mostrar un mensaje de éxito o hacer algo con la respuesta
+                } else {
+                    console.error("Error al guardar observaciones:", result);
+                }
+            } catch (error) {
+                console.error("Error de red:", error);
+            }
+        }
+
 
 
         /*

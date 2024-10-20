@@ -551,7 +551,7 @@ app.post('/actualizar-calificaciones', verificarToken, async (req, res) => {
 // Ruta para guardar observaciones con validación de token
 app.post('/guardar-observaciones', verificarToken, async (req, res) => {
     const { _id_calificacion, _observaciones, _id_usuario } = req.body; // Obtener id_usuario del cuerpo
-
+    console.log(_observaciones);
     // Validaciones de entrada
     if (!_id_calificacion || !_observaciones || _observaciones.length === 0 || !_id_usuario) {
         return res.status(400).json({ mensaje: 'Datos incompletos' });
