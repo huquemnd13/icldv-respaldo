@@ -361,13 +361,15 @@
 
         // Función para llenar los select con las observaciones ya obtenidas
         function llenarSelectConObservaciones(selectElement, observaciones) {
-            observaciones.forEach((observacion) => {
+            // Llenar el select de observaciones
+            observaciones.forEach((observacion, index) => {
                 const option = document.createElement("option");
                 option.value = observacion.id;
-                option.text = observacion.descripcion; // Solo mostrar la descripción
+                option.text = `${index + 1}. ${observacion.descripcion}`; // Agregar el índice antes de la descripción
                 option.dataset.descripcionLarga = observacion.descripcion_larga; // Usar un atributo personalizado
                 selectElement.appendChild(option);
             });
+
         }
 
 
@@ -398,14 +400,14 @@
                 selectElement.innerHTML = ''; // Limpiar el select
 
                 // Llenar el select de observaciones
-                observaciones.forEach((observacion) => {
+                observaciones.forEach((observacion, index) => {
                     const option = document.createElement("option");
                     option.value = observacion.id;
-                    option.text = observacion.descripcion; // Solo la descripción
-                    option.multiple = true;
+                    option.text = `${index + 1}. ${observacion.descripcion}`; // Agregar el número de índice a la descripción
                     option.title = observacion.descripcion_larga; // Agregar la descripción larga como tooltip
                     selectElement.appendChild(option);
                 });
+
             } catch (error) {
                 console.error("Error al cargar observaciones:", error);
             }
@@ -588,7 +590,7 @@
                   observaciones.forEach((observacion, index) => {
                       const option = document.createElement("option");
                       option.value = observacion.id;
-                      option.text = '';//`${index + 1}. ${observacion.descripcion}`; // Agregar el número de índice a la descripción
+                      option.text = `${index + 1}. ${observacion.descripcion}`; // Agregar el número de índice a la descripción
                       selectElement.appendChild(option);
                   });
 
