@@ -47,25 +47,39 @@ app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html")); // Servir el HTML de login
 });
 
-// Middleware para validar el token JWT
-const validarToken = (req, res, next) => {
-  const token = req.headers["authorization"]?.split(" ")[1]; // Obtener el token del encabezado
-
-  if (!token) {
-    return res.status(401).json({ message: "No autorizado, token no proporcionado" });
-  }
-
-  // Verificar el token
-  jwt.verify(token, jwtSecret, (err, decoded) => {
-    if (err) {
-      return res.status(401).json({ message: "Token no válido", error: err.message });
+// Middleware para verificar el token
+function verificarToken(req, res, next) {
+    if (!req.headers.authorization) {
+        return res.status(401).json({
+            success: false,
+            message: "No se proporcionó el token de autorización.",
+        });
     }
 
-    // Si el token es válido, se puede acceder a los datos decodificados
-    req.user = decoded; // Guarda la información del usuario en el objeto de solicitud
-    next(); // Llama al siguiente middleware o ruta
-  });
-};
+    const token = req.headers.authorization.split(" ")[1];
+    
+    if (!token) {
+        return res.status(401).json({
+            success: false,
+            message: "Token no válido o ausente.",
+        });
+    }
+
+    try {
+        // Verificar el token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        // Guardar los datos del usuario en req.user para usarlos después si es necesario
+        req.user = decoded;
+        
+        next(); // Continuar con la ejecución de la ruta
+    } catch (error) {
+        return res.status(403).json({
+            success: false,
+            message: "Token inválido o expirado.",
+        });
+    }
+}
 
 app.post("/login", async (req, res) => {
   try {
@@ -563,6 +577,33 @@ app.post('/actualizar-calificaciones', async (req, res) => {
 });
 
 
+// Ruta para guardar observaciones con validación de token
+app.post('/guardar-observaciones', verificarToken, async (req, res) => {
+    const { idCalificacion, observaciones } = req.body;
+
+    // Validación de los datos
+    if (!idCalificacion || !observaciones || observaciones.length === 0) {
+        return res.status(400).send('Datos inválidos');
+    }
+
+    try {
+        // Eliminar todas las relaciones antiguas para esta calificación
+        await db.query('DELETE FROM public."CalificacionObservacion" WHERE id_calificacion = $1', [idCalificacion]);
+
+        // Insertar las nuevas observaciones para la calificación
+        for (const observacionId of observaciones) {
+            await db.query(
+                'INSERT INTO public."CalificacionObservacion" (id_calificacion, id_observacion) VALUES ($1, $2)',
+                [idCalificacion, observacionId]
+            );
+        }
+
+        res.status(200).send('Observaciones guardadas');
+    } catch (error) {
+        console.error('Error al guardar observaciones:', error);
+        res.status(500).send('Error en el servidor');
+    }
+});
 
 
 
