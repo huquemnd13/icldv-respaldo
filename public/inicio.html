@@ -585,10 +585,10 @@
                   selectElement.innerHTML = '';
 
                   // Agregar opciones al select
-                  observaciones.forEach((observacion) => {
+                  observaciones.forEach((observacion, index) => {
                       const option = document.createElement("option");
                       option.value = observacion.id;
-                      option.text = observacion.descripcion; // Solo la descripción
+                      option.text = '';//`${index + 1}. ${observacion.descripcion}`; // Agregar el número de índice a la descripción
                       selectElement.appendChild(option);
                   });
 
