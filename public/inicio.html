@@ -35,7 +35,6 @@
             // Añadir event listener para cargar alumnos al hacer clic en el botón
             document
               .getElementById("cargar-alumnos-button")
-            
               .addEventListener("click", cargarAlumnos);
 
             // Hacer petición al servidor para obtener el ciclo escolar activo
@@ -126,8 +125,8 @@
                           .getElementById("materias")
                           .addEventListener("change", (event) => {
                             const selectMateria = event.target; // El elemento select que disparó el evento
-                            const materiaSeleccionadaId = selectMateria.value; // Guarda el ID de la materia seleccionada
-                            const textoMateriaSeleccionada = selectMateria.options[selectMateria.selectedIndex].text; // Obtiene el texto de la opción seleccionada
+                            materiaSeleccionadaId = selectMateria.value; // Guarda el ID de la materia seleccionada
+                            textoMateriaSeleccionada = selectMateria.options[selectMateria.selectedIndex].text; // Obtiene el texto de la opción seleccionada
 
                             console.log("Materia seleccionada ID:", materiaSeleccionadaId); // Verificar el ID en consola
                             console.log("Materia seleccionada texto:", textoMateriaSeleccionada); // Verificar el texto en consola
@@ -277,7 +276,7 @@
                         row.appendChild(cellAlumnoId);
 
                         const cellMateria = document.createElement("td");
-                        console.log('aqui');
+                        
                         cellMateria.textContent = textoMateriaSeleccionada;
                         row.appendChild(cellMateria);
 
