@@ -444,27 +444,28 @@
       }
 
       function obtenerObservaciones(idMateria, selectElement) {
-        fetch(`/obtener-observaciones-materia?id_materia=${idMateria}`)
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(
-                `Error al obtener observaciones: ${response.status}`
+          console.log("ID de Materia:", idMateria); // Verifica el ID de materia
+          fetch(`/obtener-observaciones-materia?id_materia=${idMateria}`)
+              .then((response) => {
+                  if (!response.ok) {
+                      throw new Error(`Error al obtener observaciones: ${response.status}`);
+                  }
+                  return response.json();
+              })
+              .then((observaciones) => {
+                  console.log("Observaciones recibidas:", observaciones); // Verifica las observaciones
+                  observaciones.forEach((observacion) => {
+                      const option = document.createElement("option");
+                      option.value = observacion.id;
+                      option.text = `${observacion.descripcion} - ${observacion.descripcion_larga}`;
+                      selectElement.appendChild(option);
+                  });
+              })
+              .catch((error) =>
+                  console.error("Error al cargar observaciones:", error)
               );
-            }
-            return response.json();
-          })
-          .then((observaciones) => {
-            observaciones.forEach((observacion) => {
-              const option = document.createElement("option");
-              option.value = observacion.id;
-              option.text = `${observacion.descripcion} - ${observacion.descripcion_larga}`;
-              selectElement.appendChild(option);
-            });
-          })
-          .catch((error) =>
-            console.error("Error al cargar observaciones:", error)
-          );
       }
+
 
       // Función para manejar el cierre de sesión
       function logout() {

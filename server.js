@@ -367,50 +367,34 @@ app.get("/obtener-materias-profesor-grado", async (req, res) => {
 });
 
 // RUTA PARA OBTENER LAS OBSERVACIONES DISPONIBLES PARA UNA MATERIA
-app.get("/obtener-materias-profesor-grado", async (req, res) => {
-  const authHeader = req.headers.authorization;
-
-  if (!authHeader) {
-    return res.status(401).json({
-      success: false,
-      message: "Falta el token de autorización en el header.",
-    });
-  }
-
-  const token = authHeader.split(" ")[1]; // Obtener el token del header
-
+app.get("/obtener-observaciones-materia", async (req, res) => {
   try {
-    const decodedToken = jwt.verify(token, jwtSecret); // Decodificar el token
-    const profesorId = decodedToken.id_profesor; // Obtener el ID del profesor
-    const gradoId = req.query.grado_id; // Obtener el ID del grado desde los parámetros de la consulta
+    const idMateria = req.query.id_materia; // Obtener el ID de la materia desde los parámetros de la consulta
 
-    console.log("Profesor ID:", profesorId);
-    console.log("Grado ID:", gradoId);
-
-    if (!profesorId || !gradoId) {
+    // Verificar que el ID de la materia esté presente
+    if (!idMateria) {
       return res.status(400).json({
         success: false,
-        message: "Faltan parámetros requeridos: profesor_id o grado_id.",
+        message: "Falta el parámetro requerido: id_materia.",
       });
     }
 
-    // Llamar a la función en Supabase
-    const { data: materias, error } = await supabase.rpc(
-      "obtener_materias_por_profesor_y_grado",
+    // Llamar a la función en Supabase para obtener las observaciones
+    const { data: observaciones, error } = await supabase.rpc(
+      "obtener_observaciones_por_materia",
       {
-        _id_profesor: profesorId,
-        _id_grado_nivel_escolar: gradoId, // Pasar el ID del grado desde el dropdown
+        _id_materia: idMateria, // Pasar el ID de la materia
       }
     );
 
     if (error) {
-      console.error("Error al obtener materias:", error);
+      console.error("Error al obtener observaciones:", error);
       return res
         .status(500)
-        .json({ success: false, message: "Error al obtener materias." });
+        .json({ success: false, message: "Error al obtener observaciones." });
     }
 
-    return res.json(materias);
+    return res.json(observaciones); // Devolver las observaciones
   } catch (err) {
     console.error("Error en la consulta:", err);
     return res
@@ -418,8 +402,6 @@ app.get("/obtener-materias-profesor-grado", async (req, res) => {
       .json({ success: false, message: "Error en la consulta." });
   }
 });
-
-
 
 
 // Endpoint para obtener detalles de calificaciones
