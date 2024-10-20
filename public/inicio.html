@@ -280,7 +280,20 @@
                       cellP3.dataset.periodo = 3; // Establecer data-periodo para el periodo 3
                       cellP3.appendChild(crearDropdown(calificacion.periodo_3, periodos[2], 3)); // Pasar periodo 3
                       row.appendChild(cellP3);
+                      
+                      // Nueva columna para observaciones
+                      const cellObservacion = document.createElement("td");
+                      const selectObservacion = document.createElement("select");
+                      selectObservacion.multiple = true; // Hacer el select múltiple
+                      selectObservacion.size = 2; // Limitar a seleccionar dos observaciones
+                      selectObservacion.dataset.alumno = calificacion.id_alumno; // Almacenar el id del alumno como referencia
+                      selectObservacion.dataset.calificacion = calificacion.id_calificacion; // Almacenar el id de calificación
 
+                      // Llamada a la función para obtener las observaciones disponibles para la materia seleccionada
+                      obtenerObservaciones(calificacion.id_materia, selectObservacion);
+
+                      cellObservacion.appendChild(selectObservacion);
+                      row.appendChild(cellObservacion);
 
                       // Agregar fila al cuerpo de la tabla
                       tableBody.appendChild(row);
@@ -394,30 +407,36 @@
               mostrarToast('Error al actualizar la calificación.', 'error'); // Muestra un toast de error
           });
       }
+      
+      const materiasSelect = document.getElementById('materias');
+
+      if (!materiasSelect) {
+          console.error("El elemento select 'materias' no existe.");
+          return;
+      }
+
+      const idMateria = materiasSelect.value;
+
+      if (!idMateria) {
+          console.error("No se ha seleccionado ninguna materia.");
+          return;
+      }
 
 
-      function cargarObservaciones(idMateria, selectElement) {
-    // Supón que obtienes las observaciones desde tu base de datos
-    fetch(`/obtener-observaciones/${idMateria}`)
-        .then(response => response.json())
-        .then(observaciones => {
-            observaciones.forEach(observacion => {
-                const option = document.createElement('option');
-                option.value = observacion.id;
-                option.textContent = `${observacion.descripcion} - ${observacion.descripcion_larga}`;
-                selectElement.appendChild(option);
-            });
-        });
+      function obtenerObservaciones(idMateria, selectElement) {
+          fetch(`/obtener-observaciones-materia?id_materia=${idMateria}`)
+              .then(response => response.json())
+              .then(observaciones => {
+                  observaciones.forEach(observacion => {
+                      const option = document.createElement("option");
+                      option.value = observacion.id;
+                      option.text = `${observacion.descripcion} - ${observacion.descripcion_larga}`;
+                      selectElement.appendChild(option);
+                  });
+              })
+              .catch(error => console.error("Error al cargar observaciones:", error));
+      }
 
-    // Limitar la selección a 2 opciones
-    selectElement.addEventListener('change', function() {
-        if (selectElement.selectedOptions.length > 2) {
-            alert('Solo puedes seleccionar un máximo de dos observaciones.');
-            // Desmarcar el último seleccionado si hay más de dos seleccionados
-            selectElement.options[selectElement.selectedOptions.length - 1].selected = false;
-        }
-    });
-}
 
 
 
@@ -502,6 +521,7 @@
                     <th>Periodo 1</th>
                     <th>Periodo 2</th>
                     <th>Periodo 3</th>
+                    <th>Observaciones</th>
                 </tr>
             </thead>
             <tbody>
