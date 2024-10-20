@@ -617,9 +617,6 @@ app.post('/guardar-observaciones', verificarToken, async (req, res) => {
 });
 
 
-
-
-
 // Redirige a login.html cuando el usuario visita la raíz del sitio (/)
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "/public/login.html"));
