@@ -366,6 +366,47 @@ app.get("/obtener-materias-profesor-grado", async (req, res) => {
   }
 });
 
+// RUTA PARA OBTENER LAS OBSERVACIONES DISPONIBLES PARA UNA MATERIA
+app.get("/obtener-observaciones-materia", async (req, res) => {
+  const token = req.headers.authorization.split(" ")[1]; // Obtener el token del header
+
+  try {
+    const decodedToken = jwt.verify(token, jwtSecret); // Decodificar el token
+    const idMateria = req.query.id_materia; // Obtener el ID de la materia desde los parámetros de la consulta
+
+    // Verificar que el ID de la materia esté presente
+    if (!idMateria) {
+      return res.status(400).json({
+        success: false,
+        message: "Falta el parámetro requerido: id_materia.",
+      });
+    }
+
+    // Llamar a la función en Supabase para obtener las observaciones
+    const { data: observaciones, error } = await supabase.rpc(
+      "obtener_observaciones_por_materia",
+      {
+        _id_materia: idMateria, // Pasar el ID de la materia
+      }
+    );
+
+    if (error) {
+      console.error("Error al obtener observaciones:", error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Error al obtener observaciones." });
+    }
+
+    return res.json(observaciones); // Devolver las observaciones
+  } catch (err) {
+    console.error("Error en la consulta:", err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Error en la consulta." });
+  }
+});
+
+
 // Endpoint para obtener detalles de calificaciones
 app.get("/calificaciones", async (req, res) => {
   const { id_ciclo_escolar, id_grado_nivel_escolar, id_profesor, id_materia } =

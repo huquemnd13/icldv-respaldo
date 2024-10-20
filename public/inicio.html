@@ -396,6 +396,28 @@
       }
 
 
+      function cargarObservaciones(idMateria, selectElement) {
+    // Supón que obtienes las observaciones desde tu base de datos
+    fetch(`/obtener-observaciones/${idMateria}`)
+        .then(response => response.json())
+        .then(observaciones => {
+            observaciones.forEach(observacion => {
+                const option = document.createElement('option');
+                option.value = observacion.id;
+                option.textContent = `${observacion.descripcion} - ${observacion.descripcion_larga}`;
+                selectElement.appendChild(option);
+            });
+        });
+
+    // Limitar la selección a 2 opciones
+    selectElement.addEventListener('change', function() {
+        if (selectElement.selectedOptions.length > 2) {
+            alert('Solo puedes seleccionar un máximo de dos observaciones.');
+            // Desmarcar el último seleccionado si hay más de dos seleccionados
+            selectElement.options[selectElement.selectedOptions.length - 1].selected = false;
+        }
+    });
+}
 
 
 
