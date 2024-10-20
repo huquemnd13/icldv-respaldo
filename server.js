@@ -381,31 +381,18 @@ app.get("/obtener-materias-profesor-grado", async (req, res) => {
 });
 
 // RUTA PARA OBTENER LAS OBSERVACIONES DISPONIBLES PARA UNA MATERIA
-app.get("/obtener-observaciones-materia", async (req, res) => {
-    // Verificar que el header de autorización está presente
-    if (!req.headers.authorization) {
-        return res.status(401).json({
+app.get("/obtener-observaciones-materia", verificarToken, async (req, res) => {
+    const idMateria = req.query.id_materia; // Obtener el ID de la materia desde los parámetros de la consulta
+
+    // Verificar que el ID de la materia esté presente
+    if (!idMateria) {
+        return res.status(400).json({
             success: false,
-            message: "No se proporcionó el token de autorización.",
+            message: "Falta el parámetro requerido: id_materia.",
         });
     }
 
-    // Obtener el token del header
-    const token = req.headers.authorization.split(" ")[1]; // Asegúrate de que sea "Bearer TOKEN"
-
     try {
-        // Decodificar el token
-        const decodedToken = jwt.verify(token, jwtSecret);
-        const idMateria = req.query.id_materia; // Obtener el ID de la materia desde los parámetros de la consulta
-
-        // Verificar que el ID de la materia esté presente
-        if (!idMateria) {
-            return res.status(400).json({
-                success: false,
-                message: "Falta el parámetro requerido: id_materia.",
-            });
-        }
-
         // Llamar a la función en Supabase para obtener las observaciones
         const { data: observaciones, error } = await supabase
             .from("Observacion") // Nombre de tu tabla
@@ -422,9 +409,6 @@ app.get("/obtener-observaciones-materia", async (req, res) => {
 
         return res.json(observaciones); // Devolver las observaciones
     } catch (err) {
-        if (err.name === 'JsonWebTokenError') {
-            return res.status(401).json({ success: false, message: "Token inválido." });
-        }
         console.error("Error en la consulta:", err);
         return res
             .status(500)
@@ -435,18 +419,13 @@ app.get("/obtener-observaciones-materia", async (req, res) => {
 
 
 
+
 // Endpoint para obtener detalles de calificaciones
-app.get("/calificaciones", async (req, res) => {
-  const { id_ciclo_escolar, id_grado_nivel_escolar, id_profesor, id_materia } =
-    req.query;
+app.get("/calificaciones", verificarToken, async (req, res) => {
+  const { id_ciclo_escolar, id_grado_nivel_escolar, id_profesor, id_materia } = req.query;
 
   // Valida que se hayan pasado todos los parámetros
-  if (
-    !id_ciclo_escolar ||
-    !id_grado_nivel_escolar ||
-    !id_profesor ||
-    !id_materia
-  ) {
+  if (!id_ciclo_escolar || !id_grado_nivel_escolar || !id_profesor || !id_materia) {
     return res.status(400).json({ error: "Faltan parámetros requeridos." });
   }
 
@@ -468,9 +447,7 @@ app.get("/calificaciones", async (req, res) => {
 
     if (error) {
       console.error("Error al obtener las calificaciones:", error);
-      return res
-        .status(500)
-        .json({ error: "Error al obtener las calificaciones." });
+      return res.status(500).json({ error: "Error al obtener las calificaciones." });
     }
 
     console.log("Datos obtenidos:", data);
@@ -483,58 +460,50 @@ app.get("/calificaciones", async (req, res) => {
   }
 });
 
+
 // Endpoint para obtener los periodos de un ciclo escolar por su ID
-app.get("/periodos", async (req, res) => {
+app.get("/periodos", verificarToken, async (req, res) => {
   const { id_ciclo_escolar } = req.query; // Obtener el parámetro id_ciclo_escolar de la query
 
   if (!id_ciclo_escolar) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "Falta el parámetro id_ciclo_escolar.",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "Falta el parámetro id_ciclo_escolar.",
+    });
   }
 
   try {
     // Realizar la consulta a la tabla PeriodoCicloEscolar
     const { data: periodos, error } = await supabase
-        .from("PeriodoCicloEscolar")
-        .select("id, fecha_inicio, fecha_fin, periodo")
-        .eq("id_ciclo_escolar", id_ciclo_escolar)
-        .order("periodo", { ascending: true }); // Ordenar por la columna 'periodo' en orden ascendente
-
+      .from("PeriodoCicloEscolar")
+      .select("id, fecha_inicio, fecha_fin, periodo")
+      .eq("id_ciclo_escolar", id_ciclo_escolar)
+      .order("periodo", { ascending: true }); // Ordenar por la columna 'periodo' en orden ascendente
 
     if (error) {
       console.error("Error al obtener los periodos:", error);
-      return res
-        .status(500)
-        .json({
-          success: false,
-          message: "Error al obtener los periodos del ciclo escolar.",
-        });
+      return res.status(500).json({
+        success: false,
+        message: "Error al obtener los periodos del ciclo escolar.",
+      });
     }
 
     // Verificar si se encontraron periodos
     if (periodos.length === 0) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message:
-            "No se encontraron periodos para el ciclo escolar especificado.",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "No se encontraron periodos para el ciclo escolar especificado.",
+      });
     }
 
     // Retornar los periodos en la respuesta
     res.json(periodos);
   } catch (err) {
     console.error("Error interno del servidor:", err);
-    return res
-      .status(500)
-      .json({ success: false, message: "Error interno del servidor." });
+    return res.status(500).json({ success: false, message: "Error interno del servidor." });
   }
 });
+
 
 app.post('/actualizar-calificaciones', verificarToken, async (req, res) => {
     const { _id_calificacion, _campo, _nuevo_valor, _id_usuario } = req.body; // Obtener id_usuario del cuerpo

@@ -219,123 +219,159 @@
         let observacionesGlobales = []; // Variable global para almacenar observaciones
 
         async function cargarAlumnos() {
-            const token = localStorage.getItem("token");
-            if (token) {
-                try {
-                    const gradoId = document.getElementById("grados").value; // Obtener el ID del grado seleccionado
-                    const cicloId = cicloActivoGlobal.id; // Obtener el ID del ciclo seleccionado
-                    const profesorId = decodedToken.id_profesor; // Obtener el ID del profesor desde el token
+          const token = localStorage.getItem("token"); // Obtener el token del almacenamiento local
+          if (token) {
+              try {
+                  const gradoId = document.getElementById("grados").value; // Obtener el ID del grado seleccionado
+                  const cicloId = cicloActivoGlobal.id; // Obtener el ID del ciclo seleccionado
+                  const profesorId = decodedToken.id_profesor; // Obtener el ID del profesor desde el token
 
-                    // Verificar que ambos valores están seleccionados
-                    if (!gradoId || !materiaSeleccionadaId || !profesorId) {
-                        console.error("Por favor selecciona un grado y un ciclo escolar.");
-                        return;
-                    }
+                  // Verificar que ambos valores están seleccionados
+                  if (!gradoId || !materiaSeleccionadaId || !profesorId) {
+                      console.error("Por favor selecciona un grado y un ciclo escolar.");
+                      return;
+                  }
 
-                    // Obtener detalles de las calificaciones desde el nuevo endpoint
-                    const response = await fetch(
-                        `/calificaciones?id_ciclo_escolar=${cicloId}&id_grado_nivel_escolar=${gradoId}&id_profesor=${profesorId}&id_materia=${materiaSeleccionadaId}`
-                    );
-                    const calificaciones = await response.json();
+                  // Obtener detalles de las calificaciones desde el nuevo endpoint
+                  const response = await fetch(
+                      `/calificaciones?id_ciclo_escolar=${cicloId}&id_grado_nivel_escolar=${gradoId}&id_profesor=${profesorId}&id_materia=${materiaSeleccionadaId}`,
+                      {
+                          method: 'GET',
+                          headers: {
+                              'Content-Type': 'application/json',
+                              'Authorization': `Bearer ${token}` // Incluir el token aquí
+                          }
+                      }
+                  );
 
-                    // Obtener los periodos
-                    const responsePeriodos = await fetch(`/periodos?id_ciclo_escolar=${cicloId}`);
-                    const periodos = await responsePeriodos.json();
+                  // Manejar respuesta de calificaciones
+                  if (!response.ok) {
+                      if (response.status === 401) {
+                          alert('No estás autorizado. Por favor, inicia sesión nuevamente.');
+                          return;
+                      }
+                      throw new Error('Error al obtener las calificaciones.');
+                  }
 
-                    // Obtener las observaciones solo una vez y almacenarlas en la variable global
-                    if (observacionesGlobales.length === 0) {
-                        console.log(materiaSeleccionadaId);
-                        observacionesGlobales = await cargarObservaciones(materiaSeleccionadaId); // Llamada para cargar las observaciones
-                    }
+                  const calificaciones = await response.json();
 
-                    // Buscar el periodo activo
-                    const periodoActivo = periodos.find((periodo) => esPeriodoActivo(periodo));
-                    if (periodoActivo) {
-                        mostrarToast(
-                            `Periodo de captura activo: Desde ${new Date(periodoActivo.fecha_inicio).toLocaleDateString()} hasta ${new Date(periodoActivo.fecha_fin).toLocaleDateString()}`,
-                            "success"
-                        );
-                    } else {
-                        mostrarToast("No hay ningún periodo de captura activo en este momento.", "warning");
-                    }
+                  // Obtener los periodos
+                  const responsePeriodos = await fetch(`/periodos?id_ciclo_escolar=${cicloId}`, {
+                      method: 'GET',
+                      headers: {
+                          'Content-Type': 'application/json',
+                          'Authorization': `Bearer ${token}` // Incluir el token aquí
+                      }
+                  });
 
-                    const tableBody = document.getElementById("alumnos-table").querySelector("tbody");
-                    tableBody.innerHTML = ""; // Limpiar el cuerpo de la tabla
+                  // Manejar respuesta de periodos
+                  if (!responsePeriodos.ok) {
+                      if (responsePeriodos.status === 401) {
+                          alert('No estás autorizado. Por favor, inicia sesión nuevamente.');
+                          return;
+                      }
+                      throw new Error('Error al obtener los periodos.');
+                  }
 
-                    // Para cada calificación recibida
-                    for (const calificacion of calificaciones) {
-                        const row = document.createElement("tr");
+                  const periodos = await responsePeriodos.json();
 
-                        // Celdas de calificación, alumno y nombre
-                        const cellCalificacionId = document.createElement("td");
-                        cellCalificacionId.textContent = calificacion.id_calificacion;
-                        row.appendChild(cellCalificacionId);
+                  // Obtener las observaciones solo una vez y almacenarlas en la variable global
+                  if (observacionesGlobales.length === 0) {
+                      console.log(materiaSeleccionadaId);
+                      observacionesGlobales = await cargarObservaciones(materiaSeleccionadaId); // Llamada para cargar las observaciones
+                  }
 
-                        const cellAlumnoId = document.createElement("td");
-                        cellAlumnoId.textContent = calificacion.id_alumno;
-                        row.appendChild(cellAlumnoId);
+                  // Buscar el periodo activo
+                  const periodoActivo = periodos.find((periodo) => esPeriodoActivo(periodo));
+                  if (periodoActivo) {
+                      mostrarToast(
+                          `Periodo de captura activo: Desde ${new Date(periodoActivo.fecha_inicio).toLocaleDateString()} hasta ${new Date(periodoActivo.fecha_fin).toLocaleDateString()}`,
+                          "success"
+                      );
+                  } else {
+                      mostrarToast("No hay ningún periodo de captura activo en este momento.", "warning");
+                  }
 
-                        const cellMateria = document.createElement("td");
-                        cellMateria.textContent = textoMateriaSeleccionada;
-                        row.appendChild(cellMateria);
+                  const tableBody = document.getElementById("alumnos-table").querySelector("tbody");
+                  tableBody.innerHTML = ""; // Limpiar el cuerpo de la tabla
 
-                        const cellNombreCompleto = document.createElement("td");
-                        cellNombreCompleto.textContent = calificacion.nombre_completo;
-                        row.appendChild(cellNombreCompleto);
+                  // Para cada calificación recibida
+                  for (const calificacion of calificaciones) {
+                      const row = document.createElement("tr");
 
-                        // Crear dropdowns de calificación para cada periodo
-                        const cellP1 = document.createElement("td");
-                        cellP1.dataset.periodo = 1; // Establecer data-periodo para el periodo 1
-                        cellP1.appendChild(crearDropdown(calificacion.periodo_1, periodos[0], 1)); // Pasar periodo 1
-                        row.appendChild(cellP1);
+                      // Celdas de calificación, alumno y nombre
+                      const cellCalificacionId = document.createElement("td");
+                      cellCalificacionId.textContent = calificacion.id_calificacion;
+                      row.appendChild(cellCalificacionId);
 
-                        const cellP2 = document.createElement("td");
-                        cellP2.dataset.periodo = 2; // Establecer data-periodo para el periodo 2
-                        cellP2.appendChild(crearDropdown(calificacion.periodo_2, periodos[1], 2)); // Pasar periodo 2
-                        row.appendChild(cellP2);
+                      const cellAlumnoId = document.createElement("td");
+                      cellAlumnoId.textContent = calificacion.id_alumno;
+                      row.appendChild(cellAlumnoId);
 
-                        const cellP3 = document.createElement("td");
-                        cellP3.dataset.periodo = 3; // Establecer data-periodo para el periodo 3
-                        cellP3.appendChild(crearDropdown(calificacion.periodo_3, periodos[2], 3)); // Pasar periodo 3
-                        row.appendChild(cellP3);
+                      const cellMateria = document.createElement("td");
+                      cellMateria.textContent = textoMateriaSeleccionada;
+                      row.appendChild(cellMateria);
 
-                        // Nueva columna para observaciones
-                        const cellObservacion = document.createElement("td");
-                        const selectObservacion = document.createElement("select");
-                        selectObservacion.multiple = true; // Hacer el select múltiple
-                        selectObservacion.size = 6; // Limitar a 6 opciones visibles
-                        selectObservacion.dataset.alumno = calificacion.id_alumno; // Almacenar el id del alumno como referencia
-                        selectObservacion.dataset.calificacion = calificacion.id_calificacion; // Almacenar el id de calificación
+                      const cellNombreCompleto = document.createElement("td");
+                      cellNombreCompleto.textContent = calificacion.nombre_completo;
+                      row.appendChild(cellNombreCompleto);
 
-                        // Llenar el select con las observaciones obtenidas
-                        llenarSelectConObservaciones(selectObservacion, observacionesGlobales);
-                        cellObservacion.appendChild(selectObservacion);
-                        row.appendChild(cellObservacion); // Agregar la celda de observaciones a la fila
-                        
-                        // Evento para limitar la selección a 2 opciones
-                        selectObservacion.addEventListener("change", function() {
-                            const selectedOptions = Array.from(selectObservacion.selectedOptions);
-                            if (selectedOptions.length > 2) {
-                                // Desmarcar la opción más reciente
-                                const lastSelected = selectedOptions[selectedOptions.length - 1];
-                                lastSelected.selected = false;
+                      // Crear dropdowns de calificación para cada periodo
+                      const cellP1 = document.createElement("td");
+                      cellP1.dataset.periodo = 1; // Establecer data-periodo para el periodo 1
+                      cellP1.appendChild(crearDropdown(calificacion.periodo_1, periodos[0], 1)); // Pasar periodo 1
+                      row.appendChild(cellP1);
 
-                                // Mostrar un mensaje al usuario usando el toast
-                                mostrarToast("Solo puedes seleccionar hasta 2 opciones.", "error"); // Tipo "error" o el que desees
-                            }
-                        });
-                        
-                        // Llamar a manejarTooltip para el select de observaciones
-                        manejarTooltip(selectObservacion);
+                      const cellP2 = document.createElement("td");
+                      cellP2.dataset.periodo = 2; // Establecer data-periodo para el periodo 2
+                      cellP2.appendChild(crearDropdown(calificacion.periodo_2, periodos[1], 2)); // Pasar periodo 2
+                      row.appendChild(cellP2);
 
-                        // Agregar fila al cuerpo de la tabla
-                        tableBody.appendChild(row);
-                    }
-                } catch (error) {
-                    console.error("Error al cargar los alumnos:", error);
-                }
-            }
-        }
+                      const cellP3 = document.createElement("td");
+                      cellP3.dataset.periodo = 3; // Establecer data-periodo para el periodo 3
+                      cellP3.appendChild(crearDropdown(calificacion.periodo_3, periodos[2], 3)); // Pasar periodo 3
+                      row.appendChild(cellP3);
+
+                      // Nueva columna para observaciones
+                      const cellObservacion = document.createElement("td");
+                      const selectObservacion = document.createElement("select");
+                      selectObservacion.multiple = true; // Hacer el select múltiple
+                      selectObservacion.size = 6; // Limitar a 6 opciones visibles
+                      selectObservacion.dataset.alumno = calificacion.id_alumno; // Almacenar el id del alumno como referencia
+                      selectObservacion.dataset.calificacion = calificacion.id_calificacion; // Almacenar el id de calificación
+
+                      // Llenar el select con las observaciones obtenidas
+                      llenarSelectConObservaciones(selectObservacion, observacionesGlobales);
+                      cellObservacion.appendChild(selectObservacion);
+                      row.appendChild(cellObservacion); // Agregar la celda de observaciones a la fila
+
+                      // Evento para limitar la selección a 2 opciones
+                      selectObservacion.addEventListener("change", function() {
+                          const selectedOptions = Array.from(selectObservacion.selectedOptions);
+                          if (selectedOptions.length > 2) {
+                              // Desmarcar la opción más reciente
+                              const lastSelected = selectedOptions[selectedOptions.length - 1];
+                              lastSelected.selected = false;
+
+                              // Mostrar un mensaje al usuario usando el toast
+                              mostrarToast("Solo puedes seleccionar hasta 2 opciones.", "error"); // Tipo "error" o el que desees
+                          }
+                      });
+
+                      // Llamar a manejarTooltip para el select de observaciones
+                      manejarTooltip(selectObservacion);
+
+                      // Agregar fila al cuerpo de la tabla
+                      tableBody.appendChild(row);
+                  }
+              } catch (error) {
+                  console.error("Error al cargar los alumnos:", error);
+              }
+          } else {
+              console.error("No hay token disponible. Por favor inicia sesión.");
+          }
+      }
+
 
       
         // Función para obtener las observaciones desde el servidor una sola vez
