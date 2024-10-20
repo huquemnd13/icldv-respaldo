@@ -120,6 +120,17 @@
                         option.textContent = materia.materia_nombre; // Nombre de la materia
                         selectMaterias.appendChild(option); // Añadir la opción al select
                       });
+                      // Listener para capturar la materia seleccionada
+                      document
+                          .getElementById("materias")
+                          .addEventListener("change", (event) => {
+                            const selectMateria = event.target; // El elemento select que disparó el evento
+                            const materiaSeleccionadaId = selectMateria.value; // Guarda el ID de la materia seleccionada
+                            const textoMateriaSeleccionada = selectMateria.options[selectMateria.selectedIndex].text; // Obtiene el texto de la opción seleccionada
+
+                            console.log("Materia seleccionada ID:", materiaSeleccionadaId); // Verificar el ID en consola
+                            console.log("Materia seleccionada texto:", textoMateriaSeleccionada); // Verificar el texto en consola
+                          });
                     } else {
                       console.error(
                         "Error al obtener materias:",
@@ -144,18 +155,6 @@
           window.location.href = "/login.html"; // Redirige a la página de login
         }
       };
-
-      // Listener para capturar la materia seleccionada
-                      document
-                          .getElementById("materias")
-                          .addEventListener("change", (event) => {
-                            const selectMateria = event.target; // El elemento select que disparó el evento
-                            const materiaSeleccionadaId = selectMateria.value; // Guarda el ID de la materia seleccionada
-                            const textoMateriaSeleccionada = selectMateria.options[selectMateria.selectedIndex].text; // Obtiene el texto de la opción seleccionada
-
-                            console.log("Materia seleccionada ID:", materiaSeleccionadaId); // Verificar el ID en consola
-                            console.log("Materia seleccionada texto:", textoMateriaSeleccionada); // Verificar el texto en consola
-                          });
       
       // Función para crear un dropdown con las calificaciones
       function createCalificacionDropdown(
@@ -228,7 +227,7 @@
                     const profesorId = decodedToken.id_profesor; // Obtener el ID del profesor desde el token
 
                     // Verificar que ambos valores están seleccionados
-                    if (!gradoId || !profesorId) {
+                    if (!gradoId || !materiaSeleccionadaId || !profesorId) {
                         console.error("Por favor selecciona un grado y un ciclo escolar.");
                         return;
                     }
