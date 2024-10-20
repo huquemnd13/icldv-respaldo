@@ -15,6 +15,7 @@
       let decodedToken; // Declara la variable en el ámbito global
       let cicloActivoGlobal; // Declara una variable global para el ciclo activo
       let materiaSeleccionadaId; // Variable global para el ID de la materia seleccionada
+      let textoMateriaSeleccionada; //V
 
       // Decodificar el token y mostrar el nombre del profesor
       window.onload = async function () {
@@ -122,14 +123,16 @@
 
                       // Listener para capturar la materia seleccionada
                       document
-                        .getElementById("materias")
-                        .addEventListener("change", (event) => {
-                          materiaSeleccionadaId = event.target.value; // Guarda el ID de la materia seleccionada
-                          console.log(
-                            "Materia seleccionada ID:",
-                            materiaSeleccionadaId
-                          ); // Para verificar el ID en consola
-                        });
+                          .getElementById("materias")
+                          .addEventListener("change", (event) => {
+                            const selectMateria = event.target; // El elemento select que disparó el evento
+                            const materiaSeleccionadaId = selectMateria.value; // Guarda el ID de la materia seleccionada
+                            const textoMateriaSeleccionada = selectMateria.options[selectMateria.selectedIndex].text; // Obtiene el texto de la opción seleccionada
+
+                            console.log("Materia seleccionada ID:", materiaSeleccionadaId); // Verificar el ID en consola
+                            console.log("Materia seleccionada texto:", textoMateriaSeleccionada); // Verificar el texto en consola
+                          });
+
                     } else {
                       console.error(
                         "Error al obtener materias:",
@@ -243,10 +246,7 @@
 
                     // Obtener las observaciones solo una vez y almacenarlas en la variable global
                     if (observacionesGlobales.length === 0) {
-                        const selectMateria = document.getElementById("materias"); // Obtener el elemento select
-                        const idMateria = selectMateria.value; // Obtener el valor seleccionado (el id de la materia)
-
-                        observacionesGlobales = await cargarObservaciones(idMateria); // Llamada para cargar las observaciones
+                        observacionesGlobales = await cargarObservaciones(materiaSeleccionadaId); // Llamada para cargar las observaciones
                     }
 
                     // Buscar el periodo activo
@@ -277,7 +277,8 @@
                         row.appendChild(cellAlumnoId);
 
                         const cellMateria = document.createElement("td");
-                        const textoMateria = selectMateria.options[selectMateria.selectedIndex].text; // Obtener el texto de la opción seleccionada
+                        console.log('aqui');
+                        const textoMateria = materiaSeleccionadaId.options[materiaSeleccionadaId.selectedIndex].text; // Obtener el texto de la opción seleccionada
                         cellMateria.textContent = textoMateria;
                         row.appendChild(cellMateria);
 
