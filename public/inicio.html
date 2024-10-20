@@ -321,11 +321,10 @@
               const cellObservacion = document.createElement("td");
               const selectObservacion = document.createElement("select");
               selectObservacion.multiple = true; // Hacer el select múltiple
-              selectObservacion.size = 2; // Limitar a seleccionar dos observaciones
+              selectObservacion.size = 6; // Limitar a seleccionar dos observaciones
               selectObservacion.dataset.alumno = calificacion.id_alumno; // Almacenar el id del alumno como referencia
               selectObservacion.dataset.calificacion =
-                calificacion.id_calificacion; // Almacenar el id de calificación
-              console.log("aqui vamos a ver el id d ematetria", calificacion.id_materia);
+              calificacion.id_calificacion; // Almacenar el id de calificación
               // Llamada a la función para obtener las observaciones disponibles
               obtenerObservaciones(idMateria, selectObservacion);
 
@@ -409,7 +408,6 @@
         ); // Obtener el ID de calificación desde la fila
         const idMateria = document.getElementById("materias").value; // Obtener el ID de la materia seleccionada
         const periodo = selectElement.parentElement.dataset.periodo; // Obtener el periodo desde el atributo data-periodo
-        const token = localStorage.getItem("token");
         const campo = `p${periodo}`; // Determinar el campo dinámicamente
         console.log("id usuario", idUsuario);
         console.log("id calificacion", idCalificacion);
@@ -448,6 +446,13 @@
 
       function obtenerObservaciones(idMateria, selectElement) {
           const token = localStorage.getItem("token"); // Obtén el token del localStorage
+
+          // Verificar si el token existe
+          if (!token) {
+              console.error("Token no encontrado en el localStorage.");
+              return; // Salir de la función si no hay token
+          }
+
           console.log("ID de Materia:", idMateria); // Verifica el ID de materia
           fetch(`/obtener-observaciones-materia?id_materia=${idMateria}`, {
               method: 'GET',
@@ -463,20 +468,26 @@
               })
               .then((observaciones) => {
                   console.log("Observaciones recibidas:", observaciones); // Verifica las observaciones
+
+                  // Limpiar el select antes de agregar nuevas opciones
+                  selectElement.innerHTML = '';
+
+                  // Agregar opciones al select
                   observaciones.forEach((observacion) => {
                       const option = document.createElement("option");
                       option.value = observacion.id;
-                      option.text = `${observacion.descripcion} - ${observacion.descripcion_larga}`;
+                      option.text = observacion.descripcion; // Solo la descripción
                       selectElement.appendChild(option);
                   });
+
+                  // Establecer el tamaño dinámico basado en el número de observaciones
+                  const numOptions = observaciones.length;
+                  selectElement.size = Math.min(numOptions, 5); // Máximo 5 opciones visibles
               })
-              .catch((error) =>
-                  console.error("Error al cargar observaciones:", error)
-              );
+              .catch((error) => {
+                  console.error("Error al cargar observaciones:", error);
+              });
       }
-
-
-
 
       // Función para manejar el cierre de sesión
       function logout() {
