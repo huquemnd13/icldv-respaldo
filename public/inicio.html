@@ -311,6 +311,9 @@
                         llenarSelectConObservaciones(selectObservacion, observacionesGlobales);
                         cellObservacion.appendChild(selectObservacion);
                         row.appendChild(cellObservacion); // Agregar la celda de observaciones a la fila
+                      
+                        // Llamar a manejarTooltip para el select de observaciones
+                        manejarTooltip(selectObservacion);
 
                         // Agregar fila al cuerpo de la tabla
                         tableBody.appendChild(row);
@@ -349,10 +352,11 @@
                 const option = document.createElement("option");
                 option.value = observacion.id;
                 option.text = observacion.descripcion; // Solo mostrar la descripción
-                option.title = observacion.descripcion_larga; // Descripción larga como tooltip
+                option.dataset.descripcionLarga = observacion.descripcion_larga; // Usar un atributo personalizado
                 selectElement.appendChild(option);
             });
         }
+
 
         // Función para cargar las observaciones
         async function obtenerObservaciones(idMateria, selectElement) {
@@ -393,6 +397,37 @@
                 console.error("Error al cargar observaciones:", error);
             }
       }
+      
+      // Función para crear el tooltip
+      function manejarTooltip(selectElement) {
+          const tooltip = document.createElement("div");
+          tooltip.id = "tooltip";
+          tooltip.className = "tooltip";
+          tooltip.style.display = "none"; // Inicialmente oculto
+          document.body.appendChild(tooltip);
+
+          // Manejo del tooltip
+          selectElement.addEventListener("mouseover", (event) => {
+              if (event.target.tagName === "OPTION") {
+                  tooltip.innerHTML = event.target.dataset.descripcionLarga; // Usar el atributo personalizado
+                  tooltip.style.display = "block"; // Mostrar el tooltip
+                  tooltip.style.left = `${event.pageX + 5}px`; // Posicionar el tooltip
+                  tooltip.style.top = `${event.pageY + 5}px`;
+              }
+          });
+
+          selectElement.addEventListener("mousemove", (event) => {
+              if (tooltip.style.display === "block") {
+                  tooltip.style.left = `${event.pageX + 5}px`; // Actualizar la posición del tooltip
+                  tooltip.style.top = `${event.pageY + 5}px`;
+              }
+          });
+
+          selectElement.addEventListener("mouseout", () => {
+              tooltip.style.display = "none"; // Ocultar el tooltip
+          });
+      }
+
 
 
       //Verificar si un periodo está activo
