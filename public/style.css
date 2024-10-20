@@ -187,8 +187,8 @@ button:hover {
 }
 
 #alumnos-table tr:nth-child(odd) {
-  background-color: #f6f6f6 !important; /* Color de fondo para filas impares */
-  color: black !important; /* Cambiar el color del texto */
+  background-color: #ffffff; /* Color de fondo diferente para filas impares */
+  color: black; /* Color del texto en filas impares */
 }
 
 /* Efecto hover para filas */
@@ -196,7 +196,6 @@ button:hover {
   background-color: #d9d9d9; /* Color de fondo al pasar el mouse */
   color: black; /* Color del texto al pasar el mouse */
 }
-
 
 /* Especificar anchos para las columnas */
 #alumnos-table th:nth-child(1),
