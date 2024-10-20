@@ -315,6 +315,9 @@
               row.appendChild(cellP3);
 
               // Nueva columna para observaciones
+              const selectElement = document.getElementById("materias");
+              const idMateria = selectElement.value; // Obtener el valor seleccionado
+
               const cellObservacion = document.createElement("td");
               const selectObservacion = document.createElement("select");
               selectObservacion.multiple = true; // Hacer el select múltiple
@@ -322,9 +325,9 @@
               selectObservacion.dataset.alumno = calificacion.id_alumno; // Almacenar el id del alumno como referencia
               selectObservacion.dataset.calificacion =
                 calificacion.id_calificacion; // Almacenar el id de calificación
-
+              console.log("aqui vamos a ver el id d ematetria", calificacion.id_materia);
               // Llamada a la función para obtener las observaciones disponibles
-              obtenerObservaciones(calificacion.id_materia, selectObservacion);
+              obtenerObservaciones(idMateria, selectObservacion);
 
               cellObservacion.appendChild(selectObservacion);
 
@@ -445,7 +448,12 @@
 
       function obtenerObservaciones(idMateria, selectElement) {
           console.log("ID de Materia:", idMateria); // Verifica el ID de materia
-          fetch(`/obtener-observaciones-materia?id_materia=${idMateria}`)
+          fetch(`/obtener-observaciones-materia?id_materia=${idMateria}`, {
+              method: 'GET',
+              headers: {
+                  'Authorization': `Bearer ${token}` // Asegúrate de que el token aquí es válido
+              }
+          })
               .then((response) => {
                   if (!response.ok) {
                       throw new Error(`Error al obtener observaciones: ${response.status}`);
@@ -465,6 +473,8 @@
                   console.error("Error al cargar observaciones:", error)
               );
       }
+
+
 
 
       // Función para manejar el cierre de sesión

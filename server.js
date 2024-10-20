@@ -368,40 +368,55 @@ app.get("/obtener-materias-profesor-grado", async (req, res) => {
 
 // RUTA PARA OBTENER LAS OBSERVACIONES DISPONIBLES PARA UNA MATERIA
 app.get("/obtener-observaciones-materia", async (req, res) => {
-  try {
-    const idMateria = req.query.id_materia; // Obtener el ID de la materia desde los parámetros de la consulta
-
-    // Verificar que el ID de la materia esté presente
-    if (!idMateria) {
-      return res.status(400).json({
-        success: false,
-        message: "Falta el parámetro requerido: id_materia.",
-      });
+    // Verificar que el header de autorización está presente
+    if (!req.headers.authorization) {
+        return res.status(401).json({
+            success: false,
+            message: "No se proporcionó el token de autorización.",
+        });
     }
 
-    // Llamar a la función en Supabase para obtener las observaciones
-    const { data: observaciones, error } = await supabase.rpc(
-      "obtener_observaciones_por_materia",
-      {
-        _id_materia: idMateria, // Pasar el ID de la materia
-      }
-    );
+    // Obtener el token del header
+    const token = req.headers.authorization.split(" ")[1]; // Asegúrate de que sea "Bearer TOKEN"
 
-    if (error) {
-      console.error("Error al obtener observaciones:", error);
-      return res
-        .status(500)
-        .json({ success: false, message: "Error al obtener observaciones." });
+    try {
+        // Decodificar el token
+        const decodedToken = jwt.verify(token, jwtSecret);
+        const idMateria = req.query.id_materia; // Obtener el ID de la materia desde los parámetros de la consulta
+
+        // Verificar que el ID de la materia esté presente
+        if (!idMateria) {
+            return res.status(400).json({
+                success: false,
+                message: "Falta el parámetro requerido: id_materia.",
+            });
+        }
+
+        // Llamar a la función en Supabase para obtener las observaciones
+        const { data: observaciones, error } = await supabase
+            .from("Observacion") // Nombre de tu tabla
+            .select("*")
+            .eq("id_materia", idMateria); // Filtrar por ID de materia
+
+        if (error) {
+            console.error("Error al obtener observaciones:", error);
+            return res
+                .status(500)
+                .json({ success: false, message: "Error al obtener observaciones." });
+        }
+
+        return res.json(observaciones); // Devolver las observaciones
+    } catch (err) {
+        if (err.name === 'JsonWebTokenError') {
+            return res.status(401).json({ success: false, message: "Token inválido." });
+        }
+        console.error("Error en la consulta:", err);
+        return res
+            .status(500)
+            .json({ success: false, message: "Error en la consulta." });
     }
-
-    return res.json(observaciones); // Devolver las observaciones
-  } catch (err) {
-    console.error("Error en la consulta:", err);
-    return res
-      .status(500)
-      .json({ success: false, message: "Error en la consulta." });
-  }
 });
+
 
 
 // Endpoint para obtener detalles de calificaciones
