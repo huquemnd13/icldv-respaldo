@@ -260,9 +260,6 @@
                     const tableBody = document.getElementById("alumnos-table").querySelector("tbody");
                     tableBody.innerHTML = ""; // Limpiar el cuerpo de la tabla
 
-                    // Cargar las observaciones una sola vez
-                    await cargarObservaciones();
-
                     // Para cada calificación recibida
                     for (const calificacion of calificaciones) {
                         const row = document.createElement("tr");
@@ -311,7 +308,7 @@
                         selectObservacion.dataset.calificacion = calificacion.id_calificacion; // Almacenar el id de calificación
 
                         // Llamar a la función para obtener las observaciones disponibles
-                        await obtenerObservaciones(idMateria, selectObservacion); // Asegúrate de que esta función esté definida correctamente
+                        await obtenerObservaciones(selectMateria, selectObservacion); // Asegúrate de que esta función esté definida correctamente
 
                         cellObservacion.appendChild(selectObservacion);
                         row.appendChild(cellObservacion); // Agregar la celda de observaciones a la fila
