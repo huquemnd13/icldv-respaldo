@@ -466,7 +466,7 @@
                   observaciones.forEach((observacion) => {
                       const option = document.createElement("option");
                       option.value = observacion.id;
-                      option.text = `${observacion.descripcion}`;
+                      option.text = `${observacion.descripcion} - ${observacion.descripcion_larga}`;
                       selectElement.appendChild(option);
                   });
               })
