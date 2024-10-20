@@ -214,7 +214,7 @@ app.get("/grados", async (req, res) => {
 });
 
 // API PARA LLENAR EL CICLO ESCOLAR DEL HEADER EN INICIO
-app.get("/obtener-ciclos-escolares", validarToken, async (req, res) => {
+app.get("/obtener-ciclos-escolares", verificarToken, async (req, res) => {
   try {
     const { data, error } = await supabase.rpc("obtener_ciclos_escolares");
 
@@ -578,32 +578,42 @@ app.post('/actualizar-calificaciones', async (req, res) => {
 
 
 // Ruta para guardar observaciones con validación de token
-app.post('/guardar-observaciones', verificarToken, async (req, res) => {
-    const { idCalificacion, observaciones } = req.body;
+app.post('/guardar-observaciones', async (req, res) => {
+    const { _id_calificacion, _observaciones, _id_usuario } = req.body; // Obtener id_usuario del cuerpo
 
-    // Validación de los datos
-    if (!idCalificacion || !observaciones || observaciones.length === 0) {
-        return res.status(400).send('Datos inválidos');
+    // Validaciones de entrada
+    if (!_id_calificacion || !_observaciones || _observaciones.length === 0 || !_id_usuario) {
+        return res.status(400).json({ mensaje: 'Datos incompletos' });
+    }
+
+    if (!Number.isInteger(_id_calificacion)) {
+        return res.status(400).json({ mensaje: 'El ID de la calificación debe ser un número entero' });
+    }
+
+    if (!Array.isArray(_observaciones) || _observaciones.length > 2) {
+        return res.status(400).json({ mensaje: 'Las observaciones deben ser un array con hasta 2 elementos' });
     }
 
     try {
-        // Eliminar todas las relaciones antiguas para esta calificación
-        await db.query('DELETE FROM public."CalificacionObservacion" WHERE id_calificacion = $1', [idCalificacion]);
+        // Llamar a la función RPC de Supabase
+        const { data: result, error } = await supabase.rpc('guardar_observaciones', {
+            _id_calificacion,
+            _observaciones,
+            _id_usuario
+        });
 
-        // Insertar las nuevas observaciones para la calificación
-        for (const observacionId of observaciones) {
-            await db.query(
-                'INSERT INTO public."CalificacionObservacion" (id_calificacion, id_observacion) VALUES ($1, $2)',
-                [idCalificacion, observacionId]
-            );
+        if (error) {
+            console.error('Error en la función RPC de Supabase:', error); // Log detallado
+            return res.status(500).json({ mensaje: 'Error guardando observaciones', error: error.message });
         }
 
-        res.status(200).send('Observaciones guardadas');
-    } catch (error) {
-        console.error('Error al guardar observaciones:', error);
-        res.status(500).send('Error en el servidor');
+        res.status(200).json({ mensaje: 'Observaciones guardadas correctamente', data: result });
+    } catch (err) {
+        console.error('Error general en el servidor:', err.message); // Log detallado
+        res.status(500).json({ mensaje: 'Error guardando observaciones', error: err.message });
     }
 });
+
 
 
 
