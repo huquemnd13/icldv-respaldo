@@ -395,8 +395,9 @@ app.get("/obtener-observaciones-materia", async (req, res) => {
         // Llamar a la función en Supabase para obtener las observaciones
         const { data: observaciones, error } = await supabase
             .from("Observacion") // Nombre de tu tabla
-            .select("*")
-            .eq("id_materia", idMateria); // Filtrar por ID de materia
+            .select("id, descripcion") // Seleccionar solo los campos necesarios
+            .eq("id_materia", idMateria) // Filtrar por ID de materia
+            .order("tipo"); // Ordenar por el campo tipo
 
         if (error) {
             console.error("Error al obtener observaciones:", error);
@@ -416,6 +417,7 @@ app.get("/obtener-observaciones-materia", async (req, res) => {
             .json({ success: false, message: "Error en la consulta." });
     }
 });
+
 
 
 

@@ -447,6 +447,7 @@
       }
 
       function obtenerObservaciones(idMateria, selectElement) {
+          const token = localStorage.getItem("token"); // Obtén el token del localStorage
           console.log("ID de Materia:", idMateria); // Verifica el ID de materia
           fetch(`/obtener-observaciones-materia?id_materia=${idMateria}`, {
               method: 'GET',
@@ -465,7 +466,7 @@
                   observaciones.forEach((observacion) => {
                       const option = document.createElement("option");
                       option.value = observacion.id;
-                      option.text = `${observacion.descripcion} - ${observacion.descripcion_larga}`;
+                      option.text = `${observacion.descripcion}`;
                       selectElement.appendChild(option);
                   });
               })
