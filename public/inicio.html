@@ -310,16 +310,12 @@
                         selectObservacion.dataset.alumno = calificacion.id_alumno; // Almacenar el id del alumno como referencia
                         selectObservacion.dataset.calificacion = calificacion.id_calificacion; // Almacenar el id de calificación
 
-                        // Llenar el select de observaciones con las observaciones de la caché
-                        observacionesCache.forEach((observacion) => {
-                            const option = document.createElement("option");
-                            option.value = observacion.id;
-                            option.text = observacion.descripcion; // Solo la descripción
-                            selectObservacion.appendChild(option);
-                        });
+                        // Llamar a la función para obtener las observaciones disponibles
+                        await obtenerObservaciones(idMateria, selectObservacion); // Asegúrate de que esta función esté definida correctamente
 
                         cellObservacion.appendChild(selectObservacion);
                         row.appendChild(cellObservacion); // Agregar la celda de observaciones a la fila
+
 
                         // Agregar fila al cuerpo de la tabla
                         tableBody.appendChild(row);
@@ -330,8 +326,8 @@
             }
         }
 
-        // Función para cargar todas las observaciones para la materia seleccionada
-        async function cargarObservaciones() {
+        // Función para cargar las observaciones
+        async function obtenerObservaciones(idMateria, selectElement) {
             const token = localStorage.getItem("token"); // Obtén el token del localStorage
             if (!token) {
                 console.error("Token no encontrado en el localStorage.");
@@ -339,9 +335,6 @@
             }
 
             try {
-                const selectMateria = document.getElementById("materias");
-                const idMateria = selectMateria.value; // Obtener el valor del select de materias
-
                 const response = await fetch(`/obtener-observaciones-materia?id_materia=${idMateria}`, {
                     method: 'GET',
                     headers: {
@@ -356,25 +349,21 @@
                 const observaciones = await response.json();
                 console.log("Observaciones recibidas:", observaciones); // Verifica las observaciones
 
-                // Almacenar en la caché
-                observacionesCache = observaciones; // Guardar las observaciones en la caché
-
-                // Limpiar select si es necesario antes de agregar nuevas opciones
-                selectObservacion.innerHTML = ''; // Si necesitas limpiar el select
+                // Limpiar el select si es necesario antes de agregar nuevas opciones
+                selectElement.innerHTML = ''; // Limpiar el select
 
                 // Llenar el select de observaciones
-                observacionesCache.forEach((observacion) => {
+                observaciones.forEach((observacion) => {
                     const option = document.createElement("option");
                     option.value = observacion.id;
                     option.text = observacion.descripcion; // Solo la descripción
                     option.title = observacion.descripcion_larga; // Agregar la descripción larga como tooltip
-                    selectObservacion.appendChild(option);
+                    selectElement.appendChild(option);
                 });
             } catch (error) {
                 console.error("Error al cargar observaciones:", error);
             }
-        }
-
+}
 
 
       //Verificar si un periodo está activo
