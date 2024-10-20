@@ -15,7 +15,7 @@
       let decodedToken; // Declara la variable en el ámbito global
       let cicloActivoGlobal; // Declara una variable global para el ciclo activo
       let materiaSeleccionadaId; // Variable global para el ID de la materia seleccionada
-      let textoMateriaSeleccionada; //V
+      let textoMateriaSeleccionada; // Variable global para el texto de la materia seleccionada
 
       // Decodificar el token y mostrar el nombre del profesor
       window.onload = async function () {
@@ -120,19 +120,6 @@
                         option.textContent = materia.materia_nombre; // Nombre de la materia
                         selectMaterias.appendChild(option); // Añadir la opción al select
                       });
-
-                      // Listener para capturar la materia seleccionada
-                      document
-                          .getElementById("materias")
-                          .addEventListener("change", (event) => {
-                            const selectMateria = event.target; // El elemento select que disparó el evento
-                            const materiaSeleccionadaId = selectMateria.value; // Guarda el ID de la materia seleccionada
-                            const textoMateriaSeleccionada = selectMateria.options[selectMateria.selectedIndex].text; // Obtiene el texto de la opción seleccionada
-
-                            console.log("Materia seleccionada ID:", materiaSeleccionadaId); // Verificar el ID en consola
-                            console.log("Materia seleccionada texto:", textoMateriaSeleccionada); // Verificar el texto en consola
-                          });
-
                     } else {
                       console.error(
                         "Error al obtener materias:",
@@ -158,6 +145,18 @@
         }
       };
 
+      // Listener para capturar la materia seleccionada
+                      document
+                          .getElementById("materias")
+                          .addEventListener("change", (event) => {
+                            const selectMateria = event.target; // El elemento select que disparó el evento
+                            const materiaSeleccionadaId = selectMateria.value; // Guarda el ID de la materia seleccionada
+                            const textoMateriaSeleccionada = selectMateria.options[selectMateria.selectedIndex].text; // Obtiene el texto de la opción seleccionada
+
+                            console.log("Materia seleccionada ID:", materiaSeleccionadaId); // Verificar el ID en consola
+                            console.log("Materia seleccionada texto:", textoMateriaSeleccionada); // Verificar el texto en consola
+                          });
+      
       // Función para crear un dropdown con las calificaciones
       function createCalificacionDropdown(
         calificacion,
@@ -246,6 +245,7 @@
 
                     // Obtener las observaciones solo una vez y almacenarlas en la variable global
                     if (observacionesGlobales.length === 0) {
+                        console.log(materiaSeleccionadaId);
                         observacionesGlobales = await cargarObservaciones(materiaSeleccionadaId); // Llamada para cargar las observaciones
                     }
 
@@ -278,8 +278,7 @@
 
                         const cellMateria = document.createElement("td");
                         console.log('aqui');
-                        const textoMateria = materiaSeleccionadaId.options[materiaSeleccionadaId.selectedIndex].text; // Obtener el texto de la opción seleccionada
-                        cellMateria.textContent = textoMateria;
+                        cellMateria.textContent = textoMateriaSeleccionada;
                         row.appendChild(cellMateria);
 
                         const cellNombreCompleto = document.createElement("td");
@@ -329,7 +328,6 @@
         async function cargarObservaciones(idMateria) {
             if (observacionesGlobales.length === 0) {
                 const token = localStorage.getItem("token"); // Obtén el token del localStorage
-                console.log("ID de Materia:", idMateria); // Verifica el ID de materia
                 const response = await fetch(`/obtener-observaciones-materia?id_materia=${idMateria}`, {
                     method: 'GET',
                     headers: {
