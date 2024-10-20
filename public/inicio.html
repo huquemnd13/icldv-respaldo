@@ -215,7 +215,7 @@
   	  */
 
       // Función para cargar los alumnos según el grado y ciclo escolar seleccionados
-      let observacionesGlobales  = []; // Variable global para almacenar observaciones
+        let observacionesGlobales = []; // Variable global para almacenar observaciones
 
         async function cargarAlumnos() {
             const token = localStorage.getItem("token");
@@ -238,10 +238,16 @@
                     const calificaciones = await response.json();
 
                     // Obtener los periodos
-                    const responsePeriodos = await fetch(
-                        `/periodos?id_ciclo_escolar=${cicloId}`
-                    );
+                    const responsePeriodos = await fetch(`/periodos?id_ciclo_escolar=${cicloId}`);
                     const periodos = await responsePeriodos.json();
+
+                    // Obtener las observaciones solo una vez y almacenarlas en la variable global
+                    if (observacionesGlobales.length === 0) {
+                        const selectMateria = document.getElementById("materias"); // Obtener el elemento select
+                        const idMateria = selectMateria.value; // Obtener el valor seleccionado (el id de la materia)
+
+                        observacionesGlobales = await cargarObservaciones(idMateria); // Llamada para cargar las observaciones
+                    }
 
                     // Buscar el periodo activo
                     const periodoActivo = periodos.find((periodo) => esPeriodoActivo(periodo));
@@ -251,10 +257,7 @@
                             "success"
                         );
                     } else {
-                        mostrarToast(
-                            "No hay ningún periodo de captura activo en este momento.",
-                            "warning"
-                        );
+                        mostrarToast("No hay ningún periodo de captura activo en este momento.", "warning");
                     }
 
                     const tableBody = document.getElementById("alumnos-table").querySelector("tbody");
@@ -274,10 +277,7 @@
                         row.appendChild(cellAlumnoId);
 
                         const cellMateria = document.createElement("td");
-                        const selectMateria = document.getElementById("materias"); // Obtener el elemento select
                         const textoMateria = selectMateria.options[selectMateria.selectedIndex].text; // Obtener el texto de la opción seleccionada
-                        const idMateria = selectMateria.value; // Obtener el valor seleccionado (el id de la materia)
-                        
                         cellMateria.textContent = textoMateria;
                         row.appendChild(cellMateria);
 
@@ -309,14 +309,10 @@
                         selectObservacion.dataset.alumno = calificacion.id_alumno; // Almacenar el id del alumno como referencia
                         selectObservacion.dataset.calificacion = calificacion.id_calificacion; // Almacenar el id de calificación
 
-                        // Llamar a la función para obtener las observaciones disponibles
                         // Llenar el select con las observaciones obtenidas
-                llenarSelectConObservaciones(selectObservacion, observaciones);
-
-                cellObservacion.appendChild(selectObservacion);
+                        llenarSelectConObservaciones(selectObservacion, observacionesGlobales);
                         cellObservacion.appendChild(selectObservacion);
                         row.appendChild(cellObservacion); // Agregar la celda de observaciones a la fila
-
 
                         // Agregar fila al cuerpo de la tabla
                         tableBody.appendChild(row);
@@ -326,6 +322,7 @@
                 }
             }
         }
+
       
         // Función para obtener las observaciones desde el servidor una sola vez
         async function cargarObservaciones(idMateria) {
