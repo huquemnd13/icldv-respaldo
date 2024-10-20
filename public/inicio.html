@@ -215,7 +215,7 @@
   	  */
 
       // Función para cargar los alumnos según el grado y ciclo escolar seleccionados
-      let observacionesCache = []; // Variable global para almacenar observaciones
+      let observacionesGlobales  = []; // Variable global para almacenar observaciones
 
         async function cargarAlumnos() {
             const token = localStorage.getItem("token");
@@ -276,6 +276,8 @@
                         const cellMateria = document.createElement("td");
                         const selectMateria = document.getElementById("materias"); // Obtener el elemento select
                         const textoMateria = selectMateria.options[selectMateria.selectedIndex].text; // Obtener el texto de la opción seleccionada
+                        const idMateria = selectMateria.value; // Obtener el valor seleccionado (el id de la materia)
+                        
                         cellMateria.textContent = textoMateria;
                         row.appendChild(cellMateria);
 
@@ -308,8 +310,10 @@
                         selectObservacion.dataset.calificacion = calificacion.id_calificacion; // Almacenar el id de calificación
 
                         // Llamar a la función para obtener las observaciones disponibles
-                        await obtenerObservaciones(selectMateria, selectObservacion); // Asegúrate de que esta función esté definida correctamente
+                        // Llenar el select con las observaciones obtenidas
+                llenarSelectConObservaciones(selectObservacion, observaciones);
 
+                cellObservacion.appendChild(selectObservacion);
                         cellObservacion.appendChild(selectObservacion);
                         row.appendChild(cellObservacion); // Agregar la celda de observaciones a la fila
 
@@ -321,6 +325,39 @@
                     console.error("Error al cargar los alumnos:", error);
                 }
             }
+        }
+      
+        // Función para obtener las observaciones desde el servidor una sola vez
+        async function cargarObservaciones(idMateria) {
+            if (observacionesGlobales.length === 0) {
+                const token = localStorage.getItem("token"); // Obtén el token del localStorage
+                console.log("ID de Materia:", idMateria); // Verifica el ID de materia
+                const response = await fetch(`/obtener-observaciones-materia?id_materia=${idMateria}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}` // Asegúrate de que el token aquí es válido
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Error al obtener observaciones: ${response.status}`);
+                }
+
+                observacionesGlobales = await response.json();
+                console.log("Observaciones recibidas:", observacionesGlobales); // Verifica las observaciones
+            }
+            return observacionesGlobales;
+        }
+
+        // Función para llenar los select con las observaciones ya obtenidas
+        function llenarSelectConObservaciones(selectElement, observaciones) {
+            observaciones.forEach((observacion) => {
+                const option = document.createElement("option");
+                option.value = observacion.id;
+                option.text = observacion.descripcion; // Solo mostrar la descripción
+                option.title = observacion.descripcion_larga; // Descripción larga como tooltip
+                selectElement.appendChild(option);
+            });
         }
 
         // Función para cargar las observaciones
@@ -360,7 +397,7 @@
             } catch (error) {
                 console.error("Error al cargar observaciones:", error);
             }
-}
+      }
 
 
       //Verificar si un periodo está activo
