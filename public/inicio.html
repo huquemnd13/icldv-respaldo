@@ -16,6 +16,7 @@
       let cicloActivoGlobal; // Declara una variable global para el ciclo activo
       let materiaSeleccionadaId; // Variable global para el ID de la materia seleccionada
       let textoMateriaSeleccionada; // Variable global para el texto de la materia seleccionada
+      let calificacionIdSeleccionada; // Variable global para el id de la calificacion a actualizar
 
       // Decodificar el token y mostrar el nombre del profesor
       window.onload = async function () {
@@ -332,7 +333,6 @@
                       cellP3.appendChild(crearDropdown(calificacion.periodo_3, periodos[2], 3)); // Pasar periodo 3
                       row.appendChild(cellP3);
 
-                      // Nueva columna para observaciones
                       const cellObservacion = document.createElement("td");
                       const selectObservacion = document.createElement("select");
                       selectObservacion.multiple = true; // Hacer el select múltiple
@@ -344,6 +344,26 @@
                       llenarSelectConObservaciones(selectObservacion, observacionesGlobales);
                       cellObservacion.appendChild(selectObservacion);
                       row.appendChild(cellObservacion); // Agregar la celda de observaciones a la fila
+
+                      // Agregar el evento change al select
+                      selectObservacion.addEventListener("change", async function() {
+                          // Obtener el ID de calificación directamente del dataset
+                          calificacionIdSeleccionada = parseInt(selectObservacion.dataset.calificacion);
+
+                          const selectedOptions = Array.from(selectObservacion.selectedOptions).map(option => option.value);
+
+                          console.log("ID de calificación seleccionada:", calificacionIdSeleccionada);
+                          console.log("Observaciones seleccionadas:", selectedOptions);
+
+                          // Aquí puedes agregar la lógica para guardar observaciones si es necesario
+                          try {
+                              // Llama a tu función para guardar las observaciones
+                              await guardarObservaciones(calificacionIdSeleccionada, selectedOptions);
+                              console.log("Observaciones guardadas:", selectedOptions);
+                          } catch (error) {
+                              console.error("Error al guardar observaciones:", error);
+                          }
+                      });
 
                       // Evento para limitar la selección a 2 opciones
                       selectObservacion.addEventListener("change", function() {
@@ -359,9 +379,9 @@
                           selectObservacion.addEventListener("change", async function () {
                               const selectedOptions = Array.from(selectObservacion.selectedOptions);
                               const observacionesSeleccionadas = selectedOptions.map(option => option.value);
-                            
+                              calificacionIdSeleccionada = parseInt(selectElement.closest("tr").children[0].textContent)
                               console.log("Observaciones seleccionadas: ", observacionesSeleccionadas);
-                              console.log("");
+                              console.log("", calificacionIdSeleccionada);
 
                               // Llama a la función para guardar las observaciones seleccionadas
                               await guardarObservacionesSeleccionadas(calificacion.id_calificacion, observacionesSeleccionadas);
@@ -594,14 +614,14 @@
           const idUsuario = decodedToken.id || "Campo nombre_completo no encontrado";
           const nuevaCalificacion = parseInt(selectElement.value); // Valor de la calificación seleccionada
           const idAlumno = selectElement.closest("tr").children[1].textContent; // Obtener el ID del alumno desde la fila
-          const idCalificacion = parseInt(
+          calificacionIdSeleccionada = parseInt(
               selectElement.closest("tr").children[0].textContent
           ); // Obtener el ID de calificación desde la fila
           const idMateria = document.getElementById("materias").value; // Obtener el ID de la materia seleccionada
           const periodo = selectElement.parentElement.dataset.periodo; // Obtener el periodo desde el atributo data-periodo
           const campo = `p${periodo}`; // Determinar el campo dinámicamente
           console.log("id usuario", idUsuario);
-          console.log("id calificacion", idCalificacion);
+          console.log("id calificacion", calificacionIdSeleccionada);
           console.log("id alumno", idAlumno);
           console.log(`ID de materia seleccionada: ${idMateria}`); // Imprimir el ID de materia en la consola
           console.log("Campo a actualizar: ", campo);
@@ -613,7 +633,7 @@
                   Authorization: `Bearer ${token}`, // Usa el token de autorización aquí
               },
               body: JSON.stringify({
-                  _id_calificacion: idCalificacion, // Cambia 'id_calificacion' por '_id_calificacion'
+                  _id_calificacion: calificacionIdSeleccionada, // Cambia 'id_calificacion' por '_id_calificacion'
                   _campo: campo, // Cambia esto según el campo que deseas actualizar (p1, p2, p3)
                   _nuevo_valor: nuevaCalificacion, // Cambia 'nuevo_valor' por '_nuevo_valor'
                   _id_usuario: idUsuario, // Asegúrate de incluir el id_usuario (puedes obtenerlo del token o de otra fuente)
