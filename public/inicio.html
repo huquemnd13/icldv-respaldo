@@ -333,6 +333,7 @@
                       cellP3.appendChild(crearDropdown(calificacion.periodo_3, periodos[2], 3)); // Pasar periodo 3
                       row.appendChild(cellP3);
 
+                      // Crear la celda y el select
                       const cellObservacion = document.createElement("td");
                       const selectObservacion = document.createElement("select");
                       selectObservacion.multiple = true; // Hacer el select múltiple
@@ -345,6 +346,50 @@
                       cellObservacion.appendChild(selectObservacion);
                       row.appendChild(cellObservacion); // Agregar la celda de observaciones a la fila
 
+                      // Evento para controlar la selección sin Ctrl y limitar a 2 opciones
+                      selectObservacion.addEventListener("click", async function (event) {
+                          const option = event.target;
+
+                          // Verifica que se haya hecho clic en una opción del select
+                          if (option.tagName === "OPTION") {
+                              event.preventDefault(); // Previene el comportamiento por defecto de selección
+
+                              // Alterna manualmente el estado de la opción
+                              option.selected = !option.selected;
+
+                              // Obtén todas las opciones seleccionadas
+                              const selectedOptions = Array.from(selectObservacion.options).filter(opt => opt.selected);
+
+                              // Si ya hay más de 2 seleccionadas, desmarca la opción recién seleccionada
+                              if (selectedOptions.length > 2) {
+                                  option.selected = false; // Desmarca la opción más reciente
+                                  mostrarToast("Solo puedes seleccionar hasta 2 opciones.", "error");
+                              } else {
+                                  // Obtener el ID de calificación directamente del dataset
+                                  const calificacionIdSeleccionada = parseInt(selectObservacion.dataset.calificacion); // Asegúrate de que este dato esté disponible
+
+                                  // Obtener las observaciones seleccionadas
+                                  const observacionesSeleccionadas = selectedOptions.map(opt => opt.value);
+
+                                  console.log("Observaciones seleccionadas: ", observacionesSeleccionadas);
+                                  console.log("ID de calificación seleccionada: ", calificacionIdSeleccionada);
+
+                                  // Llama a la función para guardar las observaciones seleccionadas solo si hay entre 1 y 2
+                                  if (observacionesSeleccionadas.length > 0) {
+                                      try {
+                                          await guardarObservacionesSeleccionadas(calificacionIdSeleccionada, observacionesSeleccionadas);
+                                          console.log("Observaciones guardadas exitosamente.");
+                                          mostrarToast("Observaciones guardadas exitosamente.", "success"); // Mensaje de éxito
+                                      } catch (error) {
+                                          console.error("Error al guardar observaciones:", error);
+                                          mostrarToast("Error al guardar observaciones.", "error"); // Mensaje de error
+                                      }
+                                  }
+                              }
+                          }
+                      });
+
+                      /*
                       // Agregar el evento change al select
                       selectObservacion.addEventListener("change", async function() {
                           // Obtener el ID de calificación directamente del dataset
@@ -375,68 +420,8 @@
                               console.error("Error al guardar observaciones:", error);
                           }
                       });
+                      */
                     
-                      // Evento para controlar la selección sin Ctrl
-                      selectObservacion.addEventListener("click", function (event) {
-                          const option = event.target;
-
-                          // Verifica que se haya hecho clic en una opción del select
-                          if (option.tagName === "OPTION") {
-                              event.preventDefault(); // Previene el comportamiento por defecto de selección
-
-                              // Alterna manualmente el estado de la opción
-                              option.selected = !option.selected;
-
-                              // Obtén todas las opciones seleccionadas
-                              const selectedOptions = Array.from(selectObservacion.options).filter(opt => opt.selected);
-
-                              // Si ya hay más de 2 seleccionadas, desmarca la opción recién seleccionada
-                              if (selectedOptions.length > 2) {
-                                  option.selected = false; // Desmarca la más reciente
-                                  mostrarToast("Solo puedes seleccionar hasta 2 opciones.", "error");
-                              }
-                          }
-                      });
-                    
-                      // Evento para limitar la selección a 2 opciones
-                      selectObservacion.addEventListener("change", async function () {
-                          const selectedOptions = Array.from(selectObservacion.selectedOptions);
-
-                          // Limitar la selección a 2 opciones
-                          if (selectedOptions.length > 2) {
-                              // Desmarcar la opción más reciente
-                              const lastSelected = selectedOptions[selectedOptions.length - 1];
-                              lastSelected.selected = false;
-
-                              // Mostrar un mensaje al usuario usando el toast
-                              mostrarToast("Solo puedes seleccionar hasta 2 opciones.", "error"); // Tipo "error" o el que desees
-                              return; // Salir para evitar guardar observaciones
-                          }
-
-                          // Obtener el ID de calificación directamente del dataset
-                          calificacionIdSeleccionada = parseInt(selectObservacion.dataset.calificacion); // Asegúrate de que este dato esté disponible
-
-                          // Obtener las observaciones seleccionadas
-                          const observacionesSeleccionadas = selectedOptions.map(option => option.value);
-
-                          console.log("Observaciones seleccionadas: ", observacionesSeleccionadas);
-                          console.log("ID de calificación seleccionada: ", calificacionIdSeleccionada);
-
-                          // Llama a la función para guardar las observaciones seleccionadas solo si hay entre 1 y 2
-                          if (observacionesSeleccionadas.length > 0) {
-                              try {
-                                  await guardarObservacionesSeleccionadas(calificacionIdSeleccionada, observacionesSeleccionadas);
-                                  console.log("Observaciones guardadas exitosamente.");
-                                  mostrarToast("Observaciones guardadas exitosamente.", "success"); // Mensaje de éxito
-                              } catch (error) {
-                                  console.error("Error al guardar observaciones:", error);
-                                  mostrarToast("Error al guardar observaciones.", "error"); // Mensaje de error
-                              }
-                          }
-                      });
-
-
-
                       // Llamar a manejarTooltip para el select de observaciones
                       manejarTooltip(selectObservacion);
 
