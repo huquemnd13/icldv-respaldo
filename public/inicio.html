@@ -458,18 +458,28 @@
         async function guardarObservacionesSeleccionadas(id_calificacion, observaciones) {
             const token = localStorage.getItem("token");
 
+            // Decodifica el token para obtener el ID del usuario
+            let id_usuario;
+            if (token) {
+                const decodedToken = JSON.parse(atob(token.split('.')[1])); // Esto es solo un ejemplo
+                id_usuario = decodedToken.id; // Asegúrate de que esta propiedad exista
+            }
+
+            // Asegúrate de que las observaciones se envían como un array
             const observacionData = {
                 _id_calificacion: id_calificacion,  // ID de la calificación correspondiente
-                _observaciones: observaciones,      // Array de observaciones seleccionadas
-                _id_usuario: decodedToken.id_usuario // Asegúrate de que id_usuario esté disponible en tu token
+                _observaciones: Array.isArray(observaciones) ? observaciones : [observaciones], // Asegúrate de que siempre sea un array
+                _id_usuario: id_usuario                // Asegúrate de que id_usuario esté definido
             };
+
+            console.log("Datos a enviar:", observacionData); // Verifica los datos a enviar
 
             try {
                 const response = await fetch("/guardar-observaciones", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "Authorization": `Bearer ${token}` // Asegúrate de agregar el token aquí si es necesario
+                        "Authorization": `Bearer ${token}`
                     },
                     body: JSON.stringify(observacionData)
                 });
@@ -477,7 +487,6 @@
                 const result = await response.json();
                 if (response.ok) {
                     console.log("Observaciones guardadas:", result);
-                    // Aquí podrías mostrar un mensaje de éxito o hacer algo con la respuesta
                 } else {
                     console.error("Error al guardar observaciones:", result);
                 }
@@ -485,6 +494,7 @@
                 console.error("Error de red:", error);
             }
         }
+
 
         // Asegúrate de que este bloque se ejecute cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', () => {
@@ -515,6 +525,7 @@
                     // Llama a la función para guardar las observaciones seleccionadas
                     await guardarObservacionesSeleccionadas(id_calificacion, observacionesSeleccionadas);
                 });
+
             });
         });
 
