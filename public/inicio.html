@@ -350,21 +350,54 @@
                           // Obtener el ID de calificación directamente del dataset
                           calificacionIdSeleccionada = parseInt(selectObservacion.dataset.calificacion);
 
+                          // Convertir las opciones seleccionadas en un array de valores
                           const selectedOptions = Array.from(selectObservacion.selectedOptions).map(option => option.value);
+
+                          // Verificar cuántas opciones están seleccionadas
+                          if (selectedOptions.length > 2) {
+                              // Desmarcar la opción más reciente seleccionada
+                              const lastSelected = selectObservacion.selectedOptions[selectObservacion.selectedOptions.length - 1];
+                              lastSelected.selected = false;
+
+                              // Mostrar un mensaje al usuario usando un toast
+                              mostrarToast("Solo puedes seleccionar hasta 2 observaciones.", "error");
+                              return; // Salir de la función si hay más de 2 observaciones seleccionadas
+                          }
 
                           console.log("ID de calificación seleccionada:", calificacionIdSeleccionada);
                           console.log("Observaciones seleccionadas:", selectedOptions);
 
-                          // Aquí puedes agregar la lógica para guardar observaciones si es necesario
+                          // Guardar observaciones seleccionadas
                           try {
-                              // Llama a tu función para guardar las observaciones
                               await guardarObservacionesSeleccionadas(calificacionIdSeleccionada, selectedOptions);
                               console.log("Observaciones guardadas:", selectedOptions);
                           } catch (error) {
                               console.error("Error al guardar observaciones:", error);
                           }
                       });
+                    
+                      // Evento para controlar la selección sin Ctrl
+                      selectObservacion.addEventListener("click", function (event) {
+                          const option = event.target;
 
+                          // Verifica que se haya hecho clic en una opción del select
+                          if (option.tagName === "OPTION") {
+                              event.preventDefault(); // Previene el comportamiento por defecto de selección
+
+                              // Alterna manualmente el estado de la opción
+                              option.selected = !option.selected;
+
+                              // Obtén todas las opciones seleccionadas
+                              const selectedOptions = Array.from(selectObservacion.options).filter(opt => opt.selected);
+
+                              // Si ya hay más de 2 seleccionadas, desmarca la opción recién seleccionada
+                              if (selectedOptions.length > 2) {
+                                  option.selected = false; // Desmarca la más reciente
+                                  mostrarToast("Solo puedes seleccionar hasta 2 opciones.", "error");
+                              }
+                          }
+                      });
+                    
                       // Evento para limitar la selección a 2 opciones
                       selectObservacion.addEventListener("change", async function () {
                           const selectedOptions = Array.from(selectObservacion.selectedOptions);
