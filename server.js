@@ -607,39 +607,40 @@ app.post('/guardar-observaciones', verificarToken, async (req, res) => {
 
 // Endpoint para obtener el reporte de detalle de calificaciones por ciclo escolar
 app.get('/reporteDetalleCalificacionesPorCiclo/:idCiclo', verificarToken, async (req, res) => {
-  const { idCiclo } = req.params;
-  
-  // Verificar que el rol del usuario sea 1
-  if (req.user.id_rol !== 1) {
-      return res.status(403).json({
-          success: false,
-          message: "No tienes permiso para acceder a este recurso.",
-      });
-  }
+    const { idCiclo } = req.params;
 
-  try {
-      // Llamar a la función de Supabase con el ID del ciclo escolar
-      const { data, error } = await supabase.rpc('tu_nombre_de_funcion_sql', { id_ciclo_escolar: idCiclo });
+    // Verificar que el rol del usuario sea 1
+    if (req.user.id_rol !== 1) {
+        return res.status(403).json({
+            success: false,
+            message: "No tienes permiso para acceder a este recurso.",
+        });
+    }
 
-      if (error) {
-          return res.status(500).json({
-              success: false,
-              message: "Error al obtener los datos.",
-              error: error.message,
-          });
-      }
+    try {
+        // Llamar a la función de Supabase con el ID del ciclo escolar
+        const { data, error } = await supabase.rpc('obtener_calificaciones_con_promedio', { id_ciclo_escolar: idCiclo });
 
-      return res.status(200).json({
-          success: true,
-          data,
-      });
-  } catch (error) {
-      return res.status(500).json({
-          success: false,
-          message: "Error en el servidor.",
-          error: error.message,
-      });
-  }
+        if (error) {
+            return res.status(500).json({
+                success: false,
+                message: "Error al obtener los datos.",
+                error: error.message,
+            });
+        }
+
+        return res.status(200).json({
+            success: true,
+            data,
+        });
+    } catch (err) {
+        console.error('Error:', err); // Log para más información
+        return res.status(500).json({
+            success: false,
+            message: "Error en el servidor.",
+            error: err.message,
+        });
+    }
 });
 
 // Redirige a login.html cuando el usuario visita la raíz del sitio (/)
