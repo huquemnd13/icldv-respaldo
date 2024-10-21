@@ -132,13 +132,12 @@ app.post("/login", async (req, res) => {
           {
             id: usuario.id,             // ID del usuario
             id_rol: usuario.id_rol,     // Rol del usuario (administrador)
-            nombre_completo: `${usuario.nombre} ${usuario.apellidoPaterno} ${usuario.apellidoMaterno}` // Nombre completo del administrador
+            nombre_completo: usuario.nombre_usuario // Asegúrate de que esta propiedad esté correctamente asignada
           },
           jwtSecret,
           { expiresIn: "1h" } // Expiración del token en 1 hora
         );
-
-        return res.json({ success: true, token, redirect: "administracion.html" }); // Retorna el token y la redirección
+        return res.json({ success: true, token }); // Retorna el token
       } else {
         // Buscar el profesor relacionado con el usuario
         const { data: profesor, error: errorProfesor } = await supabase

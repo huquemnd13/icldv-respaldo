@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantalla de Administración</title>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            const token = localStorage.getItem("token");
+            console.log("Token:", token);
+
+            if (!token) {
+                console.error("No se encontró el token en localStorage");
+                document.getElementById("nombre_usuario").textContent = "Invitado";
+                return;
+            }
+
+            try {
+                // Decodificamos el token usando jwt_decode
+                const decodedToken = jwt_decode(token);
+                console.log("Token decodificado:", decodedToken);
+
+                // Mostramos el nombre del usuario en la pantalla
+                if (decodedToken && decodedToken.nombre_completo) {
+                    document.getElementById("nombre_usuario").textContent = decodedToken.nombre_completo;
+                } else {
+                    console.error("El token no contiene el campo 'nombre_completo'");
+                    document.getElementById("nombre_usuario").textContent = "Invitado";
+                }
+
+            } catch (error) {
+                console.error("Error al decodificar el token:", error);
+                document.getElementById("nombre_usuario").textContent = "Invitado";
+            }
+        };
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .admin-container {
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin: 20px;
+        }
+        h1 {
+            font-size: 24px;
+            text-align: center;
+        }
+        .table-container {
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div id="header" style="display: flex; flex-direction: column; width: 100%">
+      <!-- Fila 1: Bienvenida, Ciclo Activo y Cerrar Sesión -->
+      <div
+        id="welcome-message"
+        style="display: flex; justify-content: space-between; align-items: center; width: 97%;"
+      >
+        <div
+          style="display: flex; align-items: center; justify-content: space-between; width: 100%;"
+        >
+          <img
+            src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/MarcaLDV.png?v=1728659537627"
+            alt="Logo"
+            style="width: 300px; margin-right: 20px"
+          />
+          <div style="flex: 1; text-align: left; margin-right: 20px">
+            Bienvenid@,
+            <span style="font-weight: bold" id="nombre_usuario">Usuario</span>
+          </div>
+          <div style="flex: 1; text-align: center; margin-right: 20px">
+            <span id="ciclo_activo" style="font-weight: bold"></span>
+            <!-- Aquí se mostrará el ciclo activo -->
+          </div>
+          <div style="flex: 1; text-align: right">
+            <button id="logout-button">Cerrar sesión</button>
+            <!-- Botón a la derecha -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Fila 2: Dropdowns de Grado, Materia y Botón Cargar Alumnos -->
+      <div style="display: flex; align-items: center; margin-top: 20px">
+        <label for="grados" style="margin-right: 10px; font-size: 12px">Selecciona un grado:</label>
+        <select id="grados" style="margin-right: 20px">
+          <option value="" disabled selected>Selecciona un grado</option>
+        </select>
+
+        <label for="materias" style="margin-right: 10px; font-size: 12px">Selecciona una materia:</label>
+        <select id="materias" style="margin-right: 20px">
+          <option value="" disabled selected>Selecciona una materia</option>
+        </select>
+
+        <button id="cargar-alumnos-button" style="margin-left: 20px">
+          Cargar Alumnos
+        </button>
+      </div>
+    </div>
+    <div id="toast-container" class="toast-container"></div>
+</body>
+</html>

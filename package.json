@@ -26,6 +26,7 @@
     "fastify": "^5.0.0",
     "handlebars": "^4.7.8",
     "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
     "moment-timezone": "^0.5.46",
     "redis": "^4.7.0",
     "sqlite3": "^5.1.7"
