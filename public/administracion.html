@@ -136,21 +136,29 @@
             border-collapse: collapse;
             margin-top: 10px;
         }
+
         th,
         td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 6px; /* Tamaño de la celda ajustado */
             text-align: center;
+            font-size: 12px; /* Tamaño de la letra ajustado */
         }
+
         th {
             background-color: #f2f2f2;
+            position: sticky; /* Mantiene el encabezado fijo */
+            top: 0; /* Fija el encabezado en la parte superior */
+            z-index: 1; /* Asegura que el encabezado esté por encima de otros elementos */
         }
+
         .toast-container {
             position: fixed;
             bottom: 20px;
             right: 20px;
             z-index: 9999;
         }
+
     </style>
 </head>
 <body>
@@ -176,7 +184,6 @@
 
         <!-- Fila 2: Dropdowns de Grado, Materia y Botón Cargar Alumnos -->
         <div style="display: flex; align-items: center; margin-top: 20px">
-            <button id="cargar-alumnos-button" style="margin-left: 20px">Cargar Alumnos</button>
             <button id="export-button" style="margin-left: 20px">Exportar a Excel</button>
         </div>
     </div>
