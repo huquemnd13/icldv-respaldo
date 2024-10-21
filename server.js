@@ -42,6 +42,7 @@ app.use(
 );
 
 
+
 // Ruta para el formulario de login
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html")); // Servir el HTML de login
