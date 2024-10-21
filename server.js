@@ -606,42 +606,70 @@ app.post('/guardar-observaciones', verificarToken, async (req, res) => {
 });
 
 // Endpoint para obtener el reporte de detalle de calificaciones por ciclo escolar
-app.get('/reporteDetalleCalificacionesPorCiclo/:idCiclo', verificarToken, async (req, res) => {
-    const { idCiclo } = req.params;
+app.get('/reporteDetalleCalificacionesPorCiclo', verificarToken, async (req, res) => {
+  const { idCiclo } = req.query;
 
-    // Verificar que el rol del usuario sea 1
-    if (req.user.id_rol !== 1) {
-        return res.status(403).json({
-            success: false,
-            message: "No tienes permiso para acceder a este recurso.",
-        });
+  // Validar que se haya pasado el parámetro requerido
+  if (!idCiclo) {
+    return res.status(400).json({ error: "Falta el parámetro idCiclo." });
+  }
+
+  // Verificar que el rol del usuario sea 1
+  if (req.user.id_rol !== 1) {
+    return res.status(403).json({
+      success: false,
+      message: "No tienes permiso para acceder a este recurso.",
+    });
+  }
+
+  try {
+    console.log("Parámetro recibido:", { idCiclo });
+
+    // Llama a la función de Supabase con el ID del ciclo escolar
+    const { data, error } = await supabase.rpc('obtener_calificaciones_con_promedio', { id_ciclo_escolar: parseInt(idCiclo) });
+
+    if (error) {
+      console.error("Error al obtener los datos:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Error al obtener los datos.",
+        error: error.message,
+      });
     }
 
-    try {
-        // Llamar a la función de Supabase con el ID del ciclo escolar
-        const { data, error } = await supabase.rpc('obtener_calificaciones_con_promedio', { id_ciclo_escolar: idCiclo });
+    console.log("Datos obtenidos:", data);
 
-        if (error) {
-            return res.status(500).json({
-                success: false,
-                message: "Error al obtener los datos.",
-                error: error.message,
-            });
-        }
+    // Formatear los datos a JSON
+    const formattedData = data.map(item => ({
+      nombre_completo: item[0],
+      curp: item[1],
+      ciclo_escolar: item[2],
+      grado: item[3],
+      campo_formativo: item[4],
+      nombre_materia: item[5],
+      p1: item[6],
+      p2: item[7],
+      p3: item[8],
+      grado_escolar_id: item[9],
+      campo_formativo_id: item[10],
+      orden: item[11],
+    }));
 
-        return res.status(200).json({
-            success: true,
-            data,
-        });
-    } catch (err) {
-        console.error('Error:', err); // Log para más información
-        return res.status(500).json({
-            success: false,
-            message: "Error en el servidor.",
-            error: err.message,
-        });
-    }
+    // Devuelve los resultados como respuesta
+    return res.status(200).json({
+      success: true,
+      data: formattedData,
+    });
+  } catch (err) {
+    console.error("Error en la solicitud al servidor:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Error interno del servidor.",
+      error: err.message,
+    });
+  }
 });
+
 
 // Redirige a login.html cuando el usuario visita la raíz del sitio (/)
 app.get("/", (req, res) => {
