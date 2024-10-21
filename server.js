@@ -602,3 +602,66 @@ app.listen(PORT, () => {
 app.get("/status", (req, res) => {
   res.status(200).send("OK");
 });
+
+/*
+const bcrypt = require('bcrypt'); // Asegúrate de tener bcrypt instalado
+
+app.post("/register", async (req, res) => {
+  try {
+    console.log("Inicio del proceso de registro de usuario");
+    const { nombre_usuario, email, password, id_rol } = req.body;
+
+    // Validar que todos los campos sean proporcionados
+    if (!nombre_usuario || !email || !password || !id_rol) {
+      return res.status(400).json({ success: false, message: "Todos los campos son obligatorios." });
+    }
+
+    // Verificar si el email o el nombre de usuario ya están en uso
+    const { data: existingUser, error: existingUserError } = await supabase
+      .from("Usuario")
+      .select("*")
+      .or(`email.eq.${email},nombre_usuario.eq.${nombre_usuario}`)
+      .single();
+
+    if (existingUserError && existingUserError.code !== 'PGRST116') {
+      console.error("Error al verificar usuario existente:", existingUserError);
+      return res.status(500).json({ success: false, message: "Error al verificar usuario." });
+    }
+
+    if (existingUser) {
+      return res.status(409).json({ success: false, message: "El correo electrónico o nombre de usuario ya están en uso." });
+    }
+
+    // Hashear la contraseña
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Crear el nuevo usuario
+    const { data: newUser, error: createUserError } = await supabase
+      .from("Usuario")
+      .insert([
+        {
+          nombre_usuario,
+          email,
+          password: hashedPassword,
+          id_rol,
+          fecha_creacion: new Date(),
+          estatus: true,
+          intentos_fallidos: 0
+        }
+      ])
+      .single();
+
+    if (createUserError) {
+      console.error("Error al crear usuario:", createUserError);
+      return res.status(500).json({ success: false, message: "Error al crear usuario." });
+    }
+
+    console.log("Usuario creado:", newUser);
+    return res.status(201).json({ success: true, message: "Usuario registrado con éxito.", user: newUser });
+
+  } catch (error) {
+    console.error("Error en el registro:", error);
+    return res.status(500).json({ success: false, message: "Error en el registro." });
+  }
+});
+*/
