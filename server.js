@@ -114,46 +114,65 @@ app.post("/login", async (req, res) => {
     console.log("Contraseña coincide:", passwordMatch);
 
     if (passwordMatch) {
-        // Reiniciar intentos fallidos y activar estatus
-        await supabase
-          .from("Usuario")
-          .update({ intentos_fallidos: 0, estatus: true })
-          .eq("id", usuario.id);
+      // Reiniciar intentos fallidos y activar estatus
+      await supabase
+        .from("Usuario")
+        .update({ intentos_fallidos: 0, estatus: true })
+        .eq("id", usuario.id);
 
+      // Generar token para todos los roles
+      let token;
+
+      if (usuario.id_rol === 1) {
+        // Es un administrador
+        console.log("ES ADMINISTRADOR");
+
+        // Generar el token para administrador
+        token = jwt.sign(
+          {
+            id: usuario.id,             // ID del usuario
+            id_rol: usuario.id_rol,     // Rol del usuario (administrador)
+            nombre_completo: `${usuario.nombre} ${usuario.apellidoPaterno} ${usuario.apellidoMaterno}` // Nombre completo del administrador
+          },
+          jwtSecret,
+          { expiresIn: "1h" } // Expiración del token en 1 hora
+        );
+
+        return res.json({ success: true, token, redirect: "administracion.html" }); // Retorna el token y la redirección
+      } else {
         // Buscar el profesor relacionado con el usuario
-            const { data: profesor, error: errorProfesor } = await supabase
-              .from("Profesor")
-              .select("*")
-              .eq("id_usuario", usuario.id)  // Relación Usuario-Profesor
-              .single();
+        const { data: profesor, error: errorProfesor } = await supabase
+          .from("Profesor")
+          .select("*")
+          .eq("id_usuario", usuario.id)  // Relación Usuario-Profesor
+          .single();
 
-            if (errorProfesor || !profesor) {
-              console.error("Error al buscar profesor:", errorProfesor);
-              return res.status(500).json({ success: false, message: "Error al buscar profesor." });
-            }
-      
-            // Construir el id del profesor
-      
-            const profesorId = profesor.id;
+        if (errorProfesor || !profesor) {
+          console.error("Error al buscar profesor:", errorProfesor);
+          return res.status(500).json({ success: false, message: "Error al buscar profesor." });
+        }
 
-            // Construir el nombre completo del profesor
-            const nombreCompleto = `${profesor.nombre} ${profesor.apellido_paterno} ${profesor.apellido_materno}`.trim();
+        // Construir el id del profesor
+        const profesorId = profesor.id;
 
-            // Generar el token con el nombre completo del profesor
-            const token = jwt.sign(
-              {
-                id: usuario.id,             // ID del usuario
-                id_rol: usuario.id_rol,     // Rol del usuario
-                id_profesor: profesorId,
-                nombre_completo: nombreCompleto // Nombre completo del profesor
-              },
-              jwtSecret,
-              { expiresIn: "1h" } // Expiración del token en 1 hora
-            );
+        // Construir el nombre completo del profesor
+        const nombreCompleto = `${profesor.nombre} ${profesor.apellido_paterno} ${profesor.apellido_materno}`.trim();
 
+        // Generar el token con el nombre completo del profesor
+        token = jwt.sign(
+          {
+            id: usuario.id,             // ID del usuario
+            id_rol: usuario.id_rol,     // Rol del usuario
+            id_profesor: profesorId,
+            nombre_completo: nombreCompleto // Nombre completo del profesor
+          },
+          jwtSecret,
+          { expiresIn: "1h" } // Expiración del token en 1 hora
+        );
 
-      console.log("ID PROFESOR TABLA", profesor.id);
-      return res.json({ success: true, token });
+        console.log("ID PROFESOR TABLA", profesor.id);
+        return res.json({ success: true, token });
+      }
     } else {
       // Contraseña incorrecta
       console.error("Contraseña incorrecta.");
@@ -181,6 +200,7 @@ app.post("/login", async (req, res) => {
     return res.status(500).json({ success: false, message: "Error interno del servidor." });
   }
 });
+
 
 app.get("/grados", async (req, res) => {
   try {
@@ -586,7 +606,42 @@ app.post('/guardar-observaciones', verificarToken, async (req, res) => {
     }
 });
 
+// Endpoint para obtener el reporte de detalle de calificaciones por ciclo escolar
+app.get('/reporteDetalleCalificacionesPorCiclo/:idCiclo', verificarToken, async (req, res) => {
+  const { idCiclo } = req.params;
+  
+  // Verificar que el rol del usuario sea 1
+  if (req.user.id_rol !== 1) {
+      return res.status(403).json({
+          success: false,
+          message: "No tienes permiso para acceder a este recurso.",
+      });
+  }
 
+  try {
+      // Llamar a la función de Supabase con el ID del ciclo escolar
+      const { data, error } = await supabase.rpc('tu_nombre_de_funcion_sql', { id_ciclo_escolar: idCiclo });
+
+      if (error) {
+          return res.status(500).json({
+              success: false,
+              message: "Error al obtener los datos.",
+              error: error.message,
+          });
+      }
+
+      return res.status(200).json({
+          success: true,
+          data,
+      });
+  } catch (error) {
+      return res.status(500).json({
+          success: false,
+          message: "Error en el servidor.",
+          error: error.message,
+      });
+  }
+});
 
 // Redirige a login.html cuando el usuario visita la raíz del sitio (/)
 app.get("/", (req, res) => {
@@ -594,7 +649,7 @@ app.get("/", (req, res) => {
 });
 
 // Iniciar el servidor
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`); // Usa comillas invertidas para interpolar
 });

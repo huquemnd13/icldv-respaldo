@@ -42,10 +42,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (data.success) {
                     localStorage.setItem("token", data.token); // Guarda el token en localStorage
-                    showNotification('Inicio de sesión exitoso.', false);
-                    setTimeout(() => {
-                        window.location.href = '/inicio.html'; // Redirige a la página de inicio
-                    }, 2000);
+                    
+                    // Decodifica el token
+                    const decodedToken = jwt_decode(data.token);
+                    
+                    // Redirige según el rol
+                    if (decodedToken.id_rol === 1) {
+                        showNotification('Inicio de sesión exitoso.', false);
+                        setTimeout(() => {
+                            window.location.href = '/administracion.html'; // Redirige a la página de administracion
+                        }, 2000);
+                    } else {
+                        showNotification('Inicio de sesión exitoso.', false);
+                        setTimeout(() => {
+                            window.location.href = '/inicio.html'; // Redirige a la página de inicio
+                        }, 2000);
+                    }
+
                 } else {
                     showNotification(data.message, true);
                 }
@@ -56,4 +69,5 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
 });
