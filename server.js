@@ -606,69 +606,44 @@ app.post('/guardar-observaciones', verificarToken, async (req, res) => {
 });
 
 // Endpoint para obtener el reporte de detalle de calificaciones por ciclo escolar
-app.get('/reporteDetalleCalificacionesPorCiclo', verificarToken, async (req, res) => {
-  const { idCiclo } = req.query;
+app.get("/reporteDetalleCalificacionesPorCiclo/:idCiclo", verificarToken, async (req, res) => {
+    const { idCiclo } = req.params;
 
-  // Validar que se haya pasado el parámetro requerido
-  if (!idCiclo) {
-    return res.status(400).json({ error: "Falta el parámetro idCiclo." });
-  }
-
-  // Verificar que el rol del usuario sea 1
-  if (req.user.id_rol !== 1) {
-    return res.status(403).json({
-      success: false,
-      message: "No tienes permiso para acceder a este recurso.",
-    });
-  }
-
-  try {
-    console.log("Parámetro recibido:", { idCiclo });
-
-    // Llama a la función de Supabase con el ID del ciclo escolar
-    const { data, error } = await supabase.rpc('obtener_calificaciones_con_promedio', { id_ciclo_escolar: parseInt(idCiclo) });
-
-    if (error) {
-      console.error("Error al obtener los datos:", error);
-      return res.status(500).json({
-        success: false,
-        message: "Error al obtener los datos.",
-        error: error.message,
-      });
+    // Validar que el rol del usuario sea correcto
+    if (req.user.id_rol !== 1) {
+        return res.status(403).json({
+            success: false,
+            message: "No tienes permiso para acceder a este recurso.",
+        });
     }
 
-    console.log("Datos obtenidos:", data);
+    try {
+        // Llamar a la función de Supabase
+        const { data, error } = await supabase.rpc('obtener_calificaciones_con_promedio', { _id_ciclo_escolar: parseInt(idCiclo) });
 
-    // Formatear los datos a JSON
-    const formattedData = data.map(item => ({
-      nombre_completo: item[0],
-      curp: item[1],
-      ciclo_escolar: item[2],
-      grado: item[3],
-      campo_formativo: item[4],
-      nombre_materia: item[5],
-      p1: item[6],
-      p2: item[7],
-      p3: item[8],
-      grado_escolar_id: item[9],
-      campo_formativo_id: item[10],
-      orden: item[11],
-    }));
+        if (error) {
+            console.error("Error al obtener los datos:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Error al obtener los datos.",
+                error: error.message,
+            });
+        }
 
-    // Devuelve los resultados como respuesta
-    return res.status(200).json({
-      success: true,
-      data: formattedData,
-    });
-  } catch (err) {
-    console.error("Error en la solicitud al servidor:", err);
-    return res.status(500).json({
-      success: false,
-      message: "Error interno del servidor.",
-      error: err.message,
-    });
-  }
+        return res.status(200).json({
+            success: true,
+            data,
+        });
+    } catch (error) {
+        console.error("Error en el servidor:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Error interno del servidor.",
+            error: error.message,
+        });
+    }
 });
+
 
 
 // Redirige a login.html cuando el usuario visita la raíz del sitio (/)
