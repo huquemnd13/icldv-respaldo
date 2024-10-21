@@ -346,7 +346,7 @@
                       cellObservacion.appendChild(selectObservacion);
                       row.appendChild(cellObservacion); // Agregar la celda de observaciones a la fila
 
-                      // Evento para controlar la selección sin Ctrl y limitar a 2 opciones
+                      // Evento para controlar la selección y limitar a 2 opciones
                       selectObservacion.addEventListener("click", async function (event) {
                           const option = event.target;
 
@@ -355,13 +355,20 @@
                               // Alterna manualmente el estado de la opción
                               option.selected = !option.selected;
 
+                              // Log para verificar el estado de la opción seleccionada
+                              console.log(`Opción seleccionada: ${option.value}, Estado: ${option.selected}`);
+
                               // Obtén todas las opciones seleccionadas
                               const selectedOptions = Array.from(selectObservacion.options).filter(opt => opt.selected);
+
+                              // Log para verificar las opciones seleccionadas
+                              console.log("Opciones seleccionadas en el select:", selectedOptions);
 
                               // Si ya hay más de 2 seleccionadas, desmarca la opción más reciente
                               if (selectedOptions.length > 2) {
                                   option.selected = false; // Desmarca la opción más reciente
                                   mostrarToast("Solo puedes seleccionar hasta 2 opciones.", "error");
+                                  console.log("Desmarcando la opción: ", option.value);
                               } else {
                                   // Obtener el ID de calificación directamente del dataset
                                   const calificacionIdSeleccionada = parseInt(selectObservacion.dataset.calificacion); // Asegúrate de que este dato esté disponible
@@ -369,10 +376,11 @@
                                   // Obtener las observaciones seleccionadas
                                   const observacionesSeleccionadas = selectedOptions.map(opt => opt.value);
 
+                                  // Log para verificar las observaciones seleccionadas
                                   console.log("Observaciones seleccionadas: ", observacionesSeleccionadas);
                                   console.log("ID de calificación seleccionada: ", calificacionIdSeleccionada);
 
-                                  // Llama a la función para guardar las observaciones seleccionadas solo si hay entre 1 y 2
+                                  // Llama a la función para guardar las observaciones seleccionadas
                                   if (observacionesSeleccionadas.length > 0) {
                                       try {
                                           await guardarObservacionesSeleccionadas(calificacionIdSeleccionada, observacionesSeleccionadas);
@@ -386,6 +394,9 @@
                               }
                           }
                       });
+
+
+
                     
                       // Llamar a manejarTooltip para el select de observaciones
                       manejarTooltip(selectObservacion);
