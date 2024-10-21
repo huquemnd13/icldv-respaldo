@@ -1,3 +1,9 @@
+// Esta función se llamaría al cargar la página de inicio de sesión
+window.onload = function() {
+    // Limpiar el localStorage
+    localStorage.clear();
+};
+
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const notification = document.getElementById('notification');
