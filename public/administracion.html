@@ -1,223 +1,134 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="noindex">
+    <meta name="robots" content="noindex" />
     <title>Pantalla de Administración</title>
     <link rel="stylesheet" href="style.css" />
     <script src="js/jwt-decode.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js" defer></script>
-    <script defer>
-        window.onload = function () {
-            const token = localStorage.getItem("token");
-            console.log("Token:", token);
-
-            if (!token) {
-                console.error("No se encontró el token en localStorage");
-                document.getElementById("nombre_usuario").textContent = "Invitado";
-                // Redirigir a login.html
-                window.location.href = "login.html";
-                return;
-            }
-
-            try {
-                // Decodificamos el token usando jwt_decode
-                const decodedToken = jwt_decode(token);
-                console.log("Token decodificado:", decodedToken);
-
-                // Mostramos el nombre del usuario en la pantalla
-                if (decodedToken && decodedToken.nombre_completo) {
-                    document.getElementById("nombre_usuario").textContent = decodedToken.nombre_completo;
-                } else {
-                    console.error("El token no contiene el campo 'nombre_completo'");
-                    document.getElementById("nombre_usuario").textContent = "Invitado";
-                }
-            } catch (error) {
-                console.error("Error al decodificar el token:", error);
-                document.getElementById("nombre_usuario").textContent = "Invitado";
-            }
-
-            const idCiclo = 1; // Cambia esto al ID del ciclo que quieras cargar
-            obtenerDatosCalificaciones(idCiclo);
-        };
-
-        async function obtenerDatosCalificaciones(idCiclo) {
-            const token = localStorage.getItem("token");
-            try {
-                const response = await fetch(`/reporteDetalleCalificacionesPorCiclo/${idCiclo}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error('Error al obtener los datos: ' + response.statusText);
-                }
-
-                const data = await response.json();
-                mostrarDatosEnTabla(data.data); // Llama a la función para mostrar los datos
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        }
-
-        function mostrarDatosEnTabla(datos) {
-            const tbody = document.getElementById("tbodyCalificaciones");
-            tbody.innerHTML = ""; // Limpiar tabla antes de llenar
-
-            datos.forEach(item => {
-                const row = document.createElement("tr");
-
-                // Verificar si la materia es -- PROMEDIO -- y agregar la clase
-                if (item.nombre_materia === '-- PROMEDIO --') {
-                    row.classList.add('promedio-row'); // Agregar la clase si es promedio
-                }
-
-                row.innerHTML = `
-                    <td>${item.nombre_completo_alumno}</td>
-                    <td>${item.curp}</td>
-                    <td>${item.ciclo_escolar}</td>
-                    <td>${item.grado_escolar}</td>
-                    <td>${item.descripcion_campo_formativo}</td>
-                    <td>${item.nombre_materia}</td>
-                    <td>${item.p1}</td>
-                    <td>${item.p2}</td>
-                    <td>${item.p3}</td>
-                `;
-                tbody.appendChild(row);
-            });
-        }
-
-
-        function exportarATablaExcel() {
-            const wb = XLSX.utils.table_to_book(document.getElementById('tablaCalificaciones'), { sheet: "Calificaciones" });
-            XLSX.writeFile(wb, 'reporte_calificaciones.xlsx');
-        }
-
-        // Función para manejar el cierre de sesión
-        function logout() {
-            localStorage.removeItem("token"); // Elimina el token de localStorage
-            window.location.href = "/login.html"; // Redirige al usuario a la página de inicio de sesión
-        }
-
-        document.addEventListener("DOMContentLoaded", function () {
-            // Maneja el cierre de sesión
-            const logoutButton = document.getElementById("logout-button");
-            if (logoutButton) {
-                logoutButton.addEventListener("click", logout); // Llama a la función de cierre de sesión
-            }
-
-            // Botón para exportar a Excel
-            const exportButton = document.getElementById("export-button");
-            if (exportButton) {
-                exportButton.addEventListener("click", exportarATablaExcel); // Llama a la función de exportación
-            }
-        });
-    </script>
+    <script src="js/xlsx.full.min.js" defer></script>
+    <script src="script_admin.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        .admin-container {
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            margin: 20px;
-        }
-        h1 {
-            font-size: 24px;
-            text-align: center;
-        }
-        .table-container {
-            margin-top: 20px;
-            overflow-x: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+      .admin-container {
+        padding: 20px;
+        background-color: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        margin: 20px;
+      }
+      h1 {
+        font-size: 24px;
+        text-align: center;
+      }
+      .table-container {
+        margin-top: 20px;
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
 
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 6px; /* Tamaño de la celda ajustado */
-            text-align: center;
-            font-size: 10px; /* Tamaño de la letra ajustado */
-        }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 6px; /* Tamaño de la celda ajustado */
+        text-align: center;
+        font-size: 10px; /* Tamaño de la letra ajustado */
+      }
 
-        th {
-            background-color: #f2f2f2;
-            position: sticky; /* Mantiene el encabezado fijo */
-            top: 0; /* Fija el encabezado en la parte superior */
-            z-index: 1; /* Asegura que el encabezado esté por encima de otros elementos */
-        }
-        .promedio-row {
-            background-color: #fffbaa; /* Color de fondo amarillo claro */
-            font-weight: bold; /* Negrita para resaltar el texto */
-        }
+      th {
+        background-color: #f2f2f2;
+        position: sticky; /* Mantiene el encabezado fijo */
+        top: 0; /* Fija el encabezado en la parte superior */
+        z-index: 1; /* Asegura que el encabezado esté por encima de otros elementos */
+      }
+      .promedio-row {
+        background-color: #fffbaa; /* Color de fondo amarillo claro */
+        font-weight: bold; /* Negrita para resaltar el texto */
+      }
 
-
-        .toast-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
-
+      .toast-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div id="header" style="display: flex; flex-direction: column; width: 100%">
-        <!-- Fila 1: Bienvenida, Ciclo Activo y Cerrar Sesión -->
-        <div id="welcome-message" style="display: flex; justify-content: space-between; align-items: center; width: 97%;">
-            <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
-                <img src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/MarcaLDV.png?v=1728659537627" alt="Logo" style="width: 300px; margin-right: 20px" />
-                <div style="flex: 1; text-align: left; margin-right: 20px">
-                    Bienvenid@,
-                    <span style="font-weight: bold" id="nombre_usuario">Usuario</span>
-                </div>
-                <div style="flex: 1; text-align: center; margin-right: 20px">
-                    <span id="ciclo_activo" style="font-weight: bold"></span>
-                    <!-- Aquí se mostrará el ciclo activo -->
-                </div>
-                <div style="flex: 1; text-align: right">
-                    <button id="logout-button">Cerrar sesión</button>
-                    <!-- Botón a la derecha -->
-                </div>
-            </div>
+      <!-- Fila 1: Bienvenida, Ciclo Activo y Cerrar Sesión -->
+      <div
+        id="welcome-message"
+        style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          width: 97%;
+        "
+      >
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+          "
+        >
+          <img
+            src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/MarcaLDV.png?v=1728659537627"
+            alt="Logo"
+            style="width: 300px; margin-right: 20px"
+          />
+          <div style="flex: 1; text-align: left; margin-right: 20px">
+            Bienvenid@,
+            <span style="font-weight: bold" id="nombre_usuario">Usuario</span>
+          </div>
+          <div style="flex: 1; text-align: center; margin-right: 20px">
+            <span id="ciclo_activo" style="font-weight: bold"></span>
+            <!-- Aquí se mostrará el ciclo activo -->
+          </div>
+          <div style="flex: 1; text-align: right">
+            <button id="logout-button">Cerrar sesión</button>
+            <!-- Botón a la derecha -->
+          </div>
         </div>
+      </div>
 
-        <!-- Fila 2: Dropdowns de Grado, Materia y Botón Cargar Alumnos -->
-        <div style="display: flex; align-items: center; margin-top: 20px">
-            <button id="export-button" style="margin-left: 20px">Exportar a Excel</button>
-        </div>
+      <!-- Fila 2: Dropdowns de Grado, Materia y Botón Cargar Alumnos -->
+      <div style="display: flex; align-items: center; margin-top: 20px">
+        <button id="export-button" style="margin-left: 20px">
+          Exportar a Excel
+        </button>
+      </div>
     </div>
     <div id="toast-container" class="toast-container"></div>
     <div class="table-container">
-        <table id="tablaCalificaciones">
-            <thead>
-                <tr>
-                    <th>Nombre del Alumno</th>
-                    <th>CURP</th>
-                    <th>Ciclo Escolar</th>
-                    <th>Grado Escolar</th>
-                    <th>Campo Formativo</th>
-                    <th>Materia</th>
-                    <th>P1</th>
-                    <th>P2</th>
-                    <th>P3</th>
-                </tr>
-            </thead>
-            <tbody id="tbodyCalificaciones"></tbody>
-        </table>
+      <table id="tablaCalificaciones">
+        <thead>
+          <tr>
+            <th>Nombre del Alumno</th>
+            <th>CURP</th>
+            <th>Ciclo Escolar</th>
+            <th>Grado Escolar</th>
+            <th>Campo Formativo</th>
+            <th>Materia</th>
+            <th>P1</th>
+            <th>P2</th>
+            <th>P3</th>
+          </tr>
+        </thead>
+        <tbody id="tbodyCalificaciones"></tbody>
+      </table>
     </div>
-</body>
+  </body>
 </html>
