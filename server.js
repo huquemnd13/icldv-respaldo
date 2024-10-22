@@ -234,7 +234,7 @@ app.post("/login", async (req, res) => {
             nombre_completo: nombreCompleto, // Nombre completo del profesor
           },
           process.env.JWT_SECRET, // Reemplaza con jwtSecret si no estás usando process.env
-          { algorithm: 'HS256', expiresIn: "1m" } // Expiración del token en 1 hora
+          { algorithm: 'HS256', expiresIn: "30m" } // Expiración del token en 1 hora
         );
 
         console.log("ID PROFESOR TABLA", profesor.id);
