@@ -364,7 +364,6 @@ let decodedToken; // Declara la variable en el ámbito global
                 }
 
                 observacionesGlobales = await response.json();
-                console.log("Observaciones recibidas:", observacionesGlobales); // Verifica las observaciones
             }
             return observacionesGlobales;
         }
@@ -410,16 +409,12 @@ let decodedToken; // Declara la variable en el ámbito global
                     body: JSON.stringify(observacionData)
                 });
 
-                const result = await response.json();
-                if (response.ok) {
-                    console.log("Observaciones guardadas:", result);
-                } else {
-                    console.error("Error al guardar observaciones:", result);
-                }
+                // No se muestra ningún mensaje ni se pinta información en la consola
             } catch (error) {
-                console.error("Error de red:", error);
+                // No se muestra ningún mensaje ni se pinta información en la consola
             }
         }
+
 
 
         // Asegúrate de que este bloque se ejecute cuando el DOM esté listo
@@ -548,7 +543,6 @@ let decodedToken; // Declara la variable en el ámbito global
 
           // Verificar si el token existe
           if (!token) {
-              console.error("Token no encontrado");
               mostrarToast("No se ha encontrado el token de autorización.", "error"); // Muestra un toast de error
               return; // Salir de la función si no hay token
           }
@@ -583,7 +577,6 @@ let decodedToken; // Declara la variable en el ámbito global
               return response.json();
           })
           .then((data) => {
-              console.log("Respuesta del servidor:", data);
               mostrarToast("Calificación actualizada correctamente."); // Muestra un toast de éxito
           })
           .catch((error) => {
@@ -591,54 +584,6 @@ let decodedToken; // Declara la variable en el ámbito global
               mostrarToast("Error al actualizar la calificación.", "error"); // Muestra un toast de error
           });
       }
-
-
-      /*
-        function obtenerObservaciones(idMateria, selectElement) {
-          const token = localStorage.getItem("token"); // Obtén el token del localStorage
-
-          // Verificar si el token existe
-          if (!token) {
-              console.error("Token no encontrado en el localStorage.");
-              return; // Salir de la función si no hay token
-          }
-
-          console.log("ID de Materia:", idMateria); // Verifica el ID de materia
-          fetch(`/obtener-observaciones-materia?id_materia=${idMateria}`, {
-              method: 'GET',
-              headers: {
-                  'Authorization': `Bearer ${token}` // Asegúrate de que el token aquí es válido
-              }
-          })
-              .then((response) => {
-                  if (!response.ok) {
-                      throw new Error(`Error al obtener observaciones: ${response.status}`);
-                  }
-                  return response.json();
-              })
-              .then((observaciones) => {
-                  console.log("Observaciones recibidas:", observaciones); // Verifica las observaciones
-
-                  // Limpiar el select antes de agregar nuevas opciones
-                  selectElement.innerHTML = '';
-
-                  // Agregar opciones al select
-                  observaciones.forEach((observacion, index) => {
-                      const option = document.createElement("option");
-                      option.value = observacion.id;
-                      option.text = `${index + 1}. ${observacion.descripcion}`; // Agregar el número de índice a la descripción
-                      selectElement.appendChild(option);
-                  });
-
-                  // Establecer el tamaño dinámico basado en el número de observaciones
-                  const numOptions = observaciones.length;
-                  selectElement.size = Math.min(numOptions, 5); // Máximo 5 opciones visibles
-              })
-              .catch((error) => {
-                  console.error("Error al cargar observaciones:", error);
-              });
-      }
-      */
 
       // Función para manejar el cierre de sesión
       function logout() {
