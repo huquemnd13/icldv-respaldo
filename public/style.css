@@ -3,48 +3,46 @@ body {
   height: 100%;
   margin: 0;
   display: flex;
-  justify-content: center; /* Centra horizontalmente */
-  align-items: center; /* Centra verticalmente */
+  justify-content: center;
+  align-items: center;
   font-family: "Roboto", sans-serif;
 }
 
-/* Fondo de las otras páginas */
 body::before {
   content: "";
-  position: fixed; /* Cambia a 'fixed' para que cubra toda la pantalla */
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   background-image: url("https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/LogoLDVFondo.png?v=1728658612450");
-  background-size: cover; /* Asegura que la imagen cubra todo el fondo */
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.2; /* Mantén la opacidad deseada */
-  z-index: -1; /* Asegúrate de que el fondo esté detrás de otros elementos */
+  opacity: 0.2;
+  z-index: -1;
 }
 
-/* Estilo para la página de inicio de sesión */
 body.login-background {
-  background-color: #fafafa; /* Cambia esto al color que desees */
-  opacity: 1; /* Asegúrate de que la opacidad sea 1 para el fondo de color */
+  background-color: #fafafa;
+  opacity: 1;
 }
 
 #login-forms {
   position: relative;
-  z-index: 1; /* Asegúrate de que el formulario esté por delante */
+  z-index: 1;
   padding: 20px;
   background-color: rgba(255, 255, 255, 1);
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   text-align: center;
   width: 350px;
-  height: 300px; /* Mantén la altura definida */
+  height: 300px;
 
-  display: flex; /* Habilita flexbox */
-  flex-direction: column; /* Apila los elementos verticalmente */
-  justify-content: center; /* Centra verticalmente */
-  align-items: center; /* Centra horizontalmente */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
   color: black;
   font-size: 14px;
@@ -52,20 +50,20 @@ body.login-background {
 
 input {
   width: 100%;
-  padding: 8px; /* Reduce el padding para hacerlos más pequeños */
-  margin: 8px 0; /* Reduce el margen para compactar el espacio */
+  padding: 8px;
+  margin: 8px 0;
   border: 1px solid #cccccc;
   border-radius: 5px;
   font-family: "Roboto", sans-serif;
   box-sizing: border-box;
-  font-size: 14px; /* Ajusta el tamaño de fuente para que sea más pequeño */
+  font-size: 14px;
 }
 
 button {
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
-  background-color: #01c5ff; /* Azul celeste claro */
+  background-color: #01c5ff;
   color: white;
   font-family: "Roboto", sans-serif;
   cursor: pointer;
@@ -76,7 +74,7 @@ button {
 }
 
 button:hover {
-  background-color: #008cb6; /* Color más oscuro al pasar el mouse */
+  background-color: #008cb6;
 }
 
 #header {
@@ -85,7 +83,7 @@ button:hover {
   align-items: center;
   padding: 10px;
   background-color: rgba(255, 255, 255, 1);
-  margin-bottom: 10px; /* Espacio en la parte inferior */
+  margin-bottom: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   position: fixed;
   top: 0;
@@ -139,95 +137,90 @@ button:hover {
   color: #ffffff;
 }
 
-/* Contenedor que envuelve la tabla */
 .table-container {
-  width: 900px; /* Ancho fijo para el contenedor */
-  height: 400px; /* Altura fija para el contenedor */
-  overflow-y: auto; /* Permite el desplazamiento vertical si la tabla es muy alta */
-  margin: 20px auto; /* Centra el contenedor horizontalmente */
-  border: 1px solid #dddddd; /* Borde para el contenedor */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Sombra para el contenedor */
-  background-color: white; /* Fondo blanco para el contenedor */
-  display: flex; /* Para centrar el contenido dentro del contenedor */
-  flex-direction: column; /* Apila los elementos verticalmente */
+  width: 900px;
+  height: 400px;
+  overflow-y: auto;
+  margin: 20px auto;
+  border: 1px solid #dddddd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Asegúrate de que el contenido de la tabla también se ajuste bien */
 #alumnos-table {
-  width: 100%; /* Asegúrate de que la tabla ocupe el 100% del contenedor */
-  max-width: 1200px; /* Máximo ancho de la tabla */
+  width: 100%;
+  max-width: 1200px;
   border-collapse: collapse;
   background-color: white;
 }
 
 #alumnos-table td {
   border: 1px solid #dddddd;
-  font-size: 12px; /* Tamaño de letra más pequeño */
-  padding: 8px; /* Reduce el padding para hacer las filas más angostas */
+  font-size: 12px;
+  padding: 8px;
   text-align: left;
 }
 
-/* Cambia el tamaño de la letra aquí */
 #alumnos-table th,
 #alumnos-table td {
-  font-size: 12px; /* Tamaño de letra más pequeño */
+  font-size: 12px;
 }
 
 #alumnos-table th {
-  background-color: #01c5ff; /* Cambia a azul celeste claro para encabezados */
+  background-color: #01c5ff;
   color: white;
-  font-size: 12px; /* Tamaño de letra más pequeño */
+  font-size: 12px;
   text-transform: uppercase;
-  position: sticky; /* Fija el encabezado */
-  top: 0; /* Fija el encabezado en la parte superior al hacer scroll */
-  z-index: 100; /* Asegura que el encabezado esté por encima del contenido */
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 #alumnos-table tr:nth-child(even) {
-  background-color: #f6f6f6; /* Color de fondo para filas pares */
+  background-color: #f6f6f6;
 }
 
 #alumnos-table tr:nth-child(odd) {
-  background-color: #ffffff; /* Color de fondo diferente para filas impares */
-  color: black; /* Color del texto en filas impares */
+  background-color: #ffffff;
+  color: black;
 }
 
-/* Efecto hover para filas */
 #alumnos-table tr:hover {
-  background-color: #d9d9d9; /* Color de fondo al pasar el mouse */
-  color: black; /* Color del texto al pasar el mouse */
+  background-color: #d9d9d9;
+  color: black;
 }
 
-/* Especificar anchos para las columnas */
 #alumnos-table th:nth-child(1),
 #alumnos-table td:nth-child(1) {
-  width: 10%; /* Primera columna más estrecha */
-  display: none; /* Oculta la segunda columna */
+  width: 10%;
+  display: none;
 }
 
 #alumnos-table th:nth-child(2),
 #alumnos-table td:nth-child(2) {
-  width: 10%; /* Segunda columna más estrecha */
-  display: none; /* Oculta la segunda columna */
+  width: 10%;
+  display: none;
 }
 
 #alumnos-table th:nth-child(3),
 #alumnos-table td:nth-child(3) {
-  width: 30%; /* Tercera columna más ancha */
-}
-#alumnos-table th:nth-child(4),
-#alumnos-table td:nth-child(4) {
-  width: 20%; /* Tercera columna más ancha */
+  width: 30%;
 }
 
-/* Las otras columnas ocuparán el espacio restante */
+#alumnos-table th:nth-child(4),
+#alumnos-table td:nth-child(4) {
+  width: 20%;
+}
+
 #alumnos-table th:nth-child(4),
 #alumnos-table td:nth-child(4),
 #alumnos-table th:nth-child(5),
 #alumnos-table td:nth-child(5),
 #alumnos-table th:nth-child(6),
 #alumnos-table td:nth-child(6) {
-  width: auto; /* Distribuir el ancho restante de manera equitativa */
+  width: auto;
 }
 
 .toast-container {
@@ -263,15 +256,14 @@ button:hover {
 }
 
 .toast.error {
-  background-color: #dc3545; /* Rojo para error */
+  background-color: #dc3545;
 }
 
 .tooltip {
-    position: absolute;
-    background-color: rgba(0, 0, 0, 0.7);
-    color: #fff;
-    padding: 5px;
-    border-radius: 5px;
-    z-index: 1000;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 5px;
+  border-radius: 5px;
+  z-index: 1000;
 }
-

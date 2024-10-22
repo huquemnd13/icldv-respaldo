@@ -1,6 +1,4 @@
-// Esta función se llamaría al cargar la página de inicio de sesión
 window.onload = function() {
-    // Limpiar el localStorage
     localStorage.clear();
 };
 
@@ -8,27 +6,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('login-form');
     const notification = document.getElementById('notification');
 
-    // Función para mostrar notificaciones
     function showNotification(message, isError = false) {
         notification.textContent = message;
-        notification.className = 'notification show'; // Mostrar notificación
+        notification.className = 'notification show';
         if (isError) {
-            notification.classList.add('error'); // Agregar clase de error
-            notification.classList.remove('success'); // Asegurarse de que no tenga la clase de éxito
+            notification.classList.add('error');
+            notification.classList.remove('success');
         } else {
-            notification.classList.add('success'); // Agregar clase de éxito
-            notification.classList.remove('error'); // Asegurarse de que no tenga la clase de error
+            notification.classList.add('success');
+            notification.classList.remove('error');
         }
-        // Ocultar notificación después de 3 segundos
         setTimeout(() => {
             notification.classList.remove('show');
         }, 3000);
     }
 
-
-    // Manejo del formulario de inicio de sesión
     if (loginForm) {
-        // Manejo del inicio de sesión
         loginForm.addEventListener('submit', async (event) => {
             event.preventDefault();
 
@@ -47,21 +40,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (data.success) {
-                    localStorage.setItem("token", data.token); // Guarda el token en localStorage
-                    
-                    // Decodifica el token
+                    localStorage.setItem("token", data.token);
                     const decodedToken = jwt_decode(data.token);
                     
-                    // Redirige según el rol
                     if (decodedToken.id_rol === 1) {
                         showNotification('Inicio de sesión exitoso.', false);
                         setTimeout(() => {
-                            window.location.href = '/administracion.html'; // Redirige a la página de administracion
+                            window.location.href = '/administracion.html';
                         }, 2000);
                     } else {
                         showNotification('Inicio de sesión exitoso.', false);
                         setTimeout(() => {
-                            window.location.href = '/inicio.html'; // Redirige a la página de inicio
+                            window.location.href = '/inicio.html';
                         }, 2000);
                     }
 

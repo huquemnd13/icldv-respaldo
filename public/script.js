@@ -1,113 +1,100 @@
-let decodedToken; // Declara la variable en el ámbito global
-let cicloActivoGlobal; // Declara una variable global para el ciclo activo
-let materiaSeleccionadaId; // Variable global para el ID de la materia seleccionada
-let textoMateriaSeleccionada; // Variable global para el texto de la materia seleccionada
-let calificacionIdSeleccionada; // Variable global para el id de la calificacion a actualizar
+let decodedToken; 
+let cicloActivoGlobal; 
+let materiaSeleccionadaId; 
+let textoMateriaSeleccionada; 
+let calificacionIdSeleccionada; 
 
-// Decodificar el token y mostrar el nombre del profesor
 window.onload = async function () {
-  const token = localStorage.getItem("token"); // Obtén el token del localStorage
+  const token = localStorage.getItem("token"); 
 
   if (token) {
     try {
-      decodedToken = jwt_decode(token); // Decodifica el token y asigna a la variable global
+      decodedToken = jwt_decode(token); 
       const nombreProfesor =
         decodedToken.nombre_completo || "Campo nombre_completo no encontrado";
-      document.getElementById("nombre_usuario").textContent = nombreProfesor; // Muestra el nombre en el span
+      document.getElementById("nombre_usuario").textContent = nombreProfesor; 
 
-      // Añadir event listener para cargar alumnos al hacer clic en el botón
       document
         .getElementById("cargar-alumnos-button")
         .addEventListener("click", cargarAlumnos);
 
-      // Hacer petición al servidor para obtener el ciclo escolar activo
       const responseCiclo = await fetch("/obtener-ciclos-escolares", {
         headers: {
-          Authorization: `Bearer ${token}`, // Envía el token en los headers
+          Authorization: `Bearer ${token}`, 
         },
       });
 
       if (responseCiclo.ok) {
-        const cicloActivo = await responseCiclo.json(); // Obtiene el ciclo activo en formato JSON
-        cicloActivoGlobal = cicloActivo; // Asigna el ciclo activo a la variable global
+        const cicloActivo = await responseCiclo.json(); 
+        cicloActivoGlobal = cicloActivo; 
 
-        // Asegúrate de que el elemento span para el ciclo activo esté presente
         const cicloActivoSpan = document.getElementById("ciclo_activo");
-
-        // Mostrar el ciclo activo en el DOM
-        cicloActivoSpan.textContent = `Ciclo: ${cicloActivo.inicio_ciclo} - ${cicloActivo.fin_ciclo}`; // Muestra el ciclo activo
+        cicloActivoSpan.textContent = `Ciclo: ${cicloActivo.inicio_ciclo} - ${cicloActivo.fin_ciclo}`; 
       } else {
         console.error("Error al obtener el ciclo escolar activo.");
       }
 
-      // Hacer petición al servidor para obtener los grados del profesor
       const responseGrados = await fetch("/obtener-grados-profesor", {
         headers: {
-          Authorization: `Bearer ${token}`, // Envía el token en los headers
+          Authorization: `Bearer ${token}`, 
         },
       });
 
       if (responseGrados.ok) {
-        const grados = await responseGrados.json(); // Obtiene los grados en formato JSON
+        const grados = await responseGrados.json(); 
         const selectGrados = document.getElementById("grados");
 
-        // Llenar el dropdown de grados
         grados.forEach((grado) => {
           const option = document.createElement("option");
-          option.value = grado.id; // Usa el ID del grado como valor
-          option.textContent = grado.descripcion; // Usa la descripción del grado como texto
-          selectGrados.appendChild(option); // Añadir opción al select
+          option.value = grado.id; 
+          option.textContent = grado.descripcion; 
+          selectGrados.appendChild(option); 
         });
       } else {
         console.error("Error al obtener los grados.");
       }
 
-      // Listener para el cambio en el dropdown
       document
         .getElementById("grados")
         .addEventListener("change", async (event) => {
-          const gradoId = event.target.value; // Obtén el ID del grado seleccionado
-          // Verifica que se haya seleccionado un grado
+          const gradoId = event.target.value; 
           if (gradoId) {
             try {
               const response = await fetch(
                 `/obtener-materias-profesor-grado?grado_id=${gradoId}`,
                 {
                   headers: {
-                    Authorization: `Bearer ${token}`, // Envía el token en los headers
+                    Authorization: `Bearer ${token}`, 
                   },
                 }
               );
 
               if (response.ok) {
-                const materias = await response.json(); // Obtén las materias en formato JSON
-                // Imprimir las materias en la consola
+                const materias = await response.json(); 
                 const selectMaterias = document.getElementById("materias");
                 selectMaterias.innerHTML = "";
 
-                // Agregar la opción por defecto
                 const defaultOption = document.createElement("option");
-                defaultOption.value = ""; // O '0' si deseas un valor por defecto
+                defaultOption.value = ""; 
                 defaultOption.textContent = "Selecciona una materia";
-                defaultOption.disabled = true; // Deshabilitar opción por defecto
-                defaultOption.selected = true; // Seleccionarla como la opción por defecto
-                selectMaterias.appendChild(defaultOption); // Añadir la opción por defecto
+                defaultOption.disabled = true; 
+                defaultOption.selected = true; 
+                selectMaterias.appendChild(defaultOption); 
 
-                // Agregar las materias obtenidas al select
                 materias.forEach((materia) => {
                   const option = document.createElement("option");
-                  option.value = materia.materia_id; // ID de la materia
-                  option.textContent = materia.materia_nombre; // Nombre de la materia
-                  selectMaterias.appendChild(option); // Añadir la opción al select
+                  option.value = materia.materia_id; 
+                  option.textContent = materia.materia_nombre; 
+                  selectMaterias.appendChild(option); 
                 });
-                // Listener para capturar la materia seleccionada
+
                 document
                   .getElementById("materias")
                   .addEventListener("change", (event) => {
-                    const selectMateria = event.target; // El elemento select que disparó el evento
-                    materiaSeleccionadaId = selectMateria.value; // Guarda el ID de la materia seleccionada
+                    const selectMateria = event.target; 
+                    materiaSeleccionadaId = selectMateria.value; 
                     textoMateriaSeleccionada =
-                      selectMateria.options[selectMateria.selectedIndex].text; // Obtiene el texto de la opción seleccionada
+                      selectMateria.options[selectMateria.selectedIndex].text; 
                   });
               } else {
                 console.error(
@@ -128,12 +115,10 @@ window.onload = async function () {
       );
     }
   } else {
-    // Si no hay token, redirige al usuario al login u otra acción
-    window.location.href = "/login.html"; // Redirige a la página de login
+    window.location.href = "/login.html"; 
   }
 };
 
-// Función para crear un dropdown con las calificaciones
 function createCalificacionDropdown(
   calificacion,
   tiempos,
@@ -143,65 +128,58 @@ function createCalificacionDropdown(
   const select = document.createElement("select");
   select.classList.add("calificacion-dropdown");
 
-  // Obtén el tiempo correspondiente
   const tiempo = tiempos[tiempoIndex];
 
-  // Habilitar o deshabilitar el dropdown según la vigencia
   if (
     tiempo &&
     currentDateTime >= new Date(tiempo.fecha_inicio) &&
     currentDateTime <= new Date(tiempo.fecha_fin)
   ) {
-    select.disabled = false; // Habilitar
+    select.disabled = false; 
   } else {
-    select.disabled = true; // Deshabilitar
+    select.disabled = true; 
   }
 
   for (let i = 0; i <= 10; i++) {
     const option = document.createElement("option");
-    option.value = i; // Valor de la opción
-    option.textContent = i; // Texto que se mostrará
+    option.value = i; 
+    option.textContent = i; 
     if (calificacion === i) {
-      option.selected = true; // Marca como seleccionado si coincide con la calificación
+      option.selected = true; 
     } else if (!calificacion && i === 0) {
-      option.selected = true; // Selecciona 0 si no hay calificación
+      option.selected = true; 
     }
-    select.appendChild(option); // Agrega la opción al dropdown
+    select.appendChild(option); 
   }
 
-  return select; // Devuelve el elemento select creado
+  return select; 
 }
-
-// Función para cargar los alumnos según el grado y ciclo escolar seleccionados
-let observacionesGlobales = []; // Variable global para almacenar observaciones
+let observacionesGlobales = [];
 
 async function cargarAlumnos() {
-  const token = localStorage.getItem("token"); // Obtener el token del almacenamiento local
+  const token = localStorage.getItem("token");
   if (token) {
     try {
-      const gradoId = document.getElementById("grados").value; // Obtener el ID del grado seleccionado
-      const cicloId = cicloActivoGlobal.id; // Obtener el ID del ciclo seleccionado
-      const profesorId = decodedToken.id_profesor; // Obtener el ID del profesor desde el token
+      const gradoId = document.getElementById("grados").value;
+      const cicloId = cicloActivoGlobal.id;
+      const profesorId = decodedToken.id_profesor;
 
-      // Verificar que ambos valores están seleccionados
       if (!gradoId || !materiaSeleccionadaId || !profesorId) {
         console.error("Por favor selecciona un grado y un ciclo escolar.");
         return;
       }
 
-      // Obtener detalles de las calificaciones desde el nuevo endpoint
       const response = await fetch(
         `/calificaciones?id_ciclo_escolar=${cicloId}&id_grado_nivel_escolar=${gradoId}&id_profesor=${profesorId}&id_materia=${materiaSeleccionadaId}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Incluir el token aquí
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      // Manejar respuesta de calificaciones
       if (!response.ok) {
         if (response.status === 401) {
           alert("No estás autorizado. Por favor, inicia sesión nuevamente.");
@@ -212,19 +190,17 @@ async function cargarAlumnos() {
 
       const calificaciones = await response.json();
 
-      // Obtener los periodos
       const responsePeriodos = await fetch(
         `/periodos?id_ciclo_escolar=${cicloId}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Incluir el token aquí
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      // Manejar respuesta de periodos
       if (!responsePeriodos.ok) {
         if (responsePeriodos.status === 401) {
           alert("No estás autorizado. Por favor, inicia sesión nuevamente.");
@@ -235,14 +211,10 @@ async function cargarAlumnos() {
 
       const periodos = await responsePeriodos.json();
 
-      // Obtener las observaciones solo una vez y almacenarlas en la variable global
       if (observacionesGlobales.length === 0) {
-        observacionesGlobales = await cargarObservaciones(
-          materiaSeleccionadaId
-        ); // Llamada para cargar las observaciones
+        observacionesGlobales = await cargarObservaciones(materiaSeleccionadaId);
       }
 
-      // Buscar el periodo activo
       const periodoActivo = periodos.find((periodo) =>
         esPeriodoActivo(periodo)
       );
@@ -265,13 +237,11 @@ async function cargarAlumnos() {
       const tableBody = document
         .getElementById("alumnos-table")
         .querySelector("tbody");
-      tableBody.innerHTML = ""; // Limpiar el cuerpo de la tabla
+      tableBody.innerHTML = "";
 
-      // Para cada calificación recibida
       for (const calificacion of calificaciones) {
         const row = document.createElement("tr");
 
-        // Celdas de calificación, alumno y nombre
         const cellCalificacionId = document.createElement("td");
         cellCalificacionId.textContent = calificacion.id_calificacion;
         row.appendChild(cellCalificacionId);
@@ -288,65 +258,55 @@ async function cargarAlumnos() {
         cellNombreCompleto.textContent = calificacion.nombre_completo;
         row.appendChild(cellNombreCompleto);
 
-        // Crear dropdowns de calificación para cada periodo
         const cellP1 = document.createElement("td");
-        cellP1.dataset.periodo = 1; // Establecer data-periodo para el periodo 1
+        cellP1.dataset.periodo = 1;
         cellP1.appendChild(
           crearDropdown(calificacion.periodo_1, periodos[0], 1)
-        ); // Pasar periodo 1
+        );
         row.appendChild(cellP1);
 
         const cellP2 = document.createElement("td");
-        cellP2.dataset.periodo = 2; // Establecer data-periodo para el periodo 2
+        cellP2.dataset.periodo = 2;
         cellP2.appendChild(
           crearDropdown(calificacion.periodo_2, periodos[1], 2)
-        ); // Pasar periodo 2
+        );
         row.appendChild(cellP2);
 
         const cellP3 = document.createElement("td");
-        cellP3.dataset.periodo = 3; // Establecer data-periodo para el periodo 3
+        cellP3.dataset.periodo = 3;
         cellP3.appendChild(
           crearDropdown(calificacion.periodo_3, periodos[2], 3)
-        ); // Pasar periodo 3
+        );
         row.appendChild(cellP3);
 
-        // Crear la celda y el select
         const cellObservacion = document.createElement("td");
         const selectObservacion = document.createElement("select");
-        selectObservacion.multiple = true; // Hacer el select múltiple
-        selectObservacion.size = 6; // Limitar a 6 opciones visibles
-        selectObservacion.dataset.alumno = calificacion.id_alumno; // Almacenar el id del alumno como referencia
-        selectObservacion.dataset.calificacion = calificacion.id_calificacion; // Almacenar el id de calificación
+        selectObservacion.multiple = true;
+        selectObservacion.size = 6;
+        selectObservacion.dataset.alumno = calificacion.id_alumno;
+        selectObservacion.dataset.calificacion = calificacion.id_calificacion;
 
-        // Llenar el select con las observaciones obtenidas
         llenarSelectConObservaciones(selectObservacion, observacionesGlobales);
         cellObservacion.appendChild(selectObservacion);
-        row.appendChild(cellObservacion); // Agregar la celda de observaciones a la fila
+        row.appendChild(cellObservacion);
 
-        // Evento para controlar la selección y limitar a 2 opciones
         selectObservacion.addEventListener("change", async function () {
-          // Obtén todas las opciones seleccionadas
           const selectedOptions = Array.from(selectObservacion.options).filter(
             (opt) => opt.selected
           );
-          // Si ya hay más de 2 seleccionadas, restablece la selección
           if (selectedOptions.length > 2) {
-            // Desmarca la última opción seleccionada
             const lastSelectedOption =
               selectedOptions[selectedOptions.length - 1];
-            lastSelectedOption.selected = false; // Desmarca la opción más reciente
+            lastSelectedOption.selected = false;
             mostrarToast("Solo puedes seleccionar hasta 2 opciones.", "error");
           } else {
-            // Obtener el ID de calificación directamente del dataset
             const calificacionIdSeleccionada = parseInt(
               selectObservacion.dataset.calificacion
-            ); // Asegúrate de que este dato esté disponible
+            );
 
-            // Obtener las observaciones seleccionadas
             const observacionesSeleccionadas = selectedOptions.map(
               (opt) => opt.value
             );
-            // Llama a la función para guardar las observaciones seleccionadas
             if (observacionesSeleccionadas.length > 0) {
               try {
                 await guardarObservacionesSeleccionadas(
@@ -356,19 +316,16 @@ async function cargarAlumnos() {
                 mostrarToast(
                   "Observaciones guardadas exitosamente.",
                   "success"
-                ); // Mensaje de éxito
+                );
               } catch (error) {
                 console.error("Error al guardar observaciones:", error);
-                mostrarToast("Error al guardar observaciones.", "error"); // Mensaje de error
+                mostrarToast("Error al guardar observaciones.", "error");
               }
             }
           }
         });
 
-        // Llamar a manejarTooltip para el select de observaciones
         manejarTooltip(selectObservacion);
-
-        // Agregar fila al cuerpo de la tabla
         tableBody.appendChild(row);
       }
     } catch (error) {
