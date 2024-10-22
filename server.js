@@ -8,6 +8,7 @@ const { createClient } = require("@supabase/supabase-js");
 const path = require("path"); // Importar el módulo path
 const jwt = require("jsonwebtoken"); // Asegúrate de instalar jsonwebtoken con npm
 const jwtSecret = process.env.JWT_SECRET;
+const helmet = require('helmet');
 
 const moment = require('moment-timezone'); // Importa moment-timezone
 
@@ -41,6 +42,20 @@ app.use(
   })
 );
 
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "https://fonts.googleapis.com"],  // Agrega cualquier CDN de estilos
+      imgSrc: ["'self'", "data:"],
+      fontSrc: ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"], // Fuentes externas
+      frameAncestors: ["'none'"],
+      upgradeInsecureRequests: [],
+      // reportUri: '/csp-violation-report-endpoint' // Habilita el informe de violaciones si es necesario
+    },
+  })
+);
 
 
 // Ruta para el formulario de login
