@@ -10,9 +10,7 @@ let decodedToken; // Declara la variable en el ámbito global
 
         if (token) {
           try {
-            console.log(token);
             decodedToken = jwt_decode(token); // Decodifica el token y asigna a la variable global
-            console.log(decodedToken.nombre_completo);
             const nombreProfesor =
               decodedToken.nombre_completo ||
               "Campo nombre_completo no encontrado";
@@ -71,7 +69,6 @@ let decodedToken; // Declara la variable en el ámbito global
               .getElementById("grados")
               .addEventListener("change", async (event) => {
                 const gradoId = event.target.value; // Obtén el ID del grado seleccionado
-                console.log(gradoId);
                 // Verifica que se haya seleccionado un grado
                 if (gradoId) {
                   try {
@@ -87,7 +84,6 @@ let decodedToken; // Declara la variable en el ámbito global
                     if (response.ok) {
                       const materias = await response.json(); // Obtén las materias en formato JSON
                       // Imprimir las materias en la consola
-                      console.log("Materias recuperadas:", materias);
                       const selectMaterias =
                         document.getElementById("materias");
                       selectMaterias.innerHTML = "";
@@ -114,9 +110,6 @@ let decodedToken; // Declara la variable en el ámbito global
                             const selectMateria = event.target; // El elemento select que disparó el evento
                             materiaSeleccionadaId = selectMateria.value; // Guarda el ID de la materia seleccionada
                             textoMateriaSeleccionada = selectMateria.options[selectMateria.selectedIndex].text; // Obtiene el texto de la opción seleccionada
-
-                            console.log("Materia seleccionada ID:", materiaSeleccionadaId); // Verificar el ID en consola
-                            console.log("Materia seleccionada texto:", textoMateriaSeleccionada); // Verificar el texto en consola
                           });
                     } else {
                       console.error(
@@ -128,7 +121,6 @@ let decodedToken; // Declara la variable en el ámbito global
                     console.error("Error en la solicitud:", err);
                   }
                 } else {
-                  console.log("Por favor, selecciona un grado.");
                 }
               });
           } catch (error) {
@@ -181,26 +173,6 @@ let decodedToken; // Declara la variable en el ámbito global
 
         return select; // Devuelve el elemento select creado
       }
-
-      /* 
-      async function cargarTiempos(cicloId, token) {
-        const response = await fetch(
-          `/obtener-fechas-ciclo?ciclo_id=${cicloId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`, // Envía el token en los headers
-            },
-          }
-        );
-
-        if (response.ok) {
-          return await response.json(); // Devuelve los tiempos en formato JSON
-        } else {
-          console.error("Error al obtener los tiempos escolares.");
-          return []; // Retorna un arreglo vacío en caso de error
-        }
-      }
-  	  */
 
       // Función para cargar los alumnos según el grado y ciclo escolar seleccionados
         let observacionesGlobales = []; // Variable global para almacenar observaciones
@@ -264,7 +236,6 @@ let decodedToken; // Declara la variable en el ámbito global
 
                   // Obtener las observaciones solo una vez y almacenarlas en la variable global
                   if (observacionesGlobales.length === 0) {
-                      console.log(materiaSeleccionadaId);
                       observacionesGlobales = await cargarObservaciones(materiaSeleccionadaId); // Llamada para cargar las observaciones
                   }
 
@@ -336,33 +307,22 @@ let decodedToken; // Declara la variable en el ámbito global
                       selectObservacion.addEventListener("change", async function () {
                           // Obtén todas las opciones seleccionadas
                           const selectedOptions = Array.from(selectObservacion.options).filter(opt => opt.selected);
-
-                          // Log para verificar las opciones seleccionadas
-                          console.log("Opciones seleccionadas en el select:", selectedOptions);
-
                           // Si ya hay más de 2 seleccionadas, restablece la selección
                           if (selectedOptions.length > 2) {
                               // Desmarca la última opción seleccionada
                               const lastSelectedOption = selectedOptions[selectedOptions.length - 1];
                               lastSelectedOption.selected = false; // Desmarca la opción más reciente
                               mostrarToast("Solo puedes seleccionar hasta 2 opciones.", "error");
-                              console.log("Desmarcando la opción: ", lastSelectedOption.value);
                           } else {
                               // Obtener el ID de calificación directamente del dataset
                               const calificacionIdSeleccionada = parseInt(selectObservacion.dataset.calificacion); // Asegúrate de que este dato esté disponible
 
                               // Obtener las observaciones seleccionadas
                               const observacionesSeleccionadas = selectedOptions.map(opt => opt.value);
-
-                              // Log para verificar las observaciones seleccionadas
-                              console.log("Observaciones seleccionadas: ", observacionesSeleccionadas);
-                              console.log("ID de calificación seleccionada: ", calificacionIdSeleccionada);
-
                               // Llama a la función para guardar las observaciones seleccionadas
                               if (observacionesSeleccionadas.length > 0) {
                                   try {
                                       await guardarObservacionesSeleccionadas(calificacionIdSeleccionada, observacionesSeleccionadas);
-                                      console.log("Observaciones guardadas exitosamente.");
                                       mostrarToast("Observaciones guardadas exitosamente.", "success"); // Mensaje de éxito
                                   } catch (error) {
                                       console.error("Error al guardar observaciones:", error);
@@ -440,8 +400,6 @@ let decodedToken; // Declara la variable en el ámbito global
                 _id_usuario: id_usuario                // Asegúrate de que id_usuario esté definido
             };
 
-            console.log("Datos a enviar:", observacionData); // Verifica los datos a enviar
-
             try {
                 const response = await fetch("/guardar-observaciones", {
                     method: "POST",
@@ -487,9 +445,6 @@ let decodedToken; // Declara la variable en el ámbito global
                     // Obtener el ID de calificación directamente del dataset
                     const id_calificacion = parseInt(selectObservacion.dataset.calificacion); // Asegúrate de que este dato esté disponible
 
-                    console.log("Observaciones seleccionadas: ", observacionesSeleccionadas);
-                    console.log("ID de calificación seleccionada: ", id_calificacion);
-
                     // Llama a la función para guardar las observaciones seleccionadas
                     await guardarObservacionesSeleccionadas(id_calificacion, observacionesSeleccionadas);
                 });
@@ -498,49 +453,6 @@ let decodedToken; // Declara la variable en el ámbito global
         });
 
 
-
-
-        /*
-        // Función para cargar las observaciones
-        async function obtenerObservaciones(idMateria, selectElement) {
-            const token = localStorage.getItem("token"); // Obtén el token del localStorage
-            if (!token) {
-                console.error("Token no encontrado en el localStorage.");
-                return;
-            }
-
-            try {
-                const response = await fetch(`/obtener-observaciones-materia?id_materia=${idMateria}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}` // Asegúrate de que el token aquí es válido
-                    }
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Error al obtener observaciones: ${response.status}`);
-                }
-
-                const observaciones = await response.json();
-                console.log("Observaciones recibidas:", observaciones); // Verifica las observaciones
-
-                // Limpiar el select si es necesario antes de agregar nuevas opciones
-                selectElement.innerHTML = ''; // Limpiar el select
-
-                // Llenar el select de observaciones
-                observaciones.forEach((observacion, index) => {
-                    const option = document.createElement("option");
-                    option.value = observacion.id;
-                    option.text = `${index + 1}. ${observacion.descripcion}`; // Agregar el número de índice a la descripción
-                    option.title = observacion.descripcion_larga; // Agregar la descripción larga como tooltip
-                    selectElement.appendChild(option);
-                });
-
-            } catch (error) {
-                console.error("Error al cargar observaciones:", error);
-            }
-      }
-      */
       // Función para crear el tooltip
       function manejarTooltip(selectElement) {
           const tooltip = document.createElement("div");
@@ -650,11 +562,6 @@ let decodedToken; // Declara la variable en el ámbito global
           const idMateria = document.getElementById("materias").value; // Obtener el ID de la materia seleccionada
           const periodo = selectElement.parentElement.dataset.periodo; // Obtener el periodo desde el atributo data-periodo
           const campo = `p${periodo}`; // Determinar el campo dinámicamente
-          console.log("id usuario", idUsuario);
-          console.log("id calificacion", calificacionIdSeleccionada);
-          console.log("id alumno", idAlumno);
-          console.log(`ID de materia seleccionada: ${idMateria}`); // Imprimir el ID de materia en la consola
-          console.log("Campo a actualizar: ", campo);
 
           fetch("/actualizar-calificaciones", {
               method: "POST",
