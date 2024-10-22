@@ -6,13 +6,11 @@
     <meta name="robots" content="noindex" />
     <title>Bienvenido</title>
     <link rel="stylesheet" href="style.css" />
-    <!-- Asegúrate de que la ruta sea correcta -->
     <script src="js/jwt-decode.min.js" defer></script>
     <script src="script.js"></script>
   </head>
   <body>
     <div id="header" style="display: flex; flex-direction: column; width: 100%">
-      <!-- Fila 1: Bienvenida, Ciclo Activo y Cerrar Sesión -->
       <div
         id="welcome-message"
         style="
@@ -36,17 +34,14 @@
             style="width: 300px; margin-right: 20px"
           />
           <div style="flex: 1; text-align: left; margin-right: 20px">
-            <!-- Añade margen a la derecha del texto -->
             Bienvenid@,
             <span style="font-weight: bold" id="nombre_usuario"></span>
           </div>
           <div style="flex: 1; text-align: center; margin-right: 20px">
             <span id="ciclo_activo" style="font-weight: bold"></span>
-            <!-- Aquí se mostrará el ciclo activo -->
           </div>
           <div style="flex: 1; text-align: right">
             <button id="logout-button">Cerrar sesión</button>
-            <!-- Botón a la derecha -->
           </div>
         </div>
       </div>
@@ -88,7 +83,6 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Aquí van tus filas de datos -->
         </tbody>
       </table>
     </div>
