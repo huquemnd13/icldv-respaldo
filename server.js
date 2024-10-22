@@ -57,11 +57,48 @@ app.use(
   })
 );
 
+// Configura la política HSTS
+app.use(
+  helmet.hsts({
+    maxAge: 31536000, // 1 año en segundos
+    includeSubDomains: true, // Incluir subdominios
+    preload: true, // Permite el uso en la lista de precarga HSTS
+  })
+);
+
+// Configura la política X-Content-Type-Options
+app.use(helmet.noSniff());
+
+// Configura la política de referencia Referrer Policy
+app.use(helmet.referrerPolicy({ policy: 'no-referrer-when-downgrade' }));
 
 // Ruta para el formulario de login
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html")); // Servir el HTML de login
 });
+
+// Middleware de Helmet
+app.use(
+  helmet({
+    contentSecurityPolicy: false, // Si necesitas gestionar CSP manualmente
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false,
+  })
+);
+
+// Configura la Permissions Policy
+app.use(
+  helmet.permissionsPolicy({
+    features: {
+      geolocation: ["none"],
+      camera: ["none"],
+      microphone: ["none"],
+      fullscreen: ["self"],
+      payment: ["none"],
+    },
+  })
+);
+
 
 // Middleware para verificar el token
 function verificarToken(req, res, next) {
