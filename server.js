@@ -47,7 +47,7 @@ app.use(
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'"],
-      styleSrc: ["'self'", "https://fonts.googleapis.com"],  // Agrega cualquier CDN de estilos
+      styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],  // Agrega cualquier CDN de estilos
       imgSrc: [
         "'self'", 
         "data:", 
