@@ -1,85 +1,98 @@
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f4;
-  margin: 0;
-  padding: 0;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
 }
-.admin-container {
-  padding: 20px;
-  background-color: #ffffff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  margin: 20px;
-}
+
 #header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px;
-  background-color: rgba(255, 255, 255, 1);
-  margin-bottom: 10px; /* Espacio en la parte inferior */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 10;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 50px; /* Aumenta el padding para hacer el header más ancho */
+    background-color: rgba(255, 255, 255, 1);
+    margin-bottom: 10px; /* Espacio en la parte inferior */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    height: 120px; /* Aumenta la altura del header */
 }
 
 #content {
-  margin-top: 60px;
-  text-align: center;
-  padding: 20px;
+    margin-top: 70px; /* Ajusta el margen superior según la altura del header */
+    text-align: center;
+    padding: 20px;
 }
 
 #welcome-message {
-  font-size: 18px;
+    font-size: 18px;
 }
+
 h1 {
-  font-size: 24px;
-  text-align: center;
+    font-size: 24px;
+    text-align: center;
 }
+
 .table-container {
     width: 900px; /* Ancho fijo para el contenedor */
     height: 400px; /* Altura fija para el contenedor */
     overflow-y: auto; /* Permite el desplazamiento vertical si la tabla es muy alta */
     margin: 20px auto; /* Centra el contenedor horizontalmente */
-    margin-top: 70px; /* Agrega un margen superior para separar de la parte inferior del header */
     border: 1px solid #dddddd; /* Borde para el contenedor */
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Sombra para el contenedor */
     background-color: white; /* Fondo blanco para el contenedor */
-    display: flex; /* Para centrar el contenido dentro del contenedor */
-    flex-direction: column; /* Apila los elementos verticalmente */
+    margin-top: 60px; /* Aumentado para estar más separado del header */
 }
+
 
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 70px; /* Agrega un margen superior para separar de la parte inferior del header */
 }
 
 th,
 td {
-  border: 1px solid #dddddd;
-  padding: 6px;
-  text-align: center;
-  font-size: 10px;
+    border: 1px solid #dddddd;
+    padding: 6px;
+    text-align: center;
+    font-size: 10px;
 }
 
 th {
-  background-color: #f2f2f2;
-  position: sticky;
-  top: 0;
-  z-index: 1;
+    background-color: #f2f2f2;
+    position: sticky; /* Fija la posición del encabezado */
+    top: 0; /* Mantiene el encabezado en la parte superior */
+    z-index: 1; /* Asegura que el encabezado esté sobre otros elementos */
 }
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #01c5ff; /* Azul celeste claro */
+    color: white;
+    font-family: "Roboto", sans-serif;
+    cursor: pointer;
+    font-size: 16px;
+    min-width: 100px;
+    max-width: 200px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #008cb6; /* Color más oscuro al pasar el mouse */
+}
+
 .promedio-row {
-  background-color: #fffbaa;
-  font-weight: bold;
+    background-color: #fffbaa;
+    font-weight: bold;
 }
 
 .toast-container {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 9999;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
 }
