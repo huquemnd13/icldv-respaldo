@@ -6,6 +6,12 @@ window.onload = function () {
     return;
   }
 
+  if (isTokenExpired(token)) {
+    alert("La sesión ha expirado. Por favor, inicia sesión nuevamente.");
+    logout();
+    return;
+  }
+
   try {
     const decodedToken = jwt_decode(token);
     if (decodedToken && decodedToken.nombre_completo) {
@@ -18,7 +24,7 @@ window.onload = function () {
     document.getElementById("nombre_usuario").textContent = "Invitado";
   }
 
-  const idCiclo = 1; 
+  const idCiclo = 1;
   obtenerDatosCalificaciones(idCiclo);
 };
 
@@ -76,6 +82,11 @@ function exportarATablaExcel() {
     { sheet: "Calificaciones" }
   );
   XLSX.writeFile(wb, "reporte_calificaciones.xlsx");
+}
+
+function isTokenExpired(token) {
+  const decodedToken = jwt_decode(token);
+  return decodedToken.exp * 1000 < Date.now();
 }
 
 function logout() {
