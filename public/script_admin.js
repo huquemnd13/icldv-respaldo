@@ -1,7 +1,7 @@
 window.onload = function () {
   const token = localStorage.getItem("token");
   if (!token) {
-    console.error("No se encontró el token en localStorage");
+    
     document.getElementById("nombre_usuario").textContent = "Invitado";
     // Redirigir a login.html
     window.location.href = "login.html";
@@ -11,18 +11,15 @@ window.onload = function () {
   try {
     // Decodificamos el token usando jwt_decode
     const decodedToken = jwt_decode(token);
-    console.log("Token decodificado:", decodedToken);
-
+    
     // Mostramos el nombre del usuario en la pantalla
     if (decodedToken && decodedToken.nombre_completo) {
       document.getElementById("nombre_usuario").textContent =
         decodedToken.nombre_completo;
     } else {
-      console.error("El token no contiene el campo 'nombre_completo'");
       document.getElementById("nombre_usuario").textContent = "Invitado";
     }
   } catch (error) {
-    console.error("Error al decodificar el token:", error);
     document.getElementById("nombre_usuario").textContent = "Invitado";
   }
 
@@ -51,7 +48,7 @@ async function obtenerDatosCalificaciones(idCiclo) {
     const data = await response.json();
     mostrarDatosEnTabla(data.data); // Llama a la función para mostrar los datos
   } catch (error) {
-    console.error("Error:", error);
+    
   }
 }
 

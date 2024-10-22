@@ -20,18 +20,19 @@ const supabaseUrl = process.env.SUPABASE_URL; // Cargar URL de Supabase desde la
 const supabaseKey = process.env.SUPABASE_KEY; // Cargar clave de Supabase desde la variable de entorno
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// Configura la política de seguridad de contenido
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],  // Agrega cualquier CDN de estilos
+      scriptSrc: ["'self'", "https://cdnjs.cloudflare.com"], // Agregado CDN aquí
+      styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
       imgSrc: [
         "'self'", 
         "data:", 
         "https://cdn.glitch.global" // Permite cargar imágenes desde este CDN
       ],
-      fontSrc: ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"], // Fuentes externas
+      fontSrc: ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
       frameAncestors: ["'none'"],
       upgradeInsecureRequests: [],
       // reportUri: '/csp-violation-report-endpoint' // Habilita el informe de violaciones si es necesario
