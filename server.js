@@ -48,7 +48,11 @@ app.use(
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'"],
       styleSrc: ["'self'", "https://fonts.googleapis.com"],  // Agrega cualquier CDN de estilos
-      imgSrc: ["'self'", "data:"],
+      imgSrc: [
+        "'self'", 
+        "data:", 
+        "https://cdn.glitch.global" // Permite cargar imágenes desde este CDN
+      ],
       fontSrc: ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"], // Fuentes externas
       frameAncestors: ["'none'"],
       upgradeInsecureRequests: [],
@@ -77,28 +81,11 @@ app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html")); // Servir el HTML de login
 });
 
-// Middleware de Helmet
-app.use(
-  helmet({
-    contentSecurityPolicy: false, // Si necesitas gestionar CSP manualmente
-    crossOriginEmbedderPolicy: false,
-    crossOriginResourcePolicy: false,
-  })
-);
-
-// Configura la Permissions Policy
-app.use(
-  helmet.permissionsPolicy({
-    features: {
-      geolocation: ["none"],
-      camera: ["none"],
-      microphone: ["none"],
-      fullscreen: ["self"],
-      payment: ["none"],
-    },
-  })
-);
-
+// Establecer la Política de Permisos
+app.use((req, res, next) => {
+  res.setHeader("Permissions-Policy", "geolocation=(), camera=(), microphone=(), fullscreen=(self), payment=()");
+  next();
+});
 
 // Middleware para verificar el token
 function verificarToken(req, res, next) {

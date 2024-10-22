@@ -3,10 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="noindex">
+    <meta name="robots" content="noindex" />
     <title>Iniciar sesión</title>
     <link rel="stylesheet" href="style.css" />
-    <!-- Asegúrate de que la ruta sea correcta -->
     <link
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
       rel="stylesheet"
@@ -17,10 +16,10 @@
       <img
         src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/MarcaLDV.png?v=1728659537627"
         alt="Logo"
-        style="width: 300px; margin-bottom: 1px"
+        style="width: 100px; height: auto; margin-bottom: 1px"
       />
       Sistema de captura de calificaciones
-      <br><br>
+      <br /><br />
       <form id="login-form">
         <input
           type="email"
@@ -36,16 +35,15 @@
           required
           autocomplete="current-password"
         />
-        <br><br>
+        <br /><br />
         <button type="submit">Iniciar sesión</button>
       </form>
       <div class="notification" id="notification"></div>
-      <!-- Barra de notificación justo después del formulario -->
     </div>
   </body>
   <script
-      src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"
-      defer
-    ></script>
+    src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"
+    defer
+  ></script>
   <script src="scripts.js"></script>
 </html>
