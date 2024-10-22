@@ -20,28 +20,6 @@ const supabaseUrl = process.env.SUPABASE_URL; // Cargar URL de Supabase desde la
 const supabaseKey = process.env.SUPABASE_KEY; // Cargar clave de Supabase desde la variable de entorno
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// Forzar el tipo MIME de CSS
-app.use("/styles.css", (req, res, next) => {
-  res.type("text/css");
-  next();
-});
-
-// Servir archivos estáticos desde la carpeta public
-app.use(express.static(path.join(__dirname, "public")));
-
-app.use(
-  session({
-    secret: jwtSecret,
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: true }, 
-  })
-);
-
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -76,15 +54,38 @@ app.use(helmet.noSniff());
 // Configura la política de referencia Referrer Policy
 app.use(helmet.referrerPolicy({ policy: 'no-referrer-when-downgrade' }));
 
-// Ruta para el formulario de login
-app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "login.html")); // Servir el HTML de login
+
+// Middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// Forzar el tipo MIME de CSS
+app.use("/styles.css", (req, res, next) => {
+  res.type("text/css");
+  next();
 });
 
 // Establecer la Política de Permisos
 app.use((req, res, next) => {
   res.setHeader("Permissions-Policy", "geolocation=(), camera=(), microphone=(), fullscreen=(self), payment=()");
   next();
+});
+
+// Servir archivos estáticos desde la carpeta public
+app.use(express.static(path.join(__dirname, "public")));
+
+app.use(
+  session({
+    secret: jwtSecret,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }, 
+  })
+);
+
+// Ruta para el formulario de login
+app.get("/login", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "login.html")); // Servir el HTML de login
 });
 
 // Middleware para verificar el token
