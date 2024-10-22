@@ -1,4 +1,3 @@
-
 require("dotenv").config(); // Cargar variables de entorno
 const express = require("express");
 const session = require("express-session");
@@ -8,11 +7,11 @@ const { createClient } = require("@supabase/supabase-js");
 const path = require("path"); // Importar el módulo path
 const jwt = require("jsonwebtoken"); // Asegúrate de instalar jsonwebtoken con npm
 const jwtSecret = process.env.JWT_SECRET;
-const helmet = require('helmet');
+const helmet = require("helmet");
 
-const moment = require('moment-timezone'); // Importa moment-timezone
+const moment = require("moment-timezone"); // Importa moment-timezone
 
-const { isAfter, addMinutes } = require('date-fns');
+const { isAfter, addMinutes } = require("date-fns");
 
 const app = express();
 
@@ -28,11 +27,15 @@ app.use(
       scriptSrc: ["'self'", "https://cdnjs.cloudflare.com"], // Agregado CDN aquí
       styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
       imgSrc: [
-        "'self'", 
-        "data:", 
-        "https://cdn.glitch.global" // Permite cargar imágenes desde este CDN
+        "'self'",
+        "data:",
+        "https://cdn.glitch.global", // Permite cargar imágenes desde este CDN
       ],
-      fontSrc: ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
+      fontSrc: [
+        "'self'",
+        "https://fonts.googleapis.com",
+        "https://fonts.gstatic.com",
+      ],
       frameAncestors: ["'none'"],
       upgradeInsecureRequests: [],
       // reportUri: '/csp-violation-report-endpoint' // Habilita el informe de violaciones si es necesario
@@ -53,8 +56,7 @@ app.use(
 app.use(helmet.noSniff());
 
 // Configura la política de referencia Referrer Policy
-app.use(helmet.referrerPolicy({ policy: 'no-referrer-when-downgrade' }));
-
+app.use(helmet.referrerPolicy({ policy: "no-referrer-when-downgrade" }));
 
 // Middleware
 app.use(bodyParser.json());
@@ -68,7 +70,10 @@ app.use("/styles.css", (req, res, next) => {
 
 // Establecer la Política de Permisos
 app.use((req, res, next) => {
-  res.setHeader("Permissions-Policy", "geolocation=(), camera=(), microphone=(), fullscreen=(self), payment=()");
+  res.setHeader(
+    "Permissions-Policy",
+    "geolocation=(), camera=(), microphone=(), fullscreen=(self), payment=()"
+  );
   next();
 });
 
@@ -80,7 +85,7 @@ app.use(
     secret: jwtSecret,
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: true }, 
+    cookie: { secure: true },
   })
 );
 
@@ -91,36 +96,36 @@ app.get("/login", (req, res) => {
 
 // Middleware para verificar el token
 function verificarToken(req, res, next) {
-    if (!req.headers.authorization) {
-        return res.status(401).json({
-            success: false,
-            message: "No se proporcionó el token de autorización.",
-        });
-    }
+  if (!req.headers.authorization) {
+    return res.status(401).json({
+      success: false,
+      message: "No se proporcionó el token de autorización.",
+    });
+  }
 
-    const token = req.headers.authorization.split(" ")[1];
-    
-    if (!token) {
-        return res.status(401).json({
-            success: false,
-            message: "Token no válido o ausente.",
-        });
-    }
+  const token = req.headers.authorization.split(" ")[1];
 
-    try {
-        // Verificar el token
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        
-        // Guardar los datos del usuario en req.user para usarlos después si es necesario
-        req.user = decoded;
-        
-        next(); // Continuar con la ejecución de la ruta
-    } catch (error) {
-        return res.status(403).json({
-            success: false,
-            message: "Token inválido o expirado.",
-        });
-    }
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: "Token no válido o ausente.",
+    });
+  }
+
+  try {
+    // Verificar el token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Guardar los datos del usuario en req.user para usarlos después si es necesario
+    req.user = decoded;
+
+    next(); // Continuar con la ejecución de la ruta
+  } catch (error) {
+    return res.status(403).json({
+      success: false,
+      message: "Token inválido o expirado.",
+    });
+  }
 }
 
 app.post("/login", async (req, res) => {
@@ -132,7 +137,9 @@ app.post("/login", async (req, res) => {
     // 1. Validar formato de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!email || !emailRegex.test(email)) {
-      return res.status(400).json({ success: false, message: "Email inválido." });
+      return res
+        .status(400)
+        .json({ success: false, message: "Email inválido." });
     }
 
     // Buscar usuario en Supabase
@@ -144,18 +151,27 @@ app.post("/login", async (req, res) => {
 
     if (error) {
       console.error("Error al buscar usuario:", error);
-      return res.status(500).json({ success: false, message: "Error al buscar correo." });
+      return res
+        .status(500)
+        .json({ success: false, message: "Error al buscar correo." });
     }
 
     if (!usuario) {
-      return res.status(404).json({ success: false, message: "Usuario no encontrado." });
+      return res
+        .status(404)
+        .json({ success: false, message: "Usuario no encontrado." });
     }
 
     console.log("Usuario encontrado:", usuario);
 
     // Comprobar si el usuario está bloqueado
     if (usuario.intentos_fallidos >= 3 || usuario.estatus === false) {
-      return res.status(403).json({ success: false, message: "Cuenta bloqueada. Contacta al administrador." });
+      return res
+        .status(403)
+        .json({
+          success: false,
+          message: "Cuenta bloqueada. Contacta al administrador.",
+        });
     }
 
     // Verificar contraseña
@@ -179,12 +195,12 @@ app.post("/login", async (req, res) => {
         // Generar el token para administrador
         token = jwt.sign(
           {
-            id: usuario.id,             // ID del usuario
-            id_rol: usuario.id_rol,     // Rol del usuario (administrador)
-            nombre_completo: usuario.nombre_usuario // Asegúrate de que esta propiedad esté correctamente asignada
+            id: usuario.id, // ID del usuario
+            id_rol: usuario.id_rol, // Rol del usuario (administrador)
+            nombre_completo: usuario.nombre_usuario, // Asegúrate de que esta propiedad esté correctamente asignada
           },
           process.env.JWT_SECRET, // Reemplaza con jwtSecret si no estás usando process.env
-          { expiresIn: "1h" } // Expiración del token en 1 hora
+          { algorithm: 'HS256', expiresIn: "15m" } // Expiración del token en 1 hora
         );
         return res.json({ success: true, token }); // Retorna el token
       } else {
@@ -192,30 +208,33 @@ app.post("/login", async (req, res) => {
         const { data: profesor, error: errorProfesor } = await supabase
           .from("Profesor")
           .select("*")
-          .eq("id_usuario", usuario.id)  // Relación Usuario-Profesor
+          .eq("id_usuario", usuario.id) // Relación Usuario-Profesor
           .single();
 
         if (errorProfesor || !profesor) {
           console.error("Error al buscar profesor:", errorProfesor);
-          return res.status(500).json({ success: false, message: "Error al buscar profesor." });
+          return res
+            .status(500)
+            .json({ success: false, message: "Error al buscar profesor." });
         }
 
         // Construir el id del profesor
         const profesorId = profesor.id;
 
         // Construir el nombre completo del profesor
-        const nombreCompleto = `${profesor.nombre} ${profesor.apellido_paterno} ${profesor.apellido_materno}`.trim();
+        const nombreCompleto =
+          `${profesor.nombre} ${profesor.apellido_paterno} ${profesor.apellido_materno}`.trim();
 
         // Generar el token con el nombre completo del profesor
         token = jwt.sign(
           {
-            id: usuario.id,             // ID del usuario
-            id_rol: usuario.id_rol,     // Rol del usuario
+            id: usuario.id, // ID del usuario
+            id_rol: usuario.id_rol, // Rol del usuario
             id_profesor: profesorId,
-            nombre_completo: nombreCompleto // Nombre completo del profesor
+            nombre_completo: nombreCompleto, // Nombre completo del profesor
           },
           process.env.JWT_SECRET, // Reemplaza con jwtSecret si no estás usando process.env
-          { expiresIn: "1h" } // Expiración del token en 1 hora
+          { algorithm: 'HS256', expiresIn: "1m" } // Expiración del token en 1 hora
         );
 
         console.log("ID PROFESOR TABLA", profesor.id);
@@ -231,9 +250,14 @@ app.post("/login", async (req, res) => {
       if (nuevosIntentos >= 3) {
         await supabase
           .from("Usuario")
-          .update({ intentos_fallidos: nuevosIntentos, estatus: false })  // Bloquea al usuario
+          .update({ intentos_fallidos: nuevosIntentos, estatus: false }) // Bloquea al usuario
           .eq("id", usuario.id);
-        return res.status(403).json({ success: false, message: "Cuenta bloqueada. Contacta al administrador." });
+        return res
+          .status(403)
+          .json({
+            success: false,
+            message: "Cuenta bloqueada. Contacta al administrador.",
+          });
       } else {
         await supabase
           .from("Usuario")
@@ -241,15 +265,17 @@ app.post("/login", async (req, res) => {
           .eq("id", usuario.id);
       }
 
-      return res.status(401).json({ success: false, message: "Contraseña incorrecta." });
+      return res
+        .status(401)
+        .json({ success: false, message: "Contraseña incorrecta." });
     }
   } catch (err) {
     console.error("Error en el proceso de login:", err);
-    return res.status(500).json({ success: false, message: "Error interno del servidor." });
+    return res
+      .status(500)
+      .json({ success: false, message: "Error interno del servidor." });
   }
 });
-
-
 
 app.get("/grados", async (req, res) => {
   try {
@@ -451,50 +477,52 @@ app.get("/obtener-materias-profesor-grado", async (req, res) => {
 
 // RUTA PARA OBTENER LAS OBSERVACIONES DISPONIBLES PARA UNA MATERIA
 app.get("/obtener-observaciones-materia", verificarToken, async (req, res) => {
-    const idMateria = req.query.id_materia; // Obtener el ID de la materia desde los parámetros de la consulta
+  const idMateria = req.query.id_materia; // Obtener el ID de la materia desde los parámetros de la consulta
 
-    // Verificar que el ID de la materia esté presente
-    if (!idMateria) {
-        return res.status(400).json({
-            success: false,
-            message: "Falta el parámetro requerido: id_materia.",
-        });
+  // Verificar que el ID de la materia esté presente
+  if (!idMateria) {
+    return res.status(400).json({
+      success: false,
+      message: "Falta el parámetro requerido: id_materia.",
+    });
+  }
+
+  try {
+    // Llamar a la función en Supabase para obtener las observaciones
+    const { data: observaciones, error } = await supabase
+      .from("Observacion") // Nombre de tu tabla
+      .select("id, descripcion, descripcion_larga") // Seleccionar solo los campos necesarios
+      .eq("id_materia", idMateria) // Filtrar por ID de materia
+      .order("tipo", { ascending: false });
+
+    if (error) {
+      console.error("Error al obtener observaciones:", error);
+      return res
+        .status(500)
+        .json({ success: false, message: "Error al obtener observaciones." });
     }
 
-    try {
-        // Llamar a la función en Supabase para obtener las observaciones
-        const { data: observaciones, error } = await supabase
-            .from("Observacion") // Nombre de tu tabla
-            .select("id, descripcion, descripcion_larga") // Seleccionar solo los campos necesarios
-            .eq("id_materia", idMateria) // Filtrar por ID de materia
-            .order("tipo", { ascending: false });
-
-        if (error) {
-            console.error("Error al obtener observaciones:", error);
-            return res
-                .status(500)
-                .json({ success: false, message: "Error al obtener observaciones." });
-        }
-
-        return res.json(observaciones); // Devolver las observaciones
-    } catch (err) {
-        console.error("Error en la consulta:", err);
-        return res
-            .status(500)
-            .json({ success: false, message: "Error en la consulta." });
-    }
+    return res.json(observaciones); // Devolver las observaciones
+  } catch (err) {
+    console.error("Error en la consulta:", err);
+    return res
+      .status(500)
+      .json({ success: false, message: "Error en la consulta." });
+  }
 });
-
-
-
-
 
 // Endpoint para obtener detalles de calificaciones
 app.get("/calificaciones", verificarToken, async (req, res) => {
-  const { id_ciclo_escolar, id_grado_nivel_escolar, id_profesor, id_materia } = req.query;
+  const { id_ciclo_escolar, id_grado_nivel_escolar, id_profesor, id_materia } =
+    req.query;
 
   // Valida que se hayan pasado todos los parámetros
-  if (!id_ciclo_escolar || !id_grado_nivel_escolar || !id_profesor || !id_materia) {
+  if (
+    !id_ciclo_escolar ||
+    !id_grado_nivel_escolar ||
+    !id_profesor ||
+    !id_materia
+  ) {
     return res.status(400).json({ error: "Faltan parámetros requeridos." });
   }
 
@@ -516,7 +544,9 @@ app.get("/calificaciones", verificarToken, async (req, res) => {
 
     if (error) {
       console.error("Error al obtener las calificaciones:", error);
-      return res.status(500).json({ error: "Error al obtener las calificaciones." });
+      return res
+        .status(500)
+        .json({ error: "Error al obtener las calificaciones." });
     }
 
     console.log("Datos obtenidos:", data);
@@ -528,7 +558,6 @@ app.get("/calificaciones", verificarToken, async (req, res) => {
     res.status(500).json({ error: "Error interno del servidor." });
   }
 });
-
 
 // Endpoint para obtener los periodos de un ciclo escolar por su ID
 app.get("/periodos", verificarToken, async (req, res) => {
@@ -561,7 +590,8 @@ app.get("/periodos", verificarToken, async (req, res) => {
     if (periodos.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "No se encontraron periodos para el ciclo escolar especificado.",
+        message:
+          "No se encontraron periodos para el ciclo escolar especificado.",
       });
     }
 
@@ -569,132 +599,189 @@ app.get("/periodos", verificarToken, async (req, res) => {
     res.json(periodos);
   } catch (err) {
     console.error("Error interno del servidor:", err);
-    return res.status(500).json({ success: false, message: "Error interno del servidor." });
+    return res
+      .status(500)
+      .json({ success: false, message: "Error interno del servidor." });
   }
 });
 
+app.post("/actualizar-calificaciones", verificarToken, async (req, res) => {
+  const { _id_calificacion, _campo, _nuevo_valor, _id_usuario } = req.body; // Obtener id_usuario del cuerpo
 
-app.post('/actualizar-calificaciones', verificarToken, async (req, res) => {
-    const { _id_calificacion, _campo, _nuevo_valor, _id_usuario } = req.body; // Obtener id_usuario del cuerpo
-    
-    // Validaciones de entrada
-    if (!_id_calificacion || !_campo || _nuevo_valor === undefined || !_id_usuario) {
-        return res.status(400).json({ mensaje: 'Datos incompletos' });
-    }
+  // Validaciones de entrada
+  if (
+    !_id_calificacion ||
+    !_campo ||
+    _nuevo_valor === undefined ||
+    !_id_usuario
+  ) {
+    return res.status(400).json({ mensaje: "Datos incompletos" });
+  }
 
-    if (!Number.isInteger(_id_calificacion)) {
-        return res.status(400).json({ mensaje: 'El ID de la calificación debe ser un número entero' });
-    }
+  if (!Number.isInteger(_id_calificacion)) {
+    return res
+      .status(400)
+      .json({ mensaje: "El ID de la calificación debe ser un número entero" });
+  }
 
-    if (!['p1', 'p2', 'p3'].includes(_campo)) {
-        return res.status(400).json({ mensaje: 'Campo no válido, debe ser p1, p2 o p3' });
-    }
+  if (!["p1", "p2", "p3"].includes(_campo)) {
+    return res
+      .status(400)
+      .json({ mensaje: "Campo no válido, debe ser p1, p2 o p3" });
+  }
 
-    if (!Number.isFinite(_nuevo_valor) || _nuevo_valor < 0 || _nuevo_valor > 100) {
-        return res.status(400).json({ mensaje: 'El nuevo valor debe ser un número entre 0 y 100' });
-    }
+  if (
+    !Number.isFinite(_nuevo_valor) ||
+    _nuevo_valor < 0 ||
+    _nuevo_valor > 100
+  ) {
+    return res
+      .status(400)
+      .json({ mensaje: "El nuevo valor debe ser un número entre 0 y 100" });
+  }
 
-    try {
-        // Llamar a la función RPC de Supabase
-        const { data: result, error } = await supabase.rpc('actualizar_calificacion', {
-            _id_calificacion,
-            _campo,
-            _nuevo_valor,
-            _id_usuario
+  try {
+    // Llamar a la función RPC de Supabase
+    const { data: result, error } = await supabase.rpc(
+      "actualizar_calificacion",
+      {
+        _id_calificacion,
+        _campo,
+        _nuevo_valor,
+        _id_usuario,
+      }
+    );
+
+    if (error) {
+      console.error("Error en la función RPC de Supabase:", error); // Log detallado
+      return res
+        .status(500)
+        .json({
+          mensaje: "Error actualizando calificación",
+          error: error.message,
         });
-
-        if (error) {
-            console.error('Error en la función RPC de Supabase:', error); // Log detallado
-            return res.status(500).json({ mensaje: 'Error actualizando calificación', error: error.message });
-        }
-
-        res.status(200).json({ mensaje: 'Calificación actualizada correctamente', data: result });
-    } catch (err) {
-        console.error('Error general en el servidor:', err.message); // Log detallado
-        res.status(500).json({ mensaje: 'Error actualizando calificación', error: err.message });
     }
+
+    res
+      .status(200)
+      .json({
+        mensaje: "Calificación actualizada correctamente",
+        data: result,
+      });
+  } catch (err) {
+    console.error("Error general en el servidor:", err.message); // Log detallado
+    res
+      .status(500)
+      .json({ mensaje: "Error actualizando calificación", error: err.message });
+  }
 });
 
-
-
 // Ruta para guardar observaciones con validación de token
-app.post('/guardar-observaciones', verificarToken, async (req, res) => {
-    const { _id_calificacion, _observaciones, _id_usuario } = req.body; // Obtener id_usuario del cuerpo
-    console.log(_observaciones);
+app.post("/guardar-observaciones", verificarToken, async (req, res) => {
+  const { _id_calificacion, _observaciones, _id_usuario } = req.body; // Obtener id_usuario del cuerpo
+  console.log(_observaciones);
 
-    // Validaciones de entrada
-    if (!_id_calificacion || !_observaciones || _observaciones.length === 0 || !_id_usuario) {
-        return res.status(400).json({ mensaje: 'Datos incompletos' });
-    }
+  // Validaciones de entrada
+  if (
+    !_id_calificacion ||
+    !_observaciones ||
+    _observaciones.length === 0 ||
+    !_id_usuario
+  ) {
+    return res.status(400).json({ mensaje: "Datos incompletos" });
+  }
 
-    if (!Number.isInteger(_id_calificacion)) {
-        return res.status(400).json({ mensaje: 'El ID de la calificación debe ser un número entero' });
-    }
+  if (!Number.isInteger(_id_calificacion)) {
+    return res
+      .status(400)
+      .json({ mensaje: "El ID de la calificación debe ser un número entero" });
+  }
 
-    if (!Array.isArray(_observaciones) || _observaciones.length > 2) {
-        return res.status(400).json({ mensaje: 'Las observaciones deben ser un array con hasta 2 elementos' });
-    }
+  if (!Array.isArray(_observaciones) || _observaciones.length > 2) {
+    return res
+      .status(400)
+      .json({
+        mensaje: "Las observaciones deben ser un array con hasta 2 elementos",
+      });
+  }
 
-    try {
-        // Llamar a la función RPC de Supabase
-        const { data: result, error } = await supabase.rpc('guardar_observaciones', {
-            _id_calificacion,
-            _observaciones,
-            _id_usuario
+  try {
+    // Llamar a la función RPC de Supabase
+    const { data: result, error } = await supabase.rpc(
+      "guardar_observaciones",
+      {
+        _id_calificacion,
+        _observaciones,
+        _id_usuario,
+      }
+    );
+
+    if (error) {
+      console.error("Error en la función RPC de Supabase:", error); // Log detallado
+      return res
+        .status(500)
+        .json({
+          mensaje: "Error guardando observaciones",
+          error: error.message,
         });
-
-        if (error) {
-            console.error('Error en la función RPC de Supabase:', error); // Log detallado
-            return res.status(500).json({ mensaje: 'Error guardando observaciones', error: error.message });
-        }
-
-        res.status(200).json({ mensaje: 'Observaciones guardadas correctamente', data: result });
-    } catch (err) {
-        console.error('Error general en el servidor:', err.message); // Log detallado
-        res.status(500).json({ mensaje: 'Error guardando observaciones', error: err.message });
     }
+
+    res
+      .status(200)
+      .json({ mensaje: "Observaciones guardadas correctamente", data: result });
+  } catch (err) {
+    console.error("Error general en el servidor:", err.message); // Log detallado
+    res
+      .status(500)
+      .json({ mensaje: "Error guardando observaciones", error: err.message });
+  }
 });
 
 // Endpoint para obtener el reporte de detalle de calificaciones por ciclo escolar
-app.get("/reporteDetalleCalificacionesPorCiclo/:idCiclo", verificarToken, async (req, res) => {
+app.get(
+  "/reporteDetalleCalificacionesPorCiclo/:idCiclo",
+  verificarToken,
+  async (req, res) => {
     const { idCiclo } = req.params;
 
     // Validar que el rol del usuario sea correcto
     if (req.user.id_rol !== 1) {
-        return res.status(403).json({
-            success: false,
-            message: "No tienes permiso para acceder a este recurso.",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "No tienes permiso para acceder a este recurso.",
+      });
     }
 
     try {
-        // Llamar a la función de Supabase
-        const { data, error } = await supabase.rpc('obtener_calificaciones_con_promedio', { _id_ciclo_escolar: parseInt(idCiclo) });
+      // Llamar a la función de Supabase
+      const { data, error } = await supabase.rpc(
+        "obtener_calificaciones_con_promedio",
+        { _id_ciclo_escolar: parseInt(idCiclo) }
+      );
 
-        if (error) {
-            console.error("Error al obtener los datos:", error);
-            return res.status(500).json({
-                success: false,
-                message: "Error al obtener los datos.",
-                error: error.message,
-            });
-        }
-
-        return res.status(200).json({
-            success: true,
-            data,
-        });
-    } catch (error) {
-        console.error("Error en el servidor:", error);
+      if (error) {
+        console.error("Error al obtener los datos:", error);
         return res.status(500).json({
-            success: false,
-            message: "Error interno del servidor.",
-            error: error.message,
+          success: false,
+          message: "Error al obtener los datos.",
+          error: error.message,
         });
+      }
+
+      return res.status(200).json({
+        success: true,
+        data,
+      });
+    } catch (error) {
+      console.error("Error en el servidor:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Error interno del servidor.",
+        error: error.message,
+      });
     }
-});
-
-
+  }
+);
 
 // Redirige a login.html cuando el usuario visita la raíz del sitio (/)
 app.get("/", (req, res) => {
