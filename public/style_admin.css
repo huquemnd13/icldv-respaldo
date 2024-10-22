@@ -43,6 +43,10 @@ body::before {
 
 #welcome-message {
   font-size: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
 }
 
 h1 {
