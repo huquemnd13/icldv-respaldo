@@ -1,71 +1,49 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="robots" content="noindex" />
-    <title>Pantalla de Administración</title>
-    <link rel="stylesheet" href="style_admin.css" />
-    <script src="js/jwt-decode.min.js" defer></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-    <script src="script_admin.js" defer></script>
-  </head>
-  <body>
-    <div id="header">
-      <div
-        id="welcome-message"
-      >
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex: 1;
-          "
-        >
-          <img
-            src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/MarcaLDV.png?v=1728659537627"
-            alt="Logo"
-            style="width: 300px; margin-right: 20px"
-          />
-          <div style="text-align: left; margin-right: 20px">
-            Bienvenid@,
-            <span style="font-weight: bold" id="nombre_usuario">Usuario</span>
-          </div>
-          <div style="text-align: center; margin-right: 20px">
-            <span id="ciclo_activo" style="font-weight: bold"></span>
-          </div>
-          <div style="text-align: right">
-            <button id="logout-button">Cerrar sesión</button>
-          </div>
-        </div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Pantalla de Administración</title>
+  <link rel="stylesheet" href="style_admin.css">
+  <script src="js/jwt-decode.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+  <script src="script_admin.js" defer></script>
+</head>
+<body>
+  <header id="header">
+    <div id="welcome-message">
+      <div class="logo-container">
+        <img src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/MarcaLDV.png?v=1728659537627" alt="Logo" class="logo">
+        <div class="welcome-message">Bienvenid@, <span id="nombre_usuario">Usuario</span></div>
+        <div id="ciclo_activo" class="active-cycle"></div>
       </div>
-      <div style="display: flex; align-items: center; margin-top: 10px">
-        <button id="export-button" style="margin-left: 20px">
-          Exportar a Excel
-        </button>
-      </div>
+      <nav>
+        <button id="export-button" aria-label="Exportar calificaciones a Excel">Exportar a Excel</button>
+        <button id="logout-button">Cerrar sesión</button>
+      </nav>
     </div>
+  </header>
 
-    <div id="toast-container" class="toast-container"></div>
+  <div id="toast-container" class="toast-container"></div>
 
-    <div class="table-container">
-      <table id="tablaCalificaciones">
-        <thead>
-          <tr>
-            <th>Nombre del Alumno</th>
-            <th>CURP</th>
-            <th>Ciclo Escolar</th>
-            <th>Grado Escolar</th>
-            <th>Campo Formativo</th>
-            <th>Materia</th>
-            <th>P1</th>
-            <th>P2</th>
-            <th>P3</th>
-          </tr>
-        </thead>
-        <tbody id="tbodyCalificaciones"></tbody>
-      </table>
-    </div>
-  </body>
+  <div class="table-container">
+    <table id="tablaCalificaciones">
+      <thead>
+        <tr>
+          <th>Nombre del Alumno</th>
+          <th>CURP</th>
+          <th>Ciclo Escolar</th>
+          <th>Grado Escolar</th>
+          <th>Campo Formativo</th>
+          <th>Materia</th>
+          <th>P1</th>
+          <th>P2</th>
+          <th>P3</th>
+        </tr>
+      </thead>
+      <tbody id="tbodyCalificaciones"></tbody>
+    </table>
+  </div>
+</body>
 </html>

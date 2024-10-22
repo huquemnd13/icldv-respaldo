@@ -32,7 +32,7 @@ body::before {
   left: 0;
   right: 0;
   z-index: 10;
-  height: 120px;
+  height: 70px;
 }
 
 #content {
@@ -62,7 +62,7 @@ h1 {
   border: 1px solid #dddddd;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   background-color: white;
-  margin-top: 160px;
+  margin-top: 120px;
 }
 
 table {
@@ -113,4 +113,13 @@ button:hover {
   bottom: 20px;
   right: 20px;
   z-index: 9999;
+}
+.logo-container {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  width: 300px;
+  margin-right: 20px;
 }
