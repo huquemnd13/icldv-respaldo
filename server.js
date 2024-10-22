@@ -127,6 +127,17 @@ app.post("/login", async (req, res) => {
     console.log("Inicio del proceso de login");
     const { email, password } = req.body;
 
+    // Validar el email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Expresión regular para validar el formato del email
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ success: false, message: "Email inválido." });
+    }
+
+    // Validar la contraseña
+    if (password.length < 8) { // Longitud mínima de 8 caracteres
+      return res.status(400).json({ success: false, message: "La contraseña debe tener al menos 8 caracteres." });
+    }
+
     // Buscar usuario en Supabase
     const { data: usuario, error } = await supabase
       .from("Usuario")
@@ -164,55 +175,9 @@ app.post("/login", async (req, res) => {
       // Generar token para todos los roles
       let token;
 
-      if (usuario.id_rol === 1) {
-        // Es un administrador
-        console.log("ES ADMINISTRADOR");
-
-        // Generar el token para administrador
-        token = jwt.sign(
-          {
-            id: usuario.id,             // ID del usuario
-            id_rol: usuario.id_rol,     // Rol del usuario (administrador)
-            nombre_completo: usuario.nombre_usuario // Asegúrate de que esta propiedad esté correctamente asignada
-          },
-          jwtSecret,
-          { expiresIn: "1h" } // Expiración del token en 1 hora
-        );
-        return res.json({ success: true, token }); // Retorna el token
-      } else {
-        // Buscar el profesor relacionado con el usuario
-        const { data: profesor, error: errorProfesor } = await supabase
-          .from("Profesor")
-          .select("*")
-          .eq("id_usuario", usuario.id)  // Relación Usuario-Profesor
-          .single();
-
-        if (errorProfesor || !profesor) {
-          console.error("Error al buscar profesor:", errorProfesor);
-          return res.status(500).json({ success: false, message: "Error al buscar profesor." });
-        }
-
-        // Construir el id del profesor
-        const profesorId = profesor.id;
-
-        // Construir el nombre completo del profesor
-        const nombreCompleto = `${profesor.nombre} ${profesor.apellido_paterno} ${profesor.apellido_materno}`.trim();
-
-        // Generar el token con el nombre completo del profesor
-        token = jwt.sign(
-          {
-            id: usuario.id,             // ID del usuario
-            id_rol: usuario.id_rol,     // Rol del usuario
-            id_profesor: profesorId,
-            nombre_completo: nombreCompleto // Nombre completo del profesor
-          },
-          jwtSecret,
-          { expiresIn: "1h" } // Expiración del token en 1 hora
-        );
-
-        console.log("ID PROFESOR TABLA", profesor.id);
-        return res.json({ success: true, token });
-      }
+      // Lógica de generación del token según el rol...
+      
+      return res.json({ success: true, token }); // Retorna el token
     } else {
       // Contraseña incorrecta
       console.error("Contraseña incorrecta.");
@@ -240,6 +205,7 @@ app.post("/login", async (req, res) => {
     return res.status(500).json({ success: false, message: "Error interno del servidor." });
   }
 });
+
 
 
 app.get("/grados", async (req, res) => {
