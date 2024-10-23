@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Instituto Cultural Leonardo da Vinci</title>
-  <style>
-    /* Estilos para el encabezado */
-    body {
+  <head>
+    <title>Instituto Cultural Leonardo da Vinci</title>
+    <style>
+      /* Estilos para el encabezado */
+      body {
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
       height: 100vh;
       margin: 0;
+      font-family: 'Montserrat', sans-serif; /* Fuente moderna */
     }
 
     header {
@@ -18,47 +19,92 @@
       padding: 20px;
       border-radius: 4px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-      font-family: 'Montserrat', sans-serif;
-      display: flex; /* Hacemos el header un contenedor flex */
-      justify-content: center; /* Centramos el contenido del header */
+      display: flex;
       width: 80%;
       max-width: 800px;
     }
 
-    .logo-container {
-      background-color: white;
-      padding: 10px;
-      display: inline-block; /* Hacemos que el contenedor del logo sea un bloque en línea */
+      .logo-container {
+        background-color: white;
+        padding: 10px;
+        margin-right: 20px;
+        border-radius: 4px;
+      }
+
+      .logo {
+        width: 120px;
+      }
+
+      .bloque-azul {
+        background-color: #007bff;
+        color: white;
+        padding: 20px;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+        flex-grow: 1;
+      }
+
+      /* Estilos para la tabla */
+      table {
+      width: 100%; /* Ocupa el 100% del ancho del contenedor padre */
+      border-collapse: collapse;
+      margin-top: 20px;
+      border: 2px solid #007bff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     }
 
-    .logo {
-      width: 120px;
-    }
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
 
-    .bloque-azul {
-      background-color: #007bff;
-      color: white;
-      padding: 20px;
-      border-radius: 4px;
-      text-align: center;
-      font-size: 20px;
-      font-weight: bold;
-      font-family: 'Montserrat', sans-serif;
-      display: inline-block; /* Hacemos que el bloque azul sea un bloque en línea */
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <div class="logo-container">
-      <img class="logo" src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/LogoLDV-removebg.png?v=1729718938375" alt="Logo del Instituto">
-    </div>
-    <div class="bloque-azul">
-      INSTITUTO CULTURAL LEONARDO DA VINCI<br>
-      INFORME DE CALIFICACIONES<br>
-      NIVEL PRIMARIA<br>
-      CCT: 15PPR3434K
-    </div>
-  </header>
-</body>
+      th {
+        background-color: #f2f2f2; /* Fondo gris claro para los encabezados */
+      }
+
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo-container">
+        <img
+          class="logo"
+          src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/LogoLDV-removebg.png?v=1729718938375"
+          alt="Logo del Instituto"
+        />
+      </div>
+      <div class="bloque-azul">
+        INSTITUTO CULTURAL LEONARDO DA VINCI<br />
+        INFORME DE CALIFICACIONES<br />
+        NIVEL PRIMARIA<br />
+        CCT: 15PPR3434K
+      </div>
+    </header>
+
+    <table>
+      <tr>
+        <th>NOMBRE DEL ALUMNO</th>
+        <th>CICLO ESCOLAR</th>
+        <th>GRADO</th>
+        <th>GRUPO</th>
+        <th>PERIODO</th>
+      </tr>
+      <tr>
+        <td>Nombre Alumno 1</td>
+        <td>2023-2024</td>
+        <td>2°</td>
+        <td>B</td>
+        <td>Segundo</td>
+      </tr>
+    </table>
+  </body>
 </html>
