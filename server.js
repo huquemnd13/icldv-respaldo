@@ -1,74 +1,54 @@
-require("dotenv").config(); // Cargar variables de entorno
+require("dotenv").config();
 const express = require("express");
 const session = require("express-session");
 const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
 const { createClient } = require("@supabase/supabase-js");
-const path = require("path"); // Importar el módulo path
-const jwt = require("jsonwebtoken"); // Asegúrate de instalar jsonwebtoken con npm
+const path = require("path");
+const jwt = require("jsonwebtoken");
 const jwtSecret = process.env.JWT_SECRET;
 const helmet = require("helmet");
-
-const moment = require("moment-timezone"); // Importa moment-timezone
-
+const moment = require("moment-timezone");
 const { isAfter, addMinutes } = require("date-fns");
-
 const app = express();
 
-const supabaseUrl = process.env.SUPABASE_URL; // Cargar URL de Supabase desde la variable de entorno
-const supabaseKey = process.env.SUPABASE_KEY; // Cargar clave de Supabase desde la variable de entorno
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Configura la política de seguridad de contenido
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "https://cdnjs.cloudflare.com"], // Agregado CDN aquí
+      scriptSrc: ["'self'", "https://cdnjs.cloudflare.com"],
       styleSrc: ["'self'", "https://fonts.googleapis.com", "'unsafe-inline'"],
-      imgSrc: [
-        "'self'",
-        "data:",
-        "https://cdn.glitch.global", // Permite cargar imágenes desde este CDN
-      ],
-      fontSrc: [
-        "'self'",
-        "https://fonts.googleapis.com",
-        "https://fonts.gstatic.com",
-      ],
+      imgSrc: ["'self'", "data:", "https://cdn.glitch.global"],
+      fontSrc: ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
       frameAncestors: ["'none'"],
       upgradeInsecureRequests: [],
-      // reportUri: '/csp-violation-report-endpoint' // Habilita el informe de violaciones si es necesario
     },
   })
 );
 
-// Configura la política HSTS
 app.use(
   helmet.hsts({
-    maxAge: 31536000, // 1 año en segundos
-    includeSubDomains: true, // Incluir subdominios
-    preload: true, // Permite el uso en la lista de precarga HSTS
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true,
   })
 );
 
-// Configura la política X-Content-Type-Options
 app.use(helmet.noSniff());
-
-// Configura la política de referencia Referrer Policy
 app.use(helmet.referrerPolicy({ policy: "no-referrer-when-downgrade" }));
 
-// Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Forzar el tipo MIME de CSS
 app.use("/styles.css", (req, res, next) => {
   res.type("text/css");
   next();
 });
 
-// Establecer la Política de Permisos
 app.use((req, res, next) => {
   res.setHeader(
     "Permissions-Policy",
@@ -77,7 +57,6 @@ app.use((req, res, next) => {
   next();
 });
 
-// Servir archivos estáticos desde la carpeta public
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use(
@@ -89,12 +68,10 @@ app.use(
   })
 );
 
-// Ruta para el formulario de login
 app.get("/login", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "login.html")); // Servir el HTML de login
+  res.sendFile(path.join(__dirname, "public", "login.html"));
 });
 
-// Middleware para verificar el token
 function verificarToken(req, res, next) {
   if (!req.headers.authorization) {
     return res.status(401).json({
@@ -113,13 +90,9 @@ function verificarToken(req, res, next) {
   }
 
   try {
-    // Verificar el token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Guardar los datos del usuario en req.user para usarlos después si es necesario
     req.user = decoded;
-
-    next(); // Continuar con la ejecución de la ruta
+    next();
   } catch (error) {
     return res.status(403).json({
       success: false,
@@ -130,19 +103,13 @@ function verificarToken(req, res, next) {
 
 app.post("/login", async (req, res) => {
   try {
-    console.log("Inicio del proceso de login");
     const { email, password } = req.body;
-
-    // Validación de entrada
-    // 1. Validar formato de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!email || !emailRegex.test(email)) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Email inválido." });
+      return res.status(400).json({ success: false, message: "Email inválido." });
     }
 
-    // Buscar usuario en Supabase
     const { data: usuario, error } = await supabase
       .from("Usuario")
       .select("*")
@@ -150,114 +117,80 @@ app.post("/login", async (req, res) => {
       .single();
 
     if (error) {
-      console.error("Error al buscar usuario:", error);
-      return res
-        .status(500)
-        .json({ success: false, message: "Error al buscar correo." });
+      return res.status(500).json({ success: false, message: "Error al buscar correo." });
     }
 
     if (!usuario) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Usuario no encontrado." });
+      return res.status(404).json({ success: false, message: "Usuario no encontrado." });
     }
 
-    console.log("Usuario encontrado:", usuario);
-
-    // Comprobar si el usuario está bloqueado
     if (usuario.intentos_fallidos >= 3 || usuario.estatus === false) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "Cuenta bloqueada. Contacta al administrador.",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Cuenta bloqueada. Contacta al administrador.",
+      });
     }
 
-    // Verificar contraseña
     const passwordMatch = await bcrypt.compare(password, usuario.password);
-    console.log("Contraseña coincide:", passwordMatch);
 
     if (passwordMatch) {
-      // Reiniciar intentos fallidos y activar estatus
       await supabase
         .from("Usuario")
         .update({ intentos_fallidos: 0, estatus: true })
         .eq("id", usuario.id);
 
-      // Generar token para todos los roles
       let token;
 
       if (usuario.id_rol === 1) {
-        // Es un administrador
-        console.log("ES ADMINISTRADOR");
-
-        // Generar el token para administrador
         token = jwt.sign(
           {
-            id: usuario.id, // ID del usuario
-            id_rol: usuario.id_rol, // Rol del usuario (administrador)
-            nombre_completo: usuario.nombre_usuario, // Asegúrate de que esta propiedad esté correctamente asignada
+            id: usuario.id,
+            id_rol: usuario.id_rol,
+            nombre_completo: usuario.nombre_usuario,
           },
-          process.env.JWT_SECRET, // Reemplaza con jwtSecret si no estás usando process.env
-          { algorithm: 'HS256', expiresIn: "15m" } // Expiración del token en 1 hora
+          process.env.JWT_SECRET,
+          { algorithm: "HS256", expiresIn: "15m" }
         );
-        return res.json({ success: true, token }); // Retorna el token
+        return res.json({ success: true, token });
       } else {
-        // Buscar el profesor relacionado con el usuario
         const { data: profesor, error: errorProfesor } = await supabase
           .from("Profesor")
           .select("*")
-          .eq("id_usuario", usuario.id) // Relación Usuario-Profesor
+          .eq("id_usuario", usuario.id)
           .single();
 
         if (errorProfesor || !profesor) {
-          console.error("Error al buscar profesor:", errorProfesor);
-          return res
-            .status(500)
-            .json({ success: false, message: "Error al buscar profesor." });
+          return res.status(500).json({ success: false, message: "Error al buscar profesor." });
         }
 
-        // Construir el id del profesor
         const profesorId = profesor.id;
+        const nombreCompleto = `${profesor.nombre} ${profesor.apellido_paterno} ${profesor.apellido_materno}`.trim();
 
-        // Construir el nombre completo del profesor
-        const nombreCompleto =
-          `${profesor.nombre} ${profesor.apellido_paterno} ${profesor.apellido_materno}`.trim();
-
-        // Generar el token con el nombre completo del profesor
         token = jwt.sign(
           {
-            id: usuario.id, // ID del usuario
-            id_rol: usuario.id_rol, // Rol del usuario
+            id: usuario.id,
+            id_rol: usuario.id_rol,
             id_profesor: profesorId,
-            nombre_completo: nombreCompleto, // Nombre completo del profesor
+            nombre_completo: nombreCompleto,
           },
-          process.env.JWT_SECRET, // Reemplaza con jwtSecret si no estás usando process.env
-          { algorithm: 'HS256', expiresIn: "30m" } // Expiración del token en 1 hora
+          process.env.JWT_SECRET,
+          { algorithm: "HS256", expiresIn: "30m" }
         );
 
-        console.log("ID PROFESOR TABLA", profesor.id);
         return res.json({ success: true, token });
       }
     } else {
-      // Contraseña incorrecta
-      console.error("Contraseña incorrecta.");
       const nuevosIntentos = (usuario.intentos_fallidos || 0) + 1;
-      console.log("Intentos fallidos:", nuevosIntentos);
 
-      // Bloquear usuario después de 3 intentos fallidos y actualizar estatus
       if (nuevosIntentos >= 3) {
         await supabase
           .from("Usuario")
-          .update({ intentos_fallidos: nuevosIntentos, estatus: false }) // Bloquea al usuario
+          .update({ intentos_fallidos: nuevosIntentos, estatus: false })
           .eq("id", usuario.id);
-        return res
-          .status(403)
-          .json({
-            success: false,
-            message: "Cuenta bloqueada. Contacta al administrador.",
-          });
+        return res.status(403).json({
+          success: false,
+          message: "Cuenta bloqueada. Contacta al administrador.",
+        });
       } else {
         await supabase
           .from("Usuario")
@@ -265,15 +198,10 @@ app.post("/login", async (req, res) => {
           .eq("id", usuario.id);
       }
 
-      return res
-        .status(401)
-        .json({ success: false, message: "Contraseña incorrecta." });
+      return res.status(401).json({ success: false, message: "Contraseña incorrecta." });
     }
   } catch (err) {
-    console.error("Error en el proceso de login:", err);
-    return res
-      .status(500)
-      .json({ success: false, message: "Error interno del servidor." });
+    return res.status(500).json({ success: false, message: "Error interno del servidor." });
   }
 });
 
