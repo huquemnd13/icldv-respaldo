@@ -1,102 +1,35 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boleta Escolar</title>
-    <link rel="stylesheet" href="style_boleta.css">
+    <title>Instituto Cultural Leonardo da Vinci</title>
+    <style>
+        /* Estilos para el encabezado */
+        header {
+            background-color: #007bff; /* Azul similar al de tu imagen */
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .logo {
+            float: left; /* Coloca el logo a la izquierda */
+            width: 200px; /* Ajusta el ancho del logo según sea necesario */
+        }
+
+        .titulo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
-    <div class="report-card">
-        <header>
-            <div class="header-left">
-                <img src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/MarcaLDV.png?v=1728659537627" alt="Instituto Logo" class="school-logo">
-            </div>
-            <div class="header-center">
-                <h1>INSTITUTO CULTURAL LEONARDO DA VINCI</h1>
-                <h2>INFORME DE CALIFICACIONES</h2>
-                <h3>NIVEL PRIMARIA</h3>
-                <p>CCT: 15PPR3434K</p>
-            </div>
-        </header>
-
-        <section class="student-info">
-            <div class="student-details">
-                <p><strong>Nombre del Alumno:</strong> <span id="nombreAlumno"></span></p>
-                <p><strong>Ciclo Escolar:</strong> <span id="cicloEscolar"></span></p>
-                <p><strong>Grado:</strong> <span id="gradoEscolar"></span></p>
-                <p><strong>Grupo:</strong> <span id="grupoEscolar"></span></p>
-                <p><strong>Periodo:</strong> <span id="periodoEscolar"></span></p>
-            </div>
-        </section>
-
-        <section class="grades-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>UNIDADES CURRICULARES</th>
-                        <th colspan="3">PERIODOS DE EVALUACIÓN</th>
-                        <th>PROMEDIO FINAL</th>
-                    </tr>
-                    <tr>
-                        <th></th>
-                        <th>1°</th>
-                        <th>2°</th>
-                        <th>3°</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody id="subjectsTableBody">
-                    <!-- Subjects will be dynamically added here -->
-                </tbody>
-            </table>
-        </section>
-
-        <section class="footer">
-            <p>Firma del padre o tutor:</p>
-            <p>Docente (tutor/asesor):</p>
-            <p>Dirección Escolar:</p>
-        </section>
-
-    </div>
-
-    <script>
-        // Example data for dynamic population
-        const studentInfo = {
-            nombre: "DE LA ROSA GARCÉS MAYDELI SUZETTE",
-            cicloEscolar: "2020-2021",
-            grado: "1°",
-            grupo: "A",
-            periodo: "PRIMER"
-        };
-
-        const subjects = [
-            { nombre: "LENGUA MATERNA (ESPAÑOL)", p1: 9, p2: 8, p3: 10, promedio: 9 },
-            { nombre: "MATEMÁTICAS", p1: 10, p2: 9, p3: 10, promedio: 9.67 },
-            { nombre: "CIENCIAS", p1: 9, p2: 9, p3: 10, promedio: 9.33 },
-            // Add more subjects dynamically
-        ];
-
-        // Populate student info
-        document.getElementById('nombreAlumno').textContent = studentInfo.nombre;
-        document.getElementById('cicloEscolar').textContent = studentInfo.cicloEscolar;
-        document.getElementById('gradoEscolar').textContent = studentInfo.grado;
-        document.getElementById('grupoEscolar').textContent = studentInfo.grupo;
-        document.getElementById('periodoEscolar').textContent = studentInfo.periodo;
-
-        // Populate subjects dynamically
-        const subjectsTableBody = document.getElementById('subjectsTableBody');
-        subjects.forEach(subject => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${subject.nombre}</td>
-                <td>${subject.p1}</td>
-                <td>${subject.p2}</td>
-                <td>${subject.p3}</td>
-                <td>${subject.promedio.toFixed(2)}</td>
-            `;
-            subjectsTableBody.appendChild(row);
-        });
-    </script>
+    <header>
+        <img class="logo" src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/LogoLDV-removebg.png?v=1729718694077" alt="Logo del Instituto"> <div class="titulo">
+            INSTITUTO CULTURAL LEONARDO DA VINCI<br>
+            INFORME DE CALIFICACIONES<br>
+            NIVEL PRIMARIA<br>
+            CCT: 15PPR3434K
+        </div>
+    </header>
 </body>
 </html>
