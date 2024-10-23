@@ -1,0 +1,92 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    margin: 0;
+    padding: 0;
+}
+
+.boleta-container {
+    width: 80%;
+    margin: 20px auto;
+    background: #ffffff;
+    padding: 20px;
+    border: 1px solid #cccccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #004080;
+}
+
+header .logo img {
+    max-width: 100px;
+}
+
+header .header-info {
+    text-align: center;
+    flex-grow: 1;
+}
+
+header h1 {
+    font-size: 1.5em;
+    margin: 0;
+    color: #004080;
+}
+
+header p {
+    margin: 0;
+    color: #004080;
+}
+
+.student-info {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.student-details span {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.table-section {
+    margin-top: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 2px solid #000; /* Borde externo de la tabla */
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #000; /* Bordes de las celdas */
+}
+
+th {
+    background-color: #004080;
+    color: white;
+    border-bottom: 2px solid #000; /* Borde inferior de los encabezados */
+}
+
+.signature-section {
+    margin-top: 30px;
+    text-align: left;
+}
+
+.signature-section div {
+    margin-bottom: 10px;
+}
+
+footer p {
+    text-align: right;
+    margin-top: 20px;
+    font-weight: bold;
+}
