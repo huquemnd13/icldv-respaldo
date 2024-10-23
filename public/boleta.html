@@ -1,35 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Instituto Cultural Leonardo da Vinci</title>
-    <style>
-        /* Estilos para el encabezado */
-        header {
-            background-color: #007bff; /* Azul similar al de tu imagen */
-            color: white;
-            text-align: center;
-            padding: 20px;
-        }
+  <title>Instituto Cultural Leonardo da Vinci</title>
+  <style>
+    /* Estilos para el encabezado */
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
 
-        .logo {
-            float: left; /* Coloca el logo a la izquierda */
-            width: 200px; /* Ajusta el ancho del logo según sea necesario */
-        }
+    header {
+      background-color: #007bff;
+      color: white;
+      padding: 20px;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      font-family: 'Montserrat', sans-serif;
+      display: flex; /* Hacemos el header un contenedor flex */
+      justify-content: center; /* Centramos el contenido del header */
+      width: 80%;
+      max-width: 800px;
+    }
 
-        .titulo {
-            font-size: 24px;
-            font-weight: bold;
-        }
-    </style>
+    .logo-container {
+      background-color: white;
+      padding: 10px;
+      display: inline-block; /* Hacemos que el contenedor del logo sea un bloque en línea */
+    }
+
+    .logo {
+      width: 120px;
+    }
+
+    .bloque-azul {
+      background-color: #007bff;
+      color: white;
+      padding: 20px;
+      border-radius: 4px;
+      text-align: center;
+      font-size: 20px;
+      font-weight: bold;
+      font-family: 'Montserrat', sans-serif;
+      display: inline-block; /* Hacemos que el bloque azul sea un bloque en línea */
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <img class="logo" src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/LogoLDV-removebg.png?v=1729718694077" alt="Logo del Instituto"> <div class="titulo">
-            INSTITUTO CULTURAL LEONARDO DA VINCI<br>
-            INFORME DE CALIFICACIONES<br>
-            NIVEL PRIMARIA<br>
-            CCT: 15PPR3434K
-        </div>
-    </header>
+  <header>
+    <div class="logo-container">
+      <img class="logo" src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/LogoLDV-removebg.png?v=1729718938375" alt="Logo del Instituto">
+    </div>
+    <div class="bloque-azul">
+      INSTITUTO CULTURAL LEONARDO DA VINCI<br>
+      INFORME DE CALIFICACIONES<br>
+      NIVEL PRIMARIA<br>
+      CCT: 15PPR3434K
+    </div>
+  </header>
 </body>
 </html>
