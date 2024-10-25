@@ -137,16 +137,18 @@ button:hover {
   color: #ffffff;
 }
 
+/* Estilos modernos para la tabla */
 .table-container {
   width: 900px;
   height: 400px;
   overflow-y: auto;
   margin: 20px auto;
   border: 1px solid #dddddd;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra más marcada */
   background-color: white;
   display: flex;
   flex-direction: column;
+  border-radius: 8px; /* Bordes redondeados */
 }
 
 #alumnos-table {
@@ -156,16 +158,11 @@ button:hover {
   background-color: white;
 }
 
-#alumnos-table td {
-  border: 1px solid #dddddd;
+#alumnos-table th, #alumnos-table td {
   font-size: 12px;
   padding: 8px;
   text-align: left;
-}
-
-#alumnos-table th,
-#alumnos-table td {
-  font-size: 12px;
+  border: 1px solid #dddddd;
 }
 
 #alumnos-table th {
@@ -176,6 +173,8 @@ button:hover {
   position: sticky;
   top: 0;
   z-index: 100;
+  padding: 12px; /* Aumento del padding */
+  border-bottom: 2px solid #009688; /* Línea inferior más visible */
 }
 
 #alumnos-table tr:nth-child(even) {
@@ -190,36 +189,30 @@ button:hover {
 #alumnos-table tr:hover {
   background-color: #d9d9d9;
   color: black;
+  cursor: pointer;
 }
 
-#alumnos-table th:nth-child(1),
-#alumnos-table td:nth-child(1) {
+#alumnos-table th:nth-child(1), #alumnos-table td:nth-child(1) {
   width: 10%;
   display: none;
 }
 
-#alumnos-table th:nth-child(2),
-#alumnos-table td:nth-child(2) {
+#alumnos-table th:nth-child(2), #alumnos-table td:nth-child(2) {
   width: 10%;
   display: none;
 }
 
-#alumnos-table th:nth-child(3),
-#alumnos-table td:nth-child(3) {
+#alumnos-table th:nth-child(3), #alumnos-table td:nth-child(3) {
   width: 30%;
 }
 
-#alumnos-table th:nth-child(4),
-#alumnos-table td:nth-child(4) {
+#alumnos-table th:nth-child(4), #alumnos-table td:nth-child(4) {
   width: 20%;
 }
 
-#alumnos-table th:nth-child(4),
-#alumnos-table td:nth-child(4),
-#alumnos-table th:nth-child(5),
-#alumnos-table td:nth-child(5),
-#alumnos-table th:nth-child(6),
-#alumnos-table td:nth-child(6) {
+#alumnos-table th:nth-child(4), #alumnos-table td:nth-child(4),
+#alumnos-table th:nth-child(5), #alumnos-table td:nth-child(5),
+#alumnos-table th:nth-child(6), #alumnos-table td:nth-child(6) {
   width: auto;
 }
 
@@ -268,8 +261,8 @@ button:hover {
   z-index: 1000;
 }
 
-/* Estilo elegante y moderno con ajuste de ancho para los dropdowns */
-select {
+/* Estilo elegante y moderno con ajuste de ancho y desplazamiento para los dropdowns de observaciones */
+select.observaciones, select.inasistencias {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -280,8 +273,7 @@ select {
   border-radius: 8px;
   color: #444;
   outline: none;
-  width: 100%;
-  max-width: 200px; /* Ajuste del ancho máximo */
+  width: 100px; /* Ancho fijo */
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>');
@@ -293,16 +285,20 @@ select {
   text-overflow: ellipsis;
 }
 
-select:hover {
+select.observaciones:hover, select.inasistencias:hover {
   border-color: #888;
 }
 
-select:focus {
+select.observaciones:focus, select.inasistencias:focus {
   border-color: #009688;
   box-shadow: 0 0 10px rgba(0, 150, 136, 0.5);
 }
 
-select option {
+select.observaciones option, select.inasistencias option {
   padding: 10px;
 }
 
+select.observaciones, select.inasistencias {
+  overflow-y: auto; /* Permite el desplazamiento vertical */
+  max-height: 150px; /* Altura máxima del desplegable */
+}

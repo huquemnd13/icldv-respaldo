@@ -265,12 +265,14 @@ function crearCeldaConDropdown(valor, periodo, numPeriodo) {
 function crearCeldaConObservaciones(calificacion) {
   const cell = document.createElement("td");
   const selectObservacion = document.createElement("select");
+  selectObservacion.classList.add('observaciones'); // Aplica la clase 'observaciones'
   selectObservacion.multiple = true;
   selectObservacion.size = 6;
   selectObservacion.dataset.alumno = calificacion.id_alumno;
   selectObservacion.dataset.calificacion = calificacion.id_calificacion;
   llenarSelectConObservaciones(selectObservacion, observacionesGlobales);
   cell.appendChild(selectObservacion);
+
   selectObservacion.addEventListener("change", async function () {
     const selectedOptions = Array.from(selectObservacion.options).filter((opt) => opt.selected);
     if (selectedOptions.length > 2) {
@@ -291,9 +293,11 @@ function crearCeldaConObservaciones(calificacion) {
       }
     }
   });
+
   manejarTooltip(selectObservacion);
   return cell;
 }
+
 
 function crearCeldaConInasistencias(valorInicial) {
   const cell = document.createElement("td");
