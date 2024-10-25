@@ -493,7 +493,6 @@ function crearDropdown(calificacionActual, periodo, periodoNumero) {
   calificacionesPosibles.forEach((calificacion) => {
     const option = document.createElement("option");
     option.value = calificacion;
-    option.classList.add('calificacion'); // Aplica la clase 'observaciones'
     option.textContent = calificacion;
     option.selected = calificacion === calificacionActual;
     select.appendChild(option);
@@ -505,6 +504,27 @@ function crearDropdown(calificacionActual, periodo, periodoNumero) {
     guardarCalificacion(this);
   });
   return select;
+}
+
+function mostrarToast(mensaje, tipo = "success") {
+  const toastContainer = document.getElementById("toast-container");
+
+  const toast = document.createElement("div");
+  toast.classList.add("toast", tipo);
+  toast.textContent = mensaje;
+
+  toastContainer.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add("show");
+  }, 100);
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => {
+      toast.remove();
+    }, 300);
+  }, 5000);
 }
 
 function guardarCalificacion(selectElement) {
