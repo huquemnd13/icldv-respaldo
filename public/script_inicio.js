@@ -163,12 +163,10 @@ async function cargarAlumnos() {
       const gradoId = document.getElementById("grados").value;
       const cicloId = cicloActivoGlobal.id;
       const profesorId = decodedToken.id_profesor;
-
       if (!gradoId || !materiaSeleccionadaId || !profesorId) {
         console.error("Por favor selecciona un grado y un ciclo escolar.");
         return;
       }
-
       const response = await fetch(
         `/calificaciones?id_ciclo_escolar=${cicloId}&id_grado_nivel_escolar=${gradoId}&id_profesor=${profesorId}&id_materia=${materiaSeleccionadaId}`,
         {
@@ -179,7 +177,6 @@ async function cargarAlumnos() {
           },
         }
       );
-
       if (!response.ok) {
         if (response.status === 401) {
           alert("No estás autorizado. Por favor, inicia sesión nuevamente.");
@@ -187,9 +184,7 @@ async function cargarAlumnos() {
         }
         throw new Error("Error al obtener las calificaciones.");
       }
-
       const calificaciones = await response.json();
-
       const responsePeriodos = await fetch(
         `/periodos?id_ciclo_escolar=${cicloId}`,
         {
@@ -200,7 +195,6 @@ async function cargarAlumnos() {
           },
         }
       );
-
       if (!responsePeriodos.ok) {
         if (responsePeriodos.status === 401) {
           alert("No estás autorizado. Por favor, inicia sesión nuevamente.");
@@ -208,15 +202,10 @@ async function cargarAlumnos() {
         }
         throw new Error("Error al obtener los periodos.");
       }
-
       const periodos = await responsePeriodos.json();
-
       if (observacionesGlobales.length === 0) {
-        observacionesGlobales = await cargarObservaciones(
-          materiaSeleccionadaId
-        );
+        observacionesGlobales = await cargarObservaciones(materiaSeleccionadaId);
       }
-
       const periodoActivo = periodos.find((periodo) =>
         esPeriodoActivo(periodo)
       );
@@ -235,99 +224,21 @@ async function cargarAlumnos() {
           "warning"
         );
       }
-
       const tableBody = document
         .getElementById("alumnos-table")
         .querySelector("tbody");
       tableBody.innerHTML = "";
-
       for (const calificacion of calificaciones) {
         const row = document.createElement("tr");
-
-        const cellCalificacionId = document.createElement("td");
-        cellCalificacionId.textContent = calificacion.id_calificacion;
-        row.appendChild(cellCalificacionId);
-
-        const cellAlumnoId = document.createElement("td");
-        cellAlumnoId.textContent = calificacion.id_alumno;
-        row.appendChild(cellAlumnoId);
-
-        const cellMateria = document.createElement("td");
-        cellMateria.textContent = textoMateriaSeleccionada;
-        row.appendChild(cellMateria);
-
-        const cellNombreCompleto = document.createElement("td");
-        cellNombreCompleto.textContent = calificacion.nombre_completo;
-        row.appendChild(cellNombreCompleto);
-
-        const cellP1 = document.createElement("td");
-        cellP1.dataset.periodo = 1;
-        cellP1.appendChild(
-          crearDropdown(calificacion.periodo_1, periodos[0], 1)
-        );
-        row.appendChild(cellP1);
-
-        const cellP2 = document.createElement("td");
-        cellP2.dataset.periodo = 2;
-        cellP2.appendChild(
-          crearDropdown(calificacion.periodo_2, periodos[1], 2)
-        );
-        row.appendChild(cellP2);
-
-        const cellP3 = document.createElement("td");
-        cellP3.dataset.periodo = 3;
-        cellP3.appendChild(
-          crearDropdown(calificacion.periodo_3, periodos[2], 3)
-        );
-        row.appendChild(cellP3);
-
-        const cellObservacion = document.createElement("td");
-        const selectObservacion = document.createElement("select");
-        selectObservacion.multiple = true;
-        selectObservacion.size = 6;
-        selectObservacion.dataset.alumno = calificacion.id_alumno;
-        selectObservacion.dataset.calificacion = calificacion.id_calificacion;
-
-        llenarSelectConObservaciones(selectObservacion, observacionesGlobales);
-        cellObservacion.appendChild(selectObservacion);
-        row.appendChild(cellObservacion);
-
-        selectObservacion.addEventListener("change", async function () {
-          const selectedOptions = Array.from(selectObservacion.options).filter(
-            (opt) => opt.selected
-          );
-          if (selectedOptions.length > 2) {
-            const lastSelectedOption =
-              selectedOptions[selectedOptions.length - 1];
-            lastSelectedOption.selected = false;
-            mostrarToast("Solo puedes seleccionar hasta 2 opciones.", "error");
-          } else {
-            const calificacionIdSeleccionada = parseInt(
-              selectObservacion.dataset.calificacion
-            );
-
-            const observacionesSeleccionadas = selectedOptions.map(
-              (opt) => opt.value
-            );
-            if (observacionesSeleccionadas.length > 0) {
-              try {
-                await guardarObservacionesSeleccionadas(
-                  calificacionIdSeleccionada,
-                  observacionesSeleccionadas
-                );
-                mostrarToast(
-                  "Observaciones guardadas exitosamente.",
-                  "success"
-                );
-              } catch (error) {
-                console.error("Error al guardar observaciones:", error);
-                mostrarToast("Error al guardar observaciones.", "error");
-              }
-            }
-          }
-        });
-
-        manejarTooltip(selectObservacion);
+        row.appendChild(crearCelda(calificacion.id_calificacion));
+        row.appendChild(crearCelda(calificacion.id_alumno));
+        row.appendChild(crearCelda(textoMateriaSeleccionada));
+        row.appendChild(crearCelda(calificacion.nombre_completo));
+        row.appendChild(crearCeldaConDropdown(calificacion.periodo_1, periodos[0], 1));
+        row.appendChild(crearCeldaConDropdown(calificacion.periodo_2, periodos[1], 2));
+        row.appendChild(crearCeldaConDropdown(calificacion.periodo_3, periodos[2], 3));
+        row.appendChild(crearCeldaConObservaciones(calificacion));
+        row.appendChild(crearCeldaConInasistencias(calificacion.inasistencias));
         tableBody.appendChild(row);
       }
     } catch (error) {
@@ -337,6 +248,71 @@ async function cargarAlumnos() {
     console.error("No hay token disponible. Por favor inicia sesión.");
   }
 }
+
+function crearCelda(texto) {
+  const cell = document.createElement("td");
+  cell.textContent = texto;
+  return cell;
+}
+
+function crearCeldaConDropdown(valor, periodo, numPeriodo) {
+  const cell = document.createElement("td");
+  cell.dataset.periodo = numPeriodo;
+  cell.appendChild(crearDropdown(valor, periodo, numPeriodo));
+  return cell;
+}
+
+function crearCeldaConObservaciones(calificacion) {
+  const cell = document.createElement("td");
+  const selectObservacion = document.createElement("select");
+  selectObservacion.multiple = true;
+  selectObservacion.size = 6;
+  selectObservacion.dataset.alumno = calificacion.id_alumno;
+  selectObservacion.dataset.calificacion = calificacion.id_calificacion;
+  llenarSelectConObservaciones(selectObservacion, observacionesGlobales);
+  cell.appendChild(selectObservacion);
+  selectObservacion.addEventListener("change", async function () {
+    const selectedOptions = Array.from(selectObservacion.options).filter((opt) => opt.selected);
+    if (selectedOptions.length > 2) {
+      const lastSelectedOption = selectedOptions[selectedOptions.length - 1];
+      lastSelectedOption.selected = false;
+      mostrarToast("Solo puedes seleccionar hasta 2 opciones.", "error");
+    } else {
+      const calificacionIdSeleccionada = parseInt(selectObservacion.dataset.calificacion);
+      const observacionesSeleccionadas = selectedOptions.map((opt) => opt.value);
+      if (observacionesSeleccionadas.length > 0) {
+        try {
+          await guardarObservacionesSeleccionadas(calificacionIdSeleccionada, observacionesSeleccionadas);
+          mostrarToast("Observaciones guardadas exitosamente.", "success");
+        } catch (error) {
+          console.error("Error al guardar observaciones:", error);
+          mostrarToast("Error al guardar observaciones.", "error");
+        }
+      }
+    }
+  });
+  manejarTooltip(selectObservacion);
+  return cell;
+}
+
+function crearCeldaConInasistencias(valorInicial) {
+  const cell = document.createElement("td");
+  const selectElement = document.createElement('select');
+
+  for (let i = 0; i <= 20; i++) {
+    const option = document.createElement('option');
+    option.value = i;
+    option.text = i;
+    if (i == valorInicial) {
+      option.selected = true;
+    }
+    selectElement.appendChild(option);
+  }
+
+  cell.appendChild(selectElement);
+  return cell;
+}
+
 async function cargarObservaciones(idMateria) {
   if (observacionesGlobales.length === 0) {
     const token = localStorage.getItem("token");
