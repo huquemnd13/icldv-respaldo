@@ -272,7 +272,7 @@ button:hover {
 }
 
 /* Estilo elegante y moderno con ajuste de ancho y desplazamiento para los dropdowns de observaciones */
-select.observaciones, select.inasistencias, select.filtros {
+select.observaciones, select.inasistencias, select.filtros, select.calificacion {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -298,24 +298,24 @@ select.observaciones, select.inasistencias, select.filtros {
 select.filtros {
   width: 300px; /* Ancho fijo para selectores 'drops' */
 }
-select.inasistencias {
+select.inasistencias, select.calificacion {
   width: 50px; /* Ancho fijo para selectores 'drops' */
 }
 
-select.observaciones:hover, select.inasistencias:hover, select.filtros:hover {
+select.observaciones:hover, select.inasistencias:hover, select.filtros:hover, select.calificacion:hover {
   border-color: #888;
 }
 
-select.observaciones:focus, select.inasistencias:focus, select.filtros:focus {
+select.observaciones:focus, select.inasistencias:focus, select.filtros:focus, select.calificacion:focus {
   border-color: #009688;
   box-shadow: 0 0 10px rgba(0, 150, 136, 0.5);
 }
 
-select.observaciones option, select.inasistencias option, select.filtros option {
+select.observaciones option, select.inasistencias option, select.filtros option, select.calificacion option {
   padding: 10px;
 }
 
-select.observaciones, select.inasistencias, select.drops {
+select.observaciones, select.inasistencias, select.drops, select.calificacion {
   overflow-y: auto; /* Permite el desplazamiento vertical */
   max-height: 150px; /* Altura máxima del desplegable */
 }
