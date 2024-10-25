@@ -119,41 +119,6 @@ window.onload = async function () {
   }
 };
 
-function createCalificacionDropdown(
-  calificacion,
-  tiempos,
-  tiempoIndex,
-  currentDateTime
-) {
-  const select = document.createElement("select");
-  select.classList.add("calificacion-dropdown");
-
-  const tiempo = tiempos[tiempoIndex];
-
-  if (
-    tiempo &&
-    currentDateTime >= new Date(tiempo.fecha_inicio) &&
-    currentDateTime <= new Date(tiempo.fecha_fin)
-  ) {
-    select.disabled = false;
-  } else {
-    select.disabled = true;
-  }
-
-  for (let i = 0; i <= 10; i++) {
-    const option = document.createElement("option");
-    option.value = i;
-    option.textContent = i;
-    if (calificacion === i) {
-      option.selected = true;
-    } else if (!calificacion && i === 0) {
-      option.selected = true;
-    }
-    select.appendChild(option);
-  }
-
-  return select;
-}
 let observacionesGlobales = [];
 
 async function cargarAlumnos() {
