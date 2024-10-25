@@ -165,6 +165,10 @@ button:hover {
   word-wrap: break-word; /* Permite el ajuste de texto largo */
 }
 
+#alumnos-table th, #alumnos-table td {
+  text-align: center; /* Centra el contenido horizontalmente */
+}
+
 #alumnos-table th {
   background-color: #01c5ff;
   color: white;
@@ -221,7 +225,6 @@ button:hover {
 #alumnos-table th:nth-child(9), #alumnos-table td:nth-child(9) {
   width: 100px; /* 10% de 1000px */
 }
-
 
 .toast-container {
   position: fixed;

@@ -1,88 +1,68 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="robots" content="noindex">
-    <title>Bienvenido</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="js/jwt-decode.min.js" defer></script>
-    <script src="script_inicio.js"></script>
-  </head>
-  <body>
-    <div id="header" style="display: flex; flex-direction: column; width: 100%">
-      <div
-        id="welcome-message"
-        style="
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          width: 97%;
-        "
-      >
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-          "
-        >
-          <img
-            src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/MarcaLDV.png?v=1728659537627"
-            alt="Logo"
-            style="width: 300px; margin-right: 20px">
-          <div style="flex: 1; text-align: left; margin-right: 20px">
-            Bienvenid@,
-            <span style="font-weight: bold" id="nombre_usuario"></span>
-          </div>
-          <div style="flex: 1; text-align: center; margin-right: 20px">
-            <span id="ciclo_activo" style="font-weight: bold"></span>
-          </div>
-          <div style="flex: 1; text-align: right">
-            <button id="logout-button">Cerrar sesión</button>
-          </div>
-        </div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>Bienvenido</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="js/jwt-decode.min.js" defer></script>
+  <script src="script_inicio.js"></script>
+</head>
+<body>
+  <div class="container">
+    <nav class="sidebar">
+      <div class="logo">
+        <img src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/MarcaLDV.png?v=1728659537627" alt="Logo" style="width: 100%;">
       </div>
-      <div style="display: flex; align-items: center; margin-top: 20px">
-        <label for="grados" style="margin-right: 10px; font-size: 12px"
-          >Selecciona un grado:</label
-        >
-        <select id="grados" class="filtros" style="margin-right: 20px">
+      <div id="welcome-message">
+        Bienvenid@, <span style="font-weight: bold" id="nombre_usuario"></span>
+      </div>
+      <div>
+        <label for="grados">Selecciona un grado:</label>
+        <select id="grados" class="filtros">
           <option value="" disabled selected>Selecciona un grado</option>
         </select>
-
-        <label for="materias" style="margin-right: 10px; font-size: 12px"
-          >Selecciona una materia:</label
-        >
-        <select id="materias" class="filtros" style="margin-right: 20px">
+      </div>
+      <div>
+        <label for="materias">Selecciona una materia:</label>
+        <select id="materias" class="filtros">
           <option value="" disabled selected>Selecciona una materia</option>
         </select>
-
-        <button id="cargar-alumnos-button" style="margin-left: 20px">
-          Cargar Alumnos
-        </button>
+      </div>
+      <button id="cargar-alumnos-button">Cargar Alumnos</button>
+      <button id="logout-button">Cerrar sesión</button>
+    </nav>
+    <div class="content">
+      <div id="header" style="display: flex; flex-direction: column; width: 100%">
+        <div id="welcome-message" style="display: flex; justify-content: space-between; align-items: center; width: 97%;">
+          <div style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
+            <div style="flex: 1; text-align: center; margin-right: 20px">
+              <span id="ciclo_activo" style="font-weight: bold"></span>
+            </div>
+          </div>
+        </div>
+        <div class="table-container">
+          <table id="alumnos-table">
+            <thead>
+              <tr>
+                <th>ID Calificacion</th>
+                <th>ID Alumno</th>
+                <th>Materia</th>
+                <th>Nombre</th>
+                <th>Periodo 1</th>
+                <th>Periodo 2</th>
+                <th>Periodo 3</th>
+                <th>Observaciones</th>
+                <th>Inasistencias</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
       </div>
     </div>
-
-    <div class="table-container">
-      <table id="alumnos-table">
-        <thead>
-          <tr>
-            <th>ID Calificacion</th>
-            <th>ID Alumno</th>
-            <th>Materia</th>
-            <th>Nombre</th>
-            <th>Periodo 1</th>
-            <th>Periodo 2</th>
-            <th>Periodo 3</th>
-            <th>Observaciones</th>
-            <th>Inasistencias</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-    <div id="toast-container" class="toast-container"></div>
-  </body>
+  </div>
+  <div id="toast-container" class="toast-container"></div>
+</body>
 </html>
