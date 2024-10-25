@@ -272,6 +272,8 @@ async function guardarInasistencias(id_calificacion, inasistencia) {
     const decodedToken = JSON.parse(atob(token.split(".")[1]));
     id_usuario = decodedToken.id;
   }
+  
+  console.log(id_calificacion);
 
   const inasistenciaData = {
     _id_calificacion: id_calificacion,
@@ -320,9 +322,9 @@ function crearCeldaConInasistencias(valorInicial, id_calificacion) {
 
   selectElement.addEventListener('change', async function() {
     const inasistencia = selectElement.value;
+    console.log(inasistencia);
     try {
       await guardarInasistencias(id_calificacion, inasistencia);
-      
     } catch (error) {
       mostrarToast("Error al guardar inasistencias.", "error");
     }

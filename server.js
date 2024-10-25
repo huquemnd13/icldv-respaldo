@@ -621,7 +621,9 @@ app.post("/guardar-observaciones", verificarToken, async (req, res) => {
 
 app.post("/guardar-inasistencias", verificarToken, async (req, res) => {
   const { _id_calificacion, _inasistencia, _id_usuario } = req.body;
-
+  console.log(_id_calificacion);
+  console.log(_inasistencia);
+  console.log(_id_usuario);
   if (!_id_calificacion || _inasistencia === undefined || !_id_usuario) {
     return res.status(400).json({ mensaje: "Datos incompletos" });
   }
@@ -629,13 +631,13 @@ app.post("/guardar-inasistencias", verificarToken, async (req, res) => {
   if (!Number.isInteger(_id_calificacion)) {
     return res.status(400).json({ mensaje: "El ID de la calificación debe ser un número entero" });
   }
-
+  
   try {
     const { data: result, error } = await supabase.rpc(
       "insert_inasistencia",
       {
         _id_calificacion,
-        _inasistencias: [_inasistencia], // Convertir a array
+        _inasistencia,
         _id_usuario,
       }
     );
