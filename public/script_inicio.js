@@ -306,11 +306,25 @@ async function guardarInasistencias(id_calificacion, inasistencia) {
 }
 
 function crearCeldaConInasistencias(calificacion) {
+  const token = localStorage.getItem("token");
+  let id_usuario;
+  let id_rol; // Para almacenar el rol del usuario
+
+  // Decodificar el token para obtener el rol del usuario
+  if (token) {
+    const decodedToken = JSON.parse(atob(token.split(".")[1]));
+    id_usuario = decodedToken.id;      // ID del usuario (opcional)
+    id_rol = decodedToken.id_rol; // Asumiendo que el rol se almacena en 'id_rol'
+  }
+  
   const cell = document.createElement("td");
   const selectElement = document.createElement('select');
   selectElement.classList.add('inasistencias');
   selectElement.dataset.calificacion = calificacion.id_calificacion;
+  // Habilitar o deshabilitar el select según el rol del usuario
+  selectElement.disabled = id_rol !== 3; // Solo habilitar si el rol es 3
 
+  // Llenar el select con opciones de inasistencias
   for (let i = 0; i <= 20; i++) {
     const option = document.createElement('option');
     option.value = i;
@@ -320,7 +334,6 @@ function crearCeldaConInasistencias(calificacion) {
     }
     selectElement.appendChild(option);
   }
-
 
   selectElement.addEventListener('change', async function() {
     const inasistencia = selectElement.value;
