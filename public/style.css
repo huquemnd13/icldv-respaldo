@@ -267,3 +267,42 @@ button:hover {
   border-radius: 5px;
   z-index: 1000;
 }
+
+/* Estilo elegante y moderno con ajuste de ancho para los dropdowns */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  color: #444;
+  outline: none;
+  width: 100%;
+  max-width: 200px; /* Ajuste del ancho máximo */
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+select:hover {
+  border-color: #888;
+}
+
+select:focus {
+  border-color: #009688;
+  box-shadow: 0 0 10px rgba(0, 150, 136, 0.5);
+}
+
+select option {
+  padding: 10px;
+}
+

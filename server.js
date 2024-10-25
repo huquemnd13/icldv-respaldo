@@ -15,7 +15,7 @@ const app = express();
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
-
+/*
 function redirectToHTTPS(req, res, next) {
   if (req.headers['x-forwarded-proto'] !== 'https') {
     return res.redirect(`https://${req.headers.host}${req.url}`);
@@ -24,7 +24,7 @@ function redirectToHTTPS(req, res, next) {
 }
 
 app.use(redirectToHTTPS);
-
+*/
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
