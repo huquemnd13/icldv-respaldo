@@ -139,7 +139,7 @@ button:hover {
 
 /* Estilos modernos para la tabla */
 .table-container {
-  width: 900px;
+  width: 1000px;
   height: 400px;
   overflow-y: auto;
   margin: 20px auto;
@@ -192,29 +192,32 @@ button:hover {
   cursor: pointer;
 }
 
-#alumnos-table th:nth-child(1), #alumnos-table td:nth-child(1) {
-  width: 10%;
-  display: none;
+#alumnos-table td:nth-child(1), #alumnos-table th:nth-child(1) {
+  display: none; /* Escondido */
 }
 
-#alumnos-table th:nth-child(2), #alumnos-table td:nth-child(2) {
-  width: 10%;
-  display: none;
+#alumnos-table td:nth-child(2), #alumnos-table th:nth-child(2) {
+  display: none; /* Escondido */
 }
 
-#alumnos-table th:nth-child(3), #alumnos-table td:nth-child(3) {
-  width: 30%;
-}
-
-#alumnos-table th:nth-child(4), #alumnos-table td:nth-child(4) {
+#alumnos-table td:nth-child(3), #alumnos-table th:nth-child(3) {
   width: 20%;
 }
 
-#alumnos-table th:nth-child(4), #alumnos-table td:nth-child(4),
-#alumnos-table th:nth-child(5), #alumnos-table td:nth-child(5),
-#alumnos-table th:nth-child(6), #alumnos-table td:nth-child(6) {
-  width: auto;
+#alumnos-table td:nth-child(4), #alumnos-table th:nth-child(4),
+#alumnos-table td:nth-child(5), #alumnos-table th:nth-child(5),
+#alumnos-table td:nth-child(6), #alumnos-table th:nth-child(6) {
+  width: 10%; /* Mismo ancho para las columnas 4, 5 y 6 */
 }
+
+#alumnos-table td:nth-child(7), #alumnos-table th:nth-child(7) {
+  width: 20%;
+}
+
+#alumnos-table td:nth-child(8), #alumnos-table th:nth-child(8) {
+  width: 10%;
+}
+
 
 .toast-container {
   position: fixed;
