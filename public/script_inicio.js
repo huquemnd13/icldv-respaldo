@@ -309,6 +309,7 @@ function crearCeldaConInasistencias(valorInicial, id_calificacion) {
   const cell = document.createElement("td");
   const selectElement = document.createElement('select');
   selectElement.classList.add('inasistencias');
+  selectElement.dataset.calificacion = id_calificacion; // Asegurarse de agregar el id_calificacion
 
   for (let i = 0; i <= 20; i++) {
     const option = document.createElement('option');
@@ -322,17 +323,19 @@ function crearCeldaConInasistencias(valorInicial, id_calificacion) {
 
   selectElement.addEventListener('change', async function() {
     const inasistencia = selectElement.value;
-    console.log(inasistencia);
+    const id_calificacion = parseInt(selectElement.dataset.calificacion);
+    console.log(id_calificacion);
     try {
       await guardarInasistencias(id_calificacion, inasistencia);
     } catch (error) {
-      mostrarToast("Error al guardar inasistencias.", "error");
+      mostrarToast(`Error al guardar inasistencias: ${error.message}`, "error");
     }
   });
 
   cell.appendChild(selectElement);
   return cell;
 }
+
 
 
 function mostrarToast(mensaje, tipo = "success") {
