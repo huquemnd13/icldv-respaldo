@@ -488,6 +488,9 @@ function esPeriodoActivo(periodo) {
 
 function crearDropdown(calificacionActual, periodo, periodoNumero) {
   const select = document.createElement("select");
+  
+  // Agregar clase CSS para el estilo
+  select.classList.add("calificaciones"); // Cambia 'observaciones' por la clase que necesites
 
   const calificacionesPosibles = [0, 7, 8, 9, 10];
   calificacionesPosibles.forEach((calificacion) => {
@@ -504,27 +507,6 @@ function crearDropdown(calificacionActual, periodo, periodoNumero) {
     guardarCalificacion(this);
   });
   return select;
-}
-
-function mostrarToast(mensaje, tipo = "success") {
-  const toastContainer = document.getElementById("toast-container");
-
-  const toast = document.createElement("div");
-  toast.classList.add("toast", tipo);
-  toast.textContent = mensaje;
-
-  toastContainer.appendChild(toast);
-
-  setTimeout(() => {
-    toast.classList.add("show");
-  }, 100);
-
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => {
-      toast.remove();
-    }, 300);
-  }, 5000);
 }
 
 function guardarCalificacion(selectElement) {
