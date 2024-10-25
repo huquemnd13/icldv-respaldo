@@ -264,7 +264,44 @@ function crearCeldaConObservaciones(calificacion) {
 }
 
 
-function crearCeldaConInasistencias(valorInicial) {
+async function guardarInasistencias(id_calificacion, inasistencia) {
+  const token = localStorage.getItem("token");
+  let id_usuario;
+
+  if (token) {
+    const decodedToken = JSON.parse(atob(token.split(".")[1]));
+    id_usuario = decodedToken.id;
+  }
+
+  const inasistenciaData = {
+    _id_calificacion: id_calificacion,
+    _inasistencia: inasistencia,
+    _id_usuario: id_usuario,
+  };
+
+  try {
+    const response = await fetch("/guardar-inasistencias", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(inasistenciaData),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error al guardar inasistencias.");
+    }
+
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error("Error:", error);
+    throw error;
+  }
+}
+
+function crearCeldaConInasistencias(valorInicial, id_calificacion) {
   const cell = document.createElement("td");
   const selectElement = document.createElement('select');
   selectElement.classList.add('inasistencias');
@@ -279,9 +316,20 @@ function crearCeldaConInasistencias(valorInicial) {
     selectElement.appendChild(option);
   }
 
+  selectElement.addEventListener('change', async function() {
+    const inasistencia = selectElement.value;
+    try {
+      await guardarInasistencias(id_calificacion, inasistencia);
+      console.log("Inasistencias guardadas exitosamente.");
+    } catch (error) {
+      console.error("Error al guardar inasistencias:", error);
+    }
+  });
+
   cell.appendChild(selectElement);
   return cell;
 }
+
 
 async function cargarObservaciones(idMateria) {
   if (observacionesGlobales.length === 0) {
