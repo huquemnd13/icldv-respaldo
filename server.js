@@ -16,6 +16,15 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+function redirectToHTTPS(req, res, next) {
+  if (req.headers['x-forwarded-proto'] !== 'https') {
+    return res.redirect(`https://${req.headers.host}${req.url}`);
+  }
+  next();
+}
+
+app.use(redirectToHTTPS);
+
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -44,6 +53,12 @@ app.use(
 
 app.use(helmet.noSniff());
 app.use(helmet.referrerPolicy({ policy: "no-referrer-when-downgrade" }));
+
+app.use((req, res, next) => {
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
