@@ -138,7 +138,7 @@ button:hover {
 }
 
 .table-container {
-  width: 1000px;
+  width: 1200px;
   height: 400px;
   overflow-y: auto;
   margin: 20px auto;
@@ -152,7 +152,6 @@ button:hover {
 
 #alumnos-table {
   width: 100%;
-  max-width: 1200px;
   border-collapse: collapse;
   background-color: white;
   table-layout: fixed; /* Fija el layout de la tabla */
@@ -193,31 +192,36 @@ button:hover {
   cursor: pointer;
 }
 
-#alumnos-table td:nth-child(1), #alumnos-table th:nth-child(1) {
+#alumnos-table th:nth-child(1), #alumnos-table td:nth-child(1) {
   display: none; /* Escondido */
 }
 
-#alumnos-table td:nth-child(2), #alumnos-table th:nth-child(2) {
+#alumnos-table th:nth-child(2), #alumnos-table td:nth-child(2) {
   display: none; /* Escondido */
 }
 
-#alumnos-table td:nth-child(3), #alumnos-table th:nth-child(3) {
-  width: 20%;
+#alumnos-table th:nth-child(3), #alumnos-table td:nth-child(3) {
+  width: 200px; /* 20% de 1000px */
 }
 
-#alumnos-table td:nth-child(4), #alumnos-table th:nth-child(4),
-#alumnos-table td:nth-child(5), #alumnos-table th:nth-child(5),
-#alumnos-table td:nth-child(6), #alumnos-table th:nth-child(6) {
-  width: 10%; /* Mismo ancho para las columnas 4, 5 y 6 */
+#alumnos-table th:nth-child(4), #alumnos-table td:nth-child(4) {
+  width: 250px; /* 30% de 1000px */
 }
 
-#alumnos-table td:nth-child(7), #alumnos-table th:nth-child(7) {
-  width: 20%;
+#alumnos-table th:nth-child(5), #alumnos-table td:nth-child(5),
+#alumnos-table th:nth-child(6), #alumnos-table td:nth-child(6),
+#alumnos-table th:nth-child(7), #alumnos-table td:nth-child(7) {
+  width: 50px; /* 10% de 1000px */
 }
 
-#alumnos-table td:nth-child(8), #alumnos-table th:nth-child(8) {
-  width: 10%;
+#alumnos-table th:nth-child(8), #alumnos-table td:nth-child(8) {
+  width: 200px; /* 20% de 1000px */
 }
+
+#alumnos-table th:nth-child(9), #alumnos-table td:nth-child(9) {
+  width: 100px; /* 10% de 1000px */
+}
+
 
 .toast-container {
   position: fixed;
@@ -258,14 +262,14 @@ button:hover {
 .tooltip {
   position: absolute;
   background-color: rgba(0, 0, 0, 0.7);
-  color: #fff;
+  color: #ffffff;
   padding: 5px;
   border-radius: 5px;
   z-index: 1000;
 }
 
 /* Estilo elegante y moderno con ajuste de ancho y desplazamiento para los dropdowns de observaciones */
-select.observaciones, select.inasistencias {
+select.observaciones, select.inasistencias, select.grados, select.materias {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -276,7 +280,7 @@ select.observaciones, select.inasistencias {
   border-radius: 8px;
   color: #444;
   outline: none;
-  width: 100px; /* Ancho fijo */
+  width: 230px; /* Ancho fijo */
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>');
@@ -288,20 +292,20 @@ select.observaciones, select.inasistencias {
   text-overflow: ellipsis;
 }
 
-select.observaciones:hover, select.inasistencias:hover {
+select.observaciones:hover, select.inasistencias:hover, select.grados:hover, select.materias:hover {
   border-color: #888;
 }
 
-select.observaciones:focus, select.inasistencias:focus {
+select.observaciones:focus, select.inasistencias:focus, select.grados:focus, select.materias:focus {
   border-color: #009688;
   box-shadow: 0 0 10px rgba(0, 150, 136, 0.5);
 }
 
-select.observaciones option, select.inasistencias option {
+select.observaciones option, select.inasistencias option, select.grados option, select.materias option {
   padding: 10px;
 }
 
-select.observaciones, select.inasistencias {
+select.observaciones, select.inasistencias, select.grados, select.materias {
   overflow-y: auto; /* Permite el desplazamiento vertical */
   max-height: 150px; /* Altura máxima del desplegable */
 }
