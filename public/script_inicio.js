@@ -203,7 +203,7 @@ async function cargarAlumnos() {
         row.appendChild(crearCeldaConDropdown(calificacion.periodo_2, periodos[1], 2));
         row.appendChild(crearCeldaConDropdown(calificacion.periodo_3, periodos[2], 3));
         row.appendChild(crearCeldaConObservaciones(calificacion));
-        row.appendChild(crearCeldaConInasistencias(calificacion.inasistencias));
+        row.appendChild(crearCeldaConInasistencias(calificacion));
         tableBody.appendChild(row);
       }
     } catch (error) {
@@ -277,7 +277,7 @@ async function guardarInasistencias(id_calificacion, inasistencia) {
 
   const inasistenciaData = {
     _id_calificacion: id_calificacion,
-    _inasistencia: inasistencia,
+    _inasistencias: inasistencia,
     _id_usuario: id_usuario,
   };
 
@@ -305,21 +305,22 @@ async function guardarInasistencias(id_calificacion, inasistencia) {
   }
 }
 
-function crearCeldaConInasistencias(valorInicial, id_calificacion) {
+function crearCeldaConInasistencias(calificacion) {
   const cell = document.createElement("td");
   const selectElement = document.createElement('select');
   selectElement.classList.add('inasistencias');
-  selectElement.dataset.calificacion = id_calificacion; // Asegurarse de agregar el id_calificacion
+  selectElement.dataset.calificacion = calificacion.id_calificacion;
 
   for (let i = 0; i <= 20; i++) {
     const option = document.createElement('option');
     option.value = i;
     option.text = i;
-    if (i == valorInicial) {
+    if (i === 0) {  // Selecciona siempre 0
       option.selected = true;
     }
     selectElement.appendChild(option);
   }
+
 
   selectElement.addEventListener('change', async function() {
     const inasistencia = selectElement.value;
