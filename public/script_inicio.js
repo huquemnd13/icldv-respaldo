@@ -302,6 +302,7 @@ function crearCeldaConObservaciones(calificacion) {
 function crearCeldaConInasistencias(valorInicial) {
   const cell = document.createElement("td");
   const selectElement = document.createElement('select');
+  selectElement.classList.add('inasistencias');
 
   for (let i = 0; i <= 20; i++) {
     const option = document.createElement('option');

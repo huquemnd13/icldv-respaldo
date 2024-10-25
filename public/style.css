@@ -269,7 +269,7 @@ button:hover {
 }
 
 /* Estilo elegante y moderno con ajuste de ancho y desplazamiento para los dropdowns de observaciones */
-select.observaciones, select.inasistencias, select.grados, select.materias {
+select.observaciones, select.inasistencias, select.drops {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -292,20 +292,43 @@ select.observaciones, select.inasistencias, select.grados, select.materias {
   text-overflow: ellipsis;
 }
 
-select.observaciones:hover, select.inasistencias:hover, select.grados:hover, select.materias:hover {
+select.drops {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 8px;
+  color: #444;
+  outline: none;
+  width: 50px; /* Ancho fijo */
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="gray" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+select.observaciones:hover, select.inasistencias:hover, select.drops.hover {
   border-color: #888;
 }
 
-select.observaciones:focus, select.inasistencias:focus, select.grados:focus, select.materias:focus {
+select.observaciones:focus, select.inasistencias:focus, select.drops.focus {
   border-color: #009688;
   box-shadow: 0 0 10px rgba(0, 150, 136, 0.5);
 }
 
-select.observaciones option, select.inasistencias option, select.grados option, select.materias option {
+select.observaciones option, select.inasistencias option, select.drops option {
   padding: 10px;
 }
 
-select.observaciones, select.inasistencias, select.grados, select.materias {
+select.observaciones, select.inasistencias{
   overflow-y: auto; /* Permite el desplazamiento vertical */
   max-height: 150px; /* Altura máxima del desplegable */
 }
