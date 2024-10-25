@@ -621,9 +621,8 @@ app.post("/guardar-observaciones", verificarToken, async (req, res) => {
 
 app.post("/guardar-inasistencias", verificarToken, async (req, res) => {
   const { _id_calificacion, _inasistencia, _id_usuario } = req.body;
-  console.log(_inasistencia);
 
-  if (!_id_calificacion || !_inasistencia || !_id_usuario) {
+  if (!_id_calificacion || _inasistencia === undefined || !_id_usuario) {
     return res.status(400).json({ mensaje: "Datos incompletos" });
   }
 
@@ -636,7 +635,7 @@ app.post("/guardar-inasistencias", verificarToken, async (req, res) => {
       "insert_inasistencia",
       {
         _id_calificacion,
-        _inasistencias: [_inasistencia], // Aunque sea uno, se manda como array
+        _inasistencias: [_inasistencia], // Convertir a array
         _id_usuario,
       }
     );
@@ -652,8 +651,6 @@ app.post("/guardar-inasistencias", verificarToken, async (req, res) => {
     res.status(500).json({ mensaje: "Error guardando inasistencias", error: err.message });
   }
 });
-
-
 
 app.get(
   "/reporteDetalleCalificacionesPorCiclo/:idCiclo",

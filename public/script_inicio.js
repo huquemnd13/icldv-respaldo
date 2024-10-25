@@ -290,13 +290,15 @@ async function guardarInasistencias(id_calificacion, inasistencia) {
     });
 
     if (!response.ok) {
+      mostrarToast("Error al guardar inasistencias.", "error");
       throw new Error("Error al guardar inasistencias.");
     }
 
     const result = await response.json();
+    mostrarToast("Inasistencias guardadas correctamente.", "success");
     return result;
   } catch (error) {
-    console.error("Error:", error);
+    mostrarToast(`Error al guardar inasistencias: ${error.message}`, "error");
     throw error;
   }
 }
@@ -320,15 +322,34 @@ function crearCeldaConInasistencias(valorInicial, id_calificacion) {
     const inasistencia = selectElement.value;
     try {
       await guardarInasistencias(id_calificacion, inasistencia);
-      console.log("Inasistencias guardadas exitosamente.");
+      
     } catch (error) {
-      console.error("Error al guardar inasistencias:", error);
+      mostrarToast("Error al guardar inasistencias.", "error");
     }
   });
 
   cell.appendChild(selectElement);
   return cell;
 }
+
+
+function mostrarToast(mensaje, tipo = "success") {
+  const toastContainer = document.getElementById("toast-container");
+  const toast = document.createElement("div");
+  toast.classList.add("toast", tipo);
+  toast.textContent = mensaje;
+  toastContainer.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add("show");
+  }, 100);
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => {
+      toast.remove();
+    }, 300);
+  }, 5000);
+}
+
 
 
 async function cargarObservaciones(idMateria) {
