@@ -3,17 +3,7 @@ let cicloActivoGlobal;
 let materiaSeleccionadaId;
 let textoMateriaSeleccionada;
 let calificacionIdSeleccionada;
-const CHECK_INTERVAL = 10000;
-
-// Selecciona el botón y le añade un evento de clic
-document.getElementById('outtokens').addEventListener('click', function() {
-    // Elimina el token del almacenamiento local
-    localStorage.removeItem('token');
-    
-    // Redirige al usuario a la página de inicio de sesión
-    window.location.href = 'login.html';
-});
-
+const CHECK_INTERVAL = 70000;
 
 // Función para validar el token
 async function verificarToken() {
@@ -60,6 +50,7 @@ window.onload = async function () {
 
   if (token) {
     try {
+      console.log(token);
       decodedToken = jwt_decode(token);
       const nombreProfesor =
         decodedToken.nombre_completo || "Campo nombre_completo no encontrado";

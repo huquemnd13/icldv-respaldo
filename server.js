@@ -202,7 +202,7 @@ app.post("/login", async (req, res) => {
             nombre_completo: nombreCompleto,
           },
           process.env.JWT_SECRET,
-          { algorithm: "HS256", expiresIn: "30m" }
+          { algorithm: "HS256", expiresIn: "1m" }
         );
 
         return res.json({ success: true, token });
