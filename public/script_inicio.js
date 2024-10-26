@@ -3,6 +3,57 @@ let cicloActivoGlobal;
 let materiaSeleccionadaId;
 let textoMateriaSeleccionada;
 let calificacionIdSeleccionada;
+const CHECK_INTERVAL = 10000;
+
+// Selecciona el botón y le añade un evento de clic
+document.getElementById('outtokens').addEventListener('click', function() {
+    // Elimina el token del almacenamiento local
+    localStorage.removeItem('token');
+    
+    // Redirige al usuario a la página de inicio de sesión
+    window.location.href = 'login.html';
+});
+
+
+// Función para validar el token
+async function verificarToken() {
+    const token = localStorage.getItem('token');
+    
+    // Si el token no existe, redirige directamente a login.html
+    if (!token) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    try {
+        // Realiza la solicitud al endpoint de verificación de token
+        const response = await fetch('/verificarToken', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        // Si el token es inválido o ha expirado, redirige al usuario
+        if (response.status === 401 || response.status === 403) {
+            // Opcionalmente, puedes eliminar el token del almacenamiento local
+            localStorage.removeItem('token');
+            window.location.href = "login.html";
+        }
+    } catch (error) {
+        console.error("Error verificando el token:", error);
+        // Opcionalmente, redirige al login en caso de error de red
+        window.location.href = "login.html";
+    }
+}
+
+// Ejecutar la función de verificación cada cierto tiempo
+setInterval(verificarToken, CHECK_INTERVAL);
+
+// Llamada inicial para verificar el token al cargar la página
+verificarToken();
+
 
 window.onload = async function () {
   const token = localStorage.getItem("token");
