@@ -127,6 +127,12 @@ function verificarToken(req, res, next) {
   }
 }
 
+// Endpoint protegido que verifica el token
+app.post("/verificarToken", verificarToken, (req, res) => {
+  // Si el token es válido, responde con un mensaje de éxito
+  res.json({ success: true, message: "Token verificado con éxito" });
+});
+
 app.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -209,7 +215,7 @@ app.post("/login", async (req, res) => {
             nombre_completo: nombreCompleto,
           },
           process.env.JWT_SECRET,
-          { algorithm: "HS256", expiresIn: "1m" }
+          { algorithm: "HS256", expiresIn: "30m" }
         );
 
         return res.json({ success: true, token });
