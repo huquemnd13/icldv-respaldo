@@ -313,12 +313,13 @@ function crearCeldaConObservaciones(calificacion) {
   return cell;
 }
 
-function crearCeldaConInasistencias(calificacion) {
+async function crearCeldaConInasistencias(calificacion) {
   const cell = document.createElement("td");
   const selectElement = document.createElement('select');
   const id_alumno = calificacion.id_alumno;
   selectElement.classList.add('inasistencias');
   selectElement.dataset.calificacion = calificacion.id_calificacion;
+
   // Habilitar o deshabilitar el select según el rol del usuario
   selectElement.disabled = id_rol !== 3; // Solo habilitar si el rol es 3
 
@@ -327,16 +328,25 @@ function crearCeldaConInasistencias(calificacion) {
     const option = document.createElement('option');
     option.value = i;
     option.text = i;
-    if (i === 0) {  // Selecciona siempre 0
-      option.selected = true;
-    }
     selectElement.appendChild(option);
+  }
+
+  // Obtener inasistencias del alumno y establecer la opción seleccionada
+  try {
+    const response = await fetch(`/obtener-inasistencias/${id_alumno}`);
+    if (response.ok) {
+      const data = await response.json();
+      const inasistencias = data.inasistencias || 0;
+      selectElement.value = inasistencias; // Establece el valor obtenido
+    } else {
+      console.error('Error al obtener inasistencias:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error al obtener inasistencias:', error);
   }
 
   selectElement.addEventListener('change', async function() {
     const inasistencia = selectElement.value;
-    //const id_alumno = parseInt(selectElement.dataset.calificacion);
-    console.log(id_alumno);
     try {
       await guardarInasistencias(id_alumno, inasistencia);
     } catch (error) {
@@ -347,6 +357,7 @@ function crearCeldaConInasistencias(calificacion) {
   cell.appendChild(selectElement);
   return cell;
 }
+
 
 async function cargarObservaciones(idMateria) {
   if (observacionesGlobales.length === 0) {
