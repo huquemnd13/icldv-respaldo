@@ -91,6 +91,10 @@ app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html"));
 });
 
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "/public/login.html"));
+});
+
 function verificarToken(req, res, next) {
   // Verifica si hay un encabezado de autorización
   if (!req.headers.authorization) {
@@ -239,6 +243,7 @@ app.post("/login", async (req, res) => {
       .json({ success: false, message: "Error interno del servidor." });
   }
 });
+
 app.get("/grados", async (req, res) => {
   try {
     const token = req.headers.authorization.split(" ")[1];
@@ -402,6 +407,7 @@ app.get("/obtener-materias-profesor-grado", async (req, res) => {
       .json({ success: false, message: "Error en la consulta." });
   }
 });
+
 app.get("/obtener-observaciones-materia", verificarToken, async (req, res) => {
   const idMateria = req.query.id_materia;
 
@@ -568,6 +574,7 @@ app.post("/actualizar-calificaciones", verificarToken, async (req, res) => {
       .json({ mensaje: "Error actualizando calificación", error: err.message });
   }
 });
+
 app.post("/guardar-observaciones", verificarToken, async (req, res) => {
   const { _id_calificacion, _observaciones, _id_usuario } = req.body;
   console.log(_observaciones);
@@ -662,7 +669,6 @@ app.post("/guardar-inasistencias", verificarToken, async (req, res) => {
 });
 
 
-
 app.get(
   "/reporteDetalleCalificacionesPorCiclo/:idCiclo",
   verificarToken,
@@ -705,12 +711,6 @@ app.get(
     }
   }
 );
-
-
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "/public/login.html"));
-});
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
