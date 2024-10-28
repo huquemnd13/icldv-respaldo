@@ -668,6 +668,27 @@ app.post("/guardar-inasistencias", verificarToken, async (req, res) => {
   }
 });
 
+// Endpoint para obtener inasistencias
+app.get('/inasistencias/:id_alumno', verificarToken, async (req, res) => {
+    const id_alumno = req.params.id_alumno;
+    
+    try {
+        const { data, error } = await supabase
+            .from('Inasistencia')
+            .select('valor')
+            .eq('id_alumno', id_alumno)
+            .eq('id_ciclo_escolar', activeCycleId) // Aquí debes definir tu ID de ciclo escolar activo
+            .eq('id_periodo_ciclo_escolar', activePeriodId); // Define tu ID de periodo escolar activo
+        
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
+
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener inasistencias' });
+    }
+});
 
 app.get(
   "/reporteDetalleCalificacionesPorCiclo/:idCiclo",
