@@ -317,9 +317,10 @@ async function crearCeldaConInasistencias(calificacion) {
   const cell = document.createElement("td");
   const selectElement = document.createElement('select');
   const id_alumno = calificacion.id_alumno;
-  
   selectElement.classList.add('inasistencias');
   selectElement.dataset.calificacion = calificacion.id_calificacion;
+
+  // Habilitar o deshabilitar el select según el rol del usuario
   selectElement.disabled = id_rol !== 3; // Solo habilitar si el rol es 3
 
   // Llenar el select con opciones de inasistencias
@@ -330,19 +331,20 @@ async function crearCeldaConInasistencias(calificacion) {
     selectElement.appendChild(option);
   }
 
-  // Obtener las inasistencias actuales para el alumno y asignarlas al select
+  // Obtener inasistencias del alumno y establecer la opción seleccionada
   try {
-    const data = await obtenerInasistencias(id_alumno);
-    if (data && data.inasistencias !== undefined) {
-      selectElement.value = data.inasistencias; // Asigna el valor de inasistencias existente
+    const response = await fetch(`/obtener-inasistencias/${id_alumno}`);
+    if (response.ok) {
+      const data = await response.json();
+      const inasistencias = data.inasistencias || 0;
+      selectElement.value = inasistencias; // Establece el valor obtenido
     } else {
-      selectElement.value = 0; // Valor por defecto si no hay inasistencias registradas
+      console.error('Error al obtener inasistencias:', response.statusText);
     }
   } catch (error) {
-    console.error("Error al obtener inasistencias:", error);
+    console.error('Error al obtener inasistencias:', error);
   }
 
-  // Manejar el cambio de valor en el select
   selectElement.addEventListener('change', async function() {
     const inasistencia = selectElement.value;
     try {
@@ -411,27 +413,6 @@ async function guardarObservacionesSeleccionadas(
     });
   } catch (error) {}
 }
-
-async function obtenerInasistencias(id_alumno) {
-  try {
-    const response = await fetch(`/obtener-inasistencias/${id_alumno}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Error ${response.status}: ${response.statusText}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error al obtener inasistencias:", error);
-    return null; // Maneja el error adecuadamente
-  }
-}
-
 
 async function guardarInasistencias(id_alumno, inasistencia) {
     const inasistenciaData = {
