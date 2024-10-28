@@ -27,6 +27,7 @@ function cargarToken() {
 // Función para validar el token
 async function verificarToken() {
     cargarToken();
+    console.log("1");
     // Si el token no existe, redirige directamente a login.html
     if (!token) {
         window.location.href = "login.html";
@@ -59,25 +60,24 @@ async function verificarToken() {
 // Ejecutar la función de verificación cada cierto tiempo
 setInterval(verificarToken, CHECK_INTERVAL);
 
-// Llamada inicial para verificar el token al cargar la página
-verificarToken();
-
 window.onload = async function () {
+  // Llamada inicial para verificar el token al cargar la página
+  verificarToken();
   if (token) {
     try {
-      console.log(token);
+      console.log("2");
       document.getElementById("nombre_usuario").textContent = nombreProfesor;
-
+      
       document
         .getElementById("cargar-alumnos-button")
         .addEventListener("click", cargarAlumnos);
-
+      console.log("2.1");
       const responseCiclo = await fetch("/obtener-ciclos-escolares", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-
+      console.log("3");
       if (responseCiclo.ok) {
         const cicloActivo = await responseCiclo.json();
         cicloActivoGlobal = cicloActivo;
