@@ -40,23 +40,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (data.success) {
-                    // Almacenar el token en localStorage
                     localStorage.setItem("token", data.token);
-                    
-                    // Decodificar el token y obtener el rol del usuario
                     const decodedToken = jwt_decode(data.token);
-                    const userRole = decodedToken.id_rol; // Obtener el id del rol
+                    const userRole = decodedToken.id_rol;
 
-                    // Redirigir según el rol del usuario
                     if (userRole === 1) {
                         showNotification('Inicio de sesión exitoso.', false);
                         setTimeout(() => {
-                            window.location.href = '/administracion.html'; // Rol 1 para administración
+                            window.location.href = '/administracion.html';
                         }, 2000);
-                    } else if (userRole === 2) {
+                    } else if (userRole === 2 || userRole === 3) {
                         showNotification('Inicio de sesión exitoso.', false);
                         setTimeout(() => {
-                            window.location.href = '/inicio.html'; // Rol 2 para usuarios normales
+                            window.location.href = '/inicio.html';
                         }, 2000);
                     } else {
                         showNotification('Rol de usuario no reconocido.', true);
@@ -72,5 +68,4 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
 });
