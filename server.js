@@ -92,6 +92,7 @@ app.get("/login", (req, res) => {
 });
 
 function verificarToken(req, res, next) {
+  // Verifica si hay un encabezado de autorización
   if (!req.headers.authorization) {
     return res.status(401).json({
       success: false,
@@ -99,6 +100,7 @@ function verificarToken(req, res, next) {
     });
   }
 
+  // Extrae el token del encabezado
   const token = req.headers.authorization.split(" ")[1];
 
   if (!token) {
@@ -109,8 +111,9 @@ function verificarToken(req, res, next) {
   }
 
   try {
+    // Verifica el token usando la clave secreta
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    req.user = decoded; // Almacena el usuario decodificado en req.user
     next();
   } catch (error) {
     return res.status(403).json({
@@ -620,13 +623,15 @@ app.post("/guardar-observaciones", verificarToken, async (req, res) => {
 });
 
 app.post("/guardar-inasistencias", verificarToken, async (req, res) => {
-  const { _id_alumno, _inasistencias, _id_usuario } = req.body;
+  const { _id_alumno, _inasistencias } = req.body;
+  const _id_usuario = req.user.id; // Obtiene el id del usuario del token decodificado
+
   console.log(_id_alumno);
   console.log(_inasistencias);
   console.log(_id_usuario);
   
   // Validación de datos
-  if (!_id_alumno || _inasistencias === undefined || !_id_usuario) {
+  if (!_id_alumno || _inasistencias === undefined) {
     return res.status(400).json({ mensaje: "Datos incompletos" });
   }
 
@@ -655,6 +660,7 @@ app.post("/guardar-inasistencias", verificarToken, async (req, res) => {
     res.status(500).json({ mensaje: "Error guardando inasistencias", error: err.message });
   }
 });
+
 
 
 app.get(

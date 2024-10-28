@@ -40,19 +40,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (data.success) {
+                    // Almacenar el token en localStorage
                     localStorage.setItem("token", data.token);
-                    const decodedToken = jwt_decode(data.token);
                     
-                    if (decodedToken.id_rol === 1) {
+                    // Decodificar el token y obtener el rol del usuario
+                    const decodedToken = jwt_decode(data.token);
+                    const userRole = decodedToken.id_rol; // Obtener el id del rol
+
+                    // Redirigir según el rol del usuario
+                    if (userRole === 1) {
                         showNotification('Inicio de sesión exitoso.', false);
                         setTimeout(() => {
-                            window.location.href = '/administracion.html';
+                            window.location.href = '/administracion.html'; // Rol 1 para administración
+                        }, 2000);
+                    } else if (userRole === 2) {
+                        showNotification('Inicio de sesión exitoso.', false);
+                        setTimeout(() => {
+                            window.location.href = '/inicio.html'; // Rol 2 para usuarios normales
                         }, 2000);
                     } else {
-                        showNotification('Inicio de sesión exitoso.', false);
-                        setTimeout(() => {
-                            window.location.href = '/inicio.html';
-                        }, 2000);
+                        showNotification('Rol de usuario no reconocido.', true);
                     }
 
                 } else {

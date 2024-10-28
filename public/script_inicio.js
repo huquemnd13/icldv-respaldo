@@ -308,19 +308,10 @@ function crearCeldaConObservaciones(calificacion) {
 
 async function guardarInasistencias(id_calificacion, inasistencia) {
   const token = localStorage.getItem("token");
-  let id_usuario;
-
-  if (token) {
-    const decodedToken = JSON.parse(atob(token.split(".")[1]));
-    id_usuario = decodedToken.id;
-  }
-  
-  console.log(id_calificacion);
 
   const inasistenciaData = {
     _id_calificacion: id_calificacion,
     _inasistencias: inasistencia,
-    _id_usuario: id_usuario,
   };
 
   try {
@@ -346,6 +337,7 @@ async function guardarInasistencias(id_calificacion, inasistencia) {
     throw error;
   }
 }
+
 
 function crearCeldaConInasistencias(calificacion) {
   const token = localStorage.getItem("token");
