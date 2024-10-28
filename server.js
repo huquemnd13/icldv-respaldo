@@ -620,23 +620,25 @@ app.post("/guardar-observaciones", verificarToken, async (req, res) => {
 });
 
 app.post("/guardar-inasistencias", verificarToken, async (req, res) => {
-  const { _id_calificacion, _inasistencias, _id_usuario } = req.body;
-  console.log(_id_calificacion);
+  const { _id_alumno, _inasistencias, _id_usuario } = req.body;
+  console.log(_id_alumno);
   console.log(_inasistencias);
   console.log(_id_usuario);
-  if (!_id_calificacion || _inasistencias === undefined || !_id_usuario) {
+  
+  // Validación de datos
+  if (!_id_alumno || _inasistencias === undefined || !_id_usuario) {
     return res.status(400).json({ mensaje: "Datos incompletos" });
   }
 
-  if (!Number.isInteger(_id_calificacion)) {
-    return res.status(400).json({ mensaje: "El ID de la calificación debe ser un número entero" });
+  if (!Number.isInteger(_id_alumno)) {
+    return res.status(400).json({ mensaje: "El ID del alumno debe ser un número entero" });
   }
   
   try {
     const { data: result, error } = await supabase.rpc(
-      "guardar_inasistencia",
+      "guardar_inasistencia",  // Nombre de la función en Supabase
       {
-        _id_calificacion,
+        _id_alumno,
         _inasistencias,
         _id_usuario,
       }
@@ -653,6 +655,7 @@ app.post("/guardar-inasistencias", verificarToken, async (req, res) => {
     res.status(500).json({ mensaje: "Error guardando inasistencias", error: err.message });
   }
 });
+
 
 app.get(
   "/reporteDetalleCalificacionesPorCiclo/:idCiclo",
