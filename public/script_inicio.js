@@ -3,6 +3,7 @@ let cicloActivoGlobal;
 let materiaSeleccionadaId;
 let textoMateriaSeleccionada;
 let calificacionIdSeleccionada;
+let observacionesGlobales = [];
 const CHECK_INTERVAL = 70000;
 
 // Función para validar el token
@@ -161,8 +162,6 @@ window.onload = async function () {
   }
 };
 
-let observacionesGlobales = [];
-
 async function cargarAlumnos() {
   const token = localStorage.getItem("token");
   if (token) {
@@ -305,40 +304,6 @@ function crearCeldaConObservaciones(calificacion) {
   return cell;
 }
 
-
-async function guardarInasistencias(id_calificacion, inasistencia) {
-  const token = localStorage.getItem("token");
-
-  const inasistenciaData = {
-    _id_calificacion: id_calificacion,
-    _inasistencias: inasistencia,
-  };
-
-  try {
-    const response = await fetch("/guardar-inasistencias", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(inasistenciaData),
-    });
-
-    if (!response.ok) {
-      mostrarToast("Error al guardar inasistencias.", "error");
-      throw new Error("Error al guardar inasistencias.");
-    }
-
-    const result = await response.json();
-    mostrarToast("Inasistencias guardadas correctamente.", "success");
-    return result;
-  } catch (error) {
-    mostrarToast(`Error al guardar inasistencias: ${error.message}`, "error");
-    throw error;
-  }
-}
-
-
 function crearCeldaConInasistencias(calificacion) {
   const token = localStorage.getItem("token");
   let id_usuario;
@@ -383,27 +348,6 @@ function crearCeldaConInasistencias(calificacion) {
   cell.appendChild(selectElement);
   return cell;
 }
-
-
-
-function mostrarToast(mensaje, tipo = "success") {
-  const toastContainer = document.getElementById("toast-container");
-  const toast = document.createElement("div");
-  toast.classList.add("toast", tipo);
-  toast.textContent = mensaje;
-  toastContainer.appendChild(toast);
-  setTimeout(() => {
-    toast.classList.add("show");
-  }, 100);
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => {
-      toast.remove();
-    }, 300);
-  }, 5000);
-}
-
-
 
 async function cargarObservaciones(idMateria) {
   if (observacionesGlobales.length === 0) {
@@ -468,6 +412,38 @@ async function guardarObservacionesSeleccionadas(
   } catch (error) {}
 }
 
+async function guardarInasistencias(id_calificacion, inasistencia) {
+  const token = localStorage.getItem("token");
+
+  const inasistenciaData = {
+    _id_calificacion: id_calificacion,
+    _inasistencias: inasistencia,
+  };
+
+  try {
+    const response = await fetch("/guardar-inasistencias", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(inasistenciaData),
+    });
+
+    if (!response.ok) {
+      mostrarToast("Error al guardar inasistencias.", "error");
+      throw new Error("Error al guardar inasistencias.");
+    }
+
+    const result = await response.json();
+    mostrarToast("Inasistencias guardadas correctamente.", "success");
+    return result;
+  } catch (error) {
+    mostrarToast(`Error al guardar inasistencias: ${error.message}`, "error");
+    throw error;
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const selectElements = document.querySelectorAll(
     'select[id^="selectObservacion"]'
@@ -497,41 +473,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
-
-function manejarTooltip(selectElement) {
-  const tooltip = document.createElement("div");
-  tooltip.id = "tooltip";
-  tooltip.className = "tooltip";
-  tooltip.style.display = "none";
-  document.body.appendChild(tooltip);
-
-  selectElement.addEventListener("mouseover", (event) => {
-    if (event.target.tagName === "OPTION") {
-      tooltip.innerHTML = event.target.dataset.descripcionLarga;
-      tooltip.style.display = "block";
-      tooltip.style.left = `${event.pageX + 5}px`;
-      tooltip.style.top = `${event.pageY + 5}px`;
-    }
-  });
-
-  selectElement.addEventListener("mousemove", (event) => {
-    if (tooltip.style.display === "block") {
-      tooltip.style.left = `${event.pageX + 5}px`;
-      tooltip.style.top = `${event.pageY + 5}px`;
-    }
-  });
-
-  selectElement.addEventListener("mouseout", () => {
-    tooltip.style.display = "none";
-  });
-}
-
-function esPeriodoActivo(periodo) {
-  const fechaActual = new Date();
-  const fechaInicio = new Date(periodo.fecha_inicio);
-  const fechaFin = new Date(periodo.fecha_fin);
-  return fechaActual >= fechaInicio && fechaActual <= fechaFin;
-}
 
 function crearDropdown(calificacionActual, periodo, periodoNumero) {
   const select = document.createElement("select");
@@ -600,6 +541,58 @@ function guardarCalificacion(selectElement) {
       console.error("Error:", error);
       mostrarToast("Error al actualizar la calificación.", "error");
     });
+}
+
+function esPeriodoActivo(periodo) {
+  const fechaActual = new Date();
+  const fechaInicio = new Date(periodo.fecha_inicio);
+  const fechaFin = new Date(periodo.fecha_fin);
+  return fechaActual >= fechaInicio && fechaActual <= fechaFin;
+}
+
+function mostrarToast(mensaje, tipo = "success") {
+  const toastContainer = document.getElementById("toast-container");
+  const toast = document.createElement("div");
+  toast.classList.add("toast", tipo);
+  toast.textContent = mensaje;
+  toastContainer.appendChild(toast);
+  setTimeout(() => {
+    toast.classList.add("show");
+  }, 100);
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => {
+      toast.remove();
+    }, 300);
+  }, 5000);
+}
+
+function manejarTooltip(selectElement) {
+  const tooltip = document.createElement("div");
+  tooltip.id = "tooltip";
+  tooltip.className = "tooltip";
+  tooltip.style.display = "none";
+  document.body.appendChild(tooltip);
+
+  selectElement.addEventListener("mouseover", (event) => {
+    if (event.target.tagName === "OPTION") {
+      tooltip.innerHTML = event.target.dataset.descripcionLarga;
+      tooltip.style.display = "block";
+      tooltip.style.left = `${event.pageX + 5}px`;
+      tooltip.style.top = `${event.pageY + 5}px`;
+    }
+  });
+
+  selectElement.addEventListener("mousemove", (event) => {
+    if (tooltip.style.display === "block") {
+      tooltip.style.left = `${event.pageX + 5}px`;
+      tooltip.style.top = `${event.pageY + 5}px`;
+    }
+  });
+
+  selectElement.addEventListener("mouseout", () => {
+    tooltip.style.display = "none";
+  });
 }
 
 function logout() {
