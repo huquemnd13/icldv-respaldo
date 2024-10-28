@@ -334,8 +334,8 @@ function crearCeldaConInasistencias(calificacion) {
 
   selectElement.addEventListener('change', async function() {
     const inasistencia = selectElement.value;
-    const id_calificacion = parseInt(selectElement.dataset.calificacion);
-    console.log(id_calificacion);
+    const id_alumno = parseInt(selectElement.dataset.calificacion);
+    console.log(id_alumno);
     try {
       await guardarInasistencias(id_calificacion, inasistencia);
     } catch (error) {
