@@ -245,6 +245,9 @@ async function cargarAlumnos() {
       tableBody.innerHTML = "";
       for (const calificacion of calificaciones) {
         const row = document.createElement("tr");
+
+        const inasistencias = await obtenerInasistencias(calificacion.id_alumno, cicloId, periodoActivo.id);
+
         row.appendChild(crearCelda(calificacion.id_calificacion));
         row.appendChild(crearCelda(calificacion.id_alumno));
         row.appendChild(crearCelda(textoMateriaSeleccionada));
@@ -253,7 +256,7 @@ async function cargarAlumnos() {
         row.appendChild(crearCeldaConDropdown(calificacion.periodo_2, periodos[1], 2));
         row.appendChild(crearCeldaConDropdown(calificacion.periodo_3, periodos[2], 3));
         row.appendChild(crearCeldaConObservaciones(calificacion));
-        row.appendChild(crearCeldaConInasistencias(calificacion));
+        row.appendChild(crearCeldaConInasistencias(calificacion, inasistencias));
         tableBody.appendChild(row);
       }
     } catch (error) {
@@ -313,13 +316,13 @@ function crearCeldaConObservaciones(calificacion) {
   return cell;
 }
 
-function crearCeldaConInasistencias(calificacion) {
+function crearCeldaConInasistencias(calificacion, inasistencias) {
   const cell = document.createElement("td");
   const selectElement = document.createElement('select');
   const id_alumno = calificacion.id_alumno;
   selectElement.classList.add('inasistencias');
   selectElement.dataset.calificacion = calificacion.id_calificacion;
-  // Habilitar o deshabilitar el select según el rol del usuario
+
   selectElement.disabled = id_rol !== 3; // Solo habilitar si el rol es 3
 
   // Llenar el select con opciones de inasistencias
@@ -327,7 +330,7 @@ function crearCeldaConInasistencias(calificacion) {
     const option = document.createElement('option');
     option.value = i;
     option.text = i;
-    if (i === 0) {  // Selecciona siempre 0
+    if (i === inasistencias) { // Establece el valor basado en inasistencias
       option.selected = true;
     }
     selectElement.appendChild(option);
@@ -335,7 +338,6 @@ function crearCeldaConInasistencias(calificacion) {
 
   selectElement.addEventListener('change', async function() {
     const inasistencia = selectElement.value;
-    //const id_alumno = parseInt(selectElement.dataset.calificacion);
     console.log(id_alumno);
     try {
       await guardarInasistencias(id_alumno, inasistencia);
@@ -347,6 +349,27 @@ function crearCeldaConInasistencias(calificacion) {
   cell.appendChild(selectElement);
   return cell;
 }
+
+
+async function obtenerInasistencias(id_alumno, cicloId, periodoId) {
+  const response = await fetch(`/inasistencias?id_alumno=${id_alumno}&id_ciclo_escolar=${cicloId}&id_periodo_ciclo_escolar=${periodoId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  
+  if (!response.ok) {
+    throw new Error("Error al obtener inasistencias.");
+  }
+  
+  const inasistencias = await response.json();
+  
+  // Suponiendo que el valor de inasistencias que quieres es el valor del primer registro
+  return inasistencias.length > 0 ? inasistencias[0].valor : 0; // Retorna 0 si no hay inasistencias
+}
+
 
 async function cargarObservaciones(idMateria) {
   if (observacionesGlobales.length === 0) {
