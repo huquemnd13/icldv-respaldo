@@ -316,6 +316,7 @@ function crearCeldaConObservaciones(calificacion) {
 function crearCeldaConInasistencias(calificacion) {
   const cell = document.createElement("td");
   const selectElement = document.createElement('select');
+  const id_alumno = calificacion.id_alumno;
   selectElement.classList.add('inasistencias');
   selectElement.dataset.calificacion = calificacion.id_calificacion;
   // Habilitar o deshabilitar el select según el rol del usuario
@@ -334,10 +335,10 @@ function crearCeldaConInasistencias(calificacion) {
 
   selectElement.addEventListener('change', async function() {
     const inasistencia = selectElement.value;
-    const id_alumno = parseInt(selectElement.dataset.calificacion);
+    //const id_alumno = parseInt(selectElement.dataset.calificacion);
     console.log(id_alumno);
     try {
-      await guardarInasistencias(id_calificacion, inasistencia);
+      await guardarInasistencias(id_alumno, inasistencia);
     } catch (error) {
       mostrarToast(`Error al guardar inasistencias: ${error.message}`, "error");
     }
@@ -402,9 +403,7 @@ async function guardarObservacionesSeleccionadas(
   } catch (error) {}
 }
 
-async function guardarInasistencias(id_calificacion, inasistencia) {
-    const id_alumno = id_calificacion; // Supongamos que id_calificacion es el id del alumno para este contexto
-
+async function guardarInasistencias(id_alumno, inasistencia) {
     const inasistenciaData = {
         _id_alumno: id_alumno,
         _id_usuario: id_usuario,
