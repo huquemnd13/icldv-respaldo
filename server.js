@@ -648,7 +648,7 @@ app.post("/guardar-inasistencias", verificarToken, async (req, res) => {
   
   try {
     const { data: result, error } = await supabase.rpc(
-      "guardar_inasistencia",  // Nombre de la función en Supabase
+      "registrar_inasistencia",  // Nombre de la función en Supabase
       {
         _id_alumno,
         _inasistencias,

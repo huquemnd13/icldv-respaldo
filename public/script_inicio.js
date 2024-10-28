@@ -6,8 +6,8 @@ let calificacionIdSeleccionada;
 let observacionesGlobales = [];
 
 let token;
-let id_usuario; // ID del usuario (opcional)
-let id_rol;     // Para almacenar el rol del usuario
+let id_usuario;
+let id_rol;
 let nombreProfesor;
 let id_profesor;
 
@@ -403,34 +403,38 @@ async function guardarObservacionesSeleccionadas(
 }
 
 async function guardarInasistencias(id_calificacion, inasistencia) {
-  const inasistenciaData = {
-    _id_calificacion: id_calificacion,
-    _inasistencias: inasistencia,
-  };
+    const id_alumno = id_calificacion; // Supongamos que id_calificacion es el id del alumno para este contexto
 
-  try {
-    const response = await fetch("/guardar-inasistencias", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(inasistenciaData),
-    });
+    const inasistenciaData = {
+        _id_alumno: id_alumno,
+        _id_usuario: id_usuario,
+        _inasistencias: inasistencia,
+    };
 
-    if (!response.ok) {
-      mostrarToast("Error al guardar inasistencias.", "error");
-      throw new Error("Error al guardar inasistencias.");
+    try {
+        const response = await fetch("/guardar-inasistencias", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(inasistenciaData),
+        });
+
+        if (!response.ok) {
+            mostrarToast("Error al guardar inasistencias.", "error");
+            throw new Error("Error al guardar inasistencias.");
+        }
+
+        const result = await response.json();
+        mostrarToast("Inasistencias guardadas correctamente.", "success");
+        return result;
+    } catch (error) {
+        mostrarToast(`Error al guardar inasistencias: ${error.message}`, "error");
+        throw error;
     }
-
-    const result = await response.json();
-    mostrarToast("Inasistencias guardadas correctamente.", "success");
-    return result;
-  } catch (error) {
-    mostrarToast(`Error al guardar inasistencias: ${error.message}`, "error");
-    throw error;
-  }
 }
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const selectElements = document.querySelectorAll(
