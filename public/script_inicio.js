@@ -4,6 +4,13 @@ let materiaSeleccionadaId;
 let textoMateriaSeleccionada;
 let calificacionIdSeleccionada;
 let observacionesGlobales = [];
+
+let token;
+let id_usuario; // ID del usuario (opcional)
+let id_rol;     // Para almacenar el rol del usuario
+let nombreProfesor;
+let id_profesor;
+
 const CHECK_INTERVAL = 70000;
 
 // Función para validar el token
@@ -45,6 +52,16 @@ setInterval(verificarToken, CHECK_INTERVAL);
 // Llamada inicial para verificar el token al cargar la página
 verificarToken();
 
+function cargarToken() {
+    token = localStorage.getItem("token");
+    if (token) {
+        const decodedToken = JSON.parse(atob(token.split(".")[1]));
+        id_usuario = decodedToken.id;      // ID del usuario
+        id_rol = decodedToken.id_rol; // Asumiendo que el rol se almacena en 'id_rol'
+        nombreProfesor = decodedToken.nombre_completo || "Campo nombre_completo no encontrado";
+        id_profesor = decodedToken.id_profesor;
+    }
+}
 
 window.onload = async function () {
   const token = localStorage.getItem("token");
@@ -53,8 +70,6 @@ window.onload = async function () {
     try {
       console.log(token);
       decodedToken = jwt_decode(token);
-      const nombreProfesor =
-        decodedToken.nombre_completo || "Campo nombre_completo no encontrado";
       document.getElementById("nombre_usuario").textContent = nombreProfesor;
 
       document
@@ -168,13 +183,12 @@ async function cargarAlumnos() {
     try {
       const gradoId = document.getElementById("grados").value;
       const cicloId = cicloActivoGlobal.id;
-      const profesorId = decodedToken.id_profesor;
-      if (!gradoId || !materiaSeleccionadaId || !profesorId) {
+      if (!gradoId || !materiaSeleccionadaId || !id_profesor) {
         console.error("Por favor selecciona un grado y un ciclo escolar.");
         return;
       }
       const response = await fetch(
-        `/calificaciones?id_ciclo_escolar=${cicloId}&id_grado_nivel_escolar=${gradoId}&id_profesor=${profesorId}&id_materia=${materiaSeleccionadaId}`,
+        `/calificaciones?id_ciclo_escolar=${cicloId}&id_grado_nivel_escolar=${gradoId}&id_profesor=${id_profesor}&id_materia=${materiaSeleccionadaId}`,
         {
           method: "GET",
           headers: {
@@ -271,7 +285,7 @@ function crearCeldaConDropdown(valor, periodo, numPeriodo) {
 function crearCeldaConObservaciones(calificacion) {
   const cell = document.createElement("td");
   const selectObservacion = document.createElement("select");
-  selectObservacion.classList.add('observaciones'); // Aplica la clase 'observaciones'
+  selectObservacion.classList.add('observaciones');
   selectObservacion.multiple = true;
   selectObservacion.size = 6;
   selectObservacion.dataset.alumno = calificacion.id_alumno;
@@ -305,17 +319,6 @@ function crearCeldaConObservaciones(calificacion) {
 }
 
 function crearCeldaConInasistencias(calificacion) {
-  const token = localStorage.getItem("token");
-  let id_usuario;
-  let id_rol; // Para almacenar el rol del usuario
-
-  // Decodificar el token para obtener el rol del usuario
-  if (token) {
-    const decodedToken = JSON.parse(atob(token.split(".")[1]));
-    id_usuario = decodedToken.id;      // ID del usuario (opcional)
-    id_rol = decodedToken.id_rol; // Asumiendo que el rol se almacena en 'id_rol'
-  }
-  
   const cell = document.createElement("td");
   const selectElement = document.createElement('select');
   selectElement.classList.add('inasistencias');
