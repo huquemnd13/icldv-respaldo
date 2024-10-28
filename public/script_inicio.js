@@ -24,6 +24,13 @@ function cargarToken() {
     }
 }
 
+// Función para decodificar el token JWT
+function decodificarToken(token) {
+    const payload = token.split('.')[1]; // Obtener la parte del payload
+    const decoded = JSON.parse(atob(payload)); // Decodificar y parsear
+    return decoded;
+}
+
 // Función para validar el token
 async function verificarToken() {
     // Si el token no existe, redirige directamente a login.html
@@ -33,6 +40,17 @@ async function verificarToken() {
     }
 
     try {
+        // Decodificar el token para obtener el id_rol
+        const decodedToken = decodificarToken(token);
+        const idRol = decodedToken.id_rol; // Asumiendo que el id_rol está en el payload
+
+        // Verificar si el rol es 2 o 3
+        if (idRol !== 2 && idRol !== 3) {
+            localStorage.removeItem('token'); // Opcional: Eliminar el token
+            window.location.href = "login.html"; // Redirigir a login
+            return;
+        }
+
         // Realiza la solicitud al endpoint de verificación de token
         const response = await fetch('/verificarToken', {
             method: 'POST',
@@ -44,9 +62,8 @@ async function verificarToken() {
 
         // Si el token es inválido o ha expirado, redirige al usuario
         if (response.status === 401 || response.status === 403) {
-            // Opcionalmente, puedes eliminar el token del almacenamiento local
-            localStorage.removeItem('token');
-            window.location.href = "login.html";
+            localStorage.removeItem('token'); // Opcional: Eliminar el token
+            window.location.href = "login.html"; // Redirigir a login
         }
     } catch (error) {
         console.error("Error verificando el token:", error);
@@ -54,6 +71,7 @@ async function verificarToken() {
         window.location.href = "login.html";
     }
 }
+
 
 // Ejecutar la función de verificación cada cierto tiempo
 setInterval(verificarToken, CHECK_INTERVAL);
