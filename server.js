@@ -668,53 +668,27 @@ app.post("/guardar-inasistencias", verificarToken, async (req, res) => {
   }
 });
 
+// Endpoint para obtener inasistencias
+app.get('/inasistencias/:id_alumno', verificarToken, async (req, res) => {
+    const id_alumno = req.params.id_alumno;
+    
+    try {
+        const { data, error } = await supabase
+            .from('Inasistencia')
+            .select('valor')
+            .eq('id_alumno', id_alumno)
+            .eq('id_ciclo_escolar', activeCycleId) // Aquí debes definir tu ID de ciclo escolar activo
+            .eq('id_periodo_ciclo_escolar', activePeriodId); // Define tu ID de periodo escolar activo
+        
+        if (error) {
+            return res.status(500).json({ error: error.message });
+        }
 
-// Endpoint en Node.js para obtener las inasistencias de un alumno
-app.get('/obtener-inasistencias/:id_alumno', verificarToken, async (req, res) => {
-  const { id_alumno } = req.params;
-
-  try {
-    // Obtener el ciclo escolar activo
-    const cicloActivo = await supabase
-      .from('CicloEscolar')
-      .select('id')
-      .eq('estatus', 'activo')
-      .single();
-
-    if (!cicloActivo.data) {
-      return res.status(404).json({ error: 'No se encontró un ciclo escolar activo.' });
+        res.status(200).json(data);
+    } catch (error) {
+        res.status(500).json({ error: 'Error al obtener inasistencias' });
     }
-
-    // Obtener el período activo
-    const periodoActivo = await supabase
-      .from('PeriodoCicloEscolar')
-      .select('id')
-      .eq('estatus', true)
-      .single();
-
-    if (!periodoActivo.data) {
-      return res.status(404).json({ error: 'No se encontró un período activo.' });
-    }
-
-    // Obtener el valor de las inasistencias del alumno para el ciclo y período activos
-    const inasistencias = await supabase
-      .from('Inasistencia')
-      .select('valor')
-      .eq('id_alumno', id_alumno)
-      .eq('id_ciclo_escolar', cicloActivo.data.id)
-      .eq('id_periodo_ciclo_escolar', periodoActivo.data.id)
-      .single();
-
-    if (inasistencias.error) {
-      return res.status(404).json({ error: 'No se encontraron inasistencias para el alumno en este ciclo y período.' });
-    }
-
-    res.json({ inasistencias: inasistencias.data.valor || 0 });
-  } catch (error) {
-    res.status(500).json({ error: 'Error al obtener inasistencias.' });
-  }
 });
-
 
 app.get(
   "/reporteDetalleCalificacionesPorCiclo/:idCiclo",
