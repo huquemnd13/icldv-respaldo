@@ -13,10 +13,20 @@ let id_profesor;
 
 const CHECK_INTERVAL = 70000;
 
+function cargarToken() {
+    token = localStorage.getItem("token");
+    if (token) {
+        const decodedToken = JSON.parse(atob(token.split(".")[1]));
+        id_usuario = decodedToken.id;      // ID del usuario
+        id_rol = decodedToken.id_rol; // Asumiendo que el rol se almacena en 'id_rol'
+        nombreProfesor = decodedToken.nombre_completo || "Campo nombre_completo no encontrado";
+        id_profesor = decodedToken.id_profesor;
+    }
+}
+
 // Función para validar el token
 async function verificarToken() {
-    const token = localStorage.getItem('token');
-    
+    cargarToken();
     // Si el token no existe, redirige directamente a login.html
     if (!token) {
         window.location.href = "login.html";
@@ -52,24 +62,10 @@ setInterval(verificarToken, CHECK_INTERVAL);
 // Llamada inicial para verificar el token al cargar la página
 verificarToken();
 
-function cargarToken() {
-    token = localStorage.getItem("token");
-    if (token) {
-        const decodedToken = JSON.parse(atob(token.split(".")[1]));
-        id_usuario = decodedToken.id;      // ID del usuario
-        id_rol = decodedToken.id_rol; // Asumiendo que el rol se almacena en 'id_rol'
-        nombreProfesor = decodedToken.nombre_completo || "Campo nombre_completo no encontrado";
-        id_profesor = decodedToken.id_profesor;
-    }
-}
-
 window.onload = async function () {
-  const token = localStorage.getItem("token");
-
   if (token) {
     try {
       console.log(token);
-      decodedToken = jwt_decode(token);
       document.getElementById("nombre_usuario").textContent = nombreProfesor;
 
       document
@@ -178,7 +174,6 @@ window.onload = async function () {
 };
 
 async function cargarAlumnos() {
-  const token = localStorage.getItem("token");
   if (token) {
     try {
       const gradoId = document.getElementById("grados").value;
@@ -354,7 +349,6 @@ function crearCeldaConInasistencias(calificacion) {
 
 async function cargarObservaciones(idMateria) {
   if (observacionesGlobales.length === 0) {
-    const token = localStorage.getItem("token");
     const response = await fetch(
       `/obtener-observaciones-materia?id_materia=${idMateria}`,
       {
@@ -388,13 +382,6 @@ async function guardarObservacionesSeleccionadas(
   id_calificacion,
   observaciones
 ) {
-  const token = localStorage.getItem("token");
-  let id_usuario;
-  if (token) {
-    const decodedToken = JSON.parse(atob(token.split(".")[1]));
-    id_usuario = decodedToken.id;
-  }
-
   const observacionData = {
     _id_calificacion: id_calificacion,
     _observaciones: Array.isArray(observaciones)
@@ -416,8 +403,6 @@ async function guardarObservacionesSeleccionadas(
 }
 
 async function guardarInasistencias(id_calificacion, inasistencia) {
-  const token = localStorage.getItem("token");
-
   const inasistenciaData = {
     _id_calificacion: id_calificacion,
     _inasistencias: inasistencia,
@@ -479,9 +464,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function crearDropdown(calificacionActual, periodo, periodoNumero) {
   const select = document.createElement("select");
-  
-  // Agregar clase CSS para el estilo
-  select.classList.add("calificaciones"); // Cambia 'observaciones' por la clase que necesites
+  select.classList.add("calificaciones");
 
   const calificacionesPosibles = [0, 7, 8, 9, 10];
   calificacionesPosibles.forEach((calificacion) => {
@@ -501,14 +484,6 @@ function crearDropdown(calificacionActual, periodo, periodoNumero) {
 }
 
 function guardarCalificacion(selectElement) {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    mostrarToast("No se ha encontrado el token de autorización.", "error");
-    return;
-  }
-
-  const idUsuario = decodedToken.id || "Campo nombre_completo no encontrado";
   const nuevaCalificacion = parseInt(selectElement.value);
   const idAlumno = selectElement.closest("tr").children[1].textContent;
   calificacionIdSeleccionada = parseInt(
@@ -528,7 +503,7 @@ function guardarCalificacion(selectElement) {
       _id_calificacion: calificacionIdSeleccionada,
       _campo: campo,
       _nuevo_valor: nuevaCalificacion,
-      _id_usuario: idUsuario,
+      _id_usuario: id_usuario,
     }),
   })
     .then((response) => {
