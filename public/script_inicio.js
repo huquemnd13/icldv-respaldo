@@ -346,8 +346,8 @@ function crearCeldaConInasistencias(calificacion, inasistencias) {
   selectElement.classList.add('inasistencias');
   selectElement.dataset.calificacion = calificacion.id_calificacion;
   console.log(materiaSeleccionadaId);
-  console.log()
-  selectElement.disabled = !(id_rol === 3 || (id_rol === 4 && materiaSeleccionadaId === 21));
+  console.log(id_rol);
+  selectElement.disabled = !(id_rol === 3 || (id_rol === 4 && materiaSeleccionadaId === "21"));
 
 
   // Llenar el select con opciones de inasistencias
