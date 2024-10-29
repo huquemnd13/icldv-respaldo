@@ -1,5 +1,5 @@
+let token = localStorage.getItem("token");
 window.onload = function () {
-  const token = localStorage.getItem("token");
   if (!token) {
     document.getElementById("nombre_usuario").textContent = "Invitado";
     window.location.href = "login.html";
@@ -29,7 +29,6 @@ window.onload = function () {
 };
 
 async function obtenerDatosCalificaciones(idCiclo) {
-  const token = localStorage.getItem("token");
   try {
     const response = await fetch(
       `/reporteDetalleCalificacionesPorCiclo/${idCiclo}`,
