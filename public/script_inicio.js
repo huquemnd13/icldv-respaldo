@@ -352,8 +352,15 @@ function crearCeldaConInasistencias(calificacion, inasistencias) {
 
   selectElement.addEventListener('change', async function() {
     const inasistencia = selectElement.value;
+
+    // Obtener el ID de la opción seleccionada del select "grados"
+    const gradoSelectElement = document.getElementById("grados");
+    console.log(gradoSelectElement);
+    const selectedGradoOption = gradoSelectElement.options[gradoSelectElement.selectedIndex];
+    const idGradoSeleccionado = selectedGradoOption.getAttribute('data-id');
+    console.log(idGradoSeleccionado);
     try {
-      await guardarInasistencias(id_alumno, inasistencia);
+      await guardarInasistencias(id_alumno, inasistencia, idGradoSeleccionado); // Ahora pasas el ID del grado también
     } catch (error) {
       mostrarToast(`Error al guardar inasistencias: ${error.message}`, "error");
     }
@@ -362,6 +369,7 @@ function crearCeldaConInasistencias(calificacion, inasistencias) {
   cell.appendChild(selectElement);
   return cell;
 }
+
 
 
 async function obtenerInasistencias(id_alumno, cicloId, periodoId) {

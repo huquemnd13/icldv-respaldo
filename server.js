@@ -479,7 +479,11 @@ app.get("/calificaciones", verificarToken, async (req, res) => {
 });
 
 app.get("/periodos", verificarToken, async (req, res) => {
-  const { id_ciclo_escolar } = req.query;
+  // Purgar el parámetro id_ciclo_escolar
+  let { id_ciclo_escolar } = req.query;
+
+  // Eliminar espacios en blanco y validar que no esté vacío
+  id_ciclo_escolar = id_ciclo_escolar ? id_ciclo_escolar.trim() : "";
 
   if (!id_ciclo_escolar) {
     return res.status(400).json({
@@ -488,11 +492,20 @@ app.get("/periodos", verificarToken, async (req, res) => {
     });
   }
 
+  // Verificar que id_ciclo_escolar sea un número entero
+  const idCicloEscolarNumber = parseInt(id_ciclo_escolar, 10);
+  if (isNaN(idCicloEscolarNumber) || idCicloEscolarNumber <= 0) {
+    return res.status(400).json({
+      success: false,
+      message: "El parámetro id_ciclo_escolar debe ser un número entero válido.",
+    });
+  }
+
   try {
     const { data: periodos, error } = await supabase
       .from("PeriodoCicloEscolar")
       .select("id, fecha_inicio, fecha_fin, periodo")
-      .eq("id_ciclo_escolar", id_ciclo_escolar)
+      .eq("id_ciclo_escolar", idCicloEscolarNumber) // Usar el número convertido
       .order("periodo", { ascending: true });
 
     if (error) {
@@ -517,6 +530,7 @@ app.get("/periodos", verificarToken, async (req, res) => {
       .json({ success: false, message: "Error interno del servidor." });
   }
 });
+
 
 app.post("/actualizar-calificaciones", verificarToken, async (req, res) => {
   const { _id_calificacion, _campo, _nuevo_valor, _id_usuario } = req.body;
