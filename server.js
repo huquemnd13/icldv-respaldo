@@ -347,7 +347,7 @@ app.get("/obtener-grados-profesor", async (req, res) => {
 
   try {
     const { data: grados, error } = await supabase.rpc(
-      "obtener_descripciones_grados_por_profesor",
+      "obtener_grados_profesor",
       {
         _id_profesor: profesorId,
       }

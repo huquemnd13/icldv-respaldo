@@ -118,6 +118,7 @@ window.onload = async function () {
           const option = document.createElement("option");
           option.value = grado.id;
           option.textContent = grado.descripcion;
+          
           option.setAttribute('data-nivel-escolar', grado.id_nivel_escolar);
           selectGrados.appendChild(option);
         });
@@ -131,7 +132,6 @@ window.onload = async function () {
           const gradoId = event.target.value;
           const selectedOption = event.target.options[event.target.selectedIndex];
           id_nivel_escolar = selectedOption.getAttribute('data-nivel-escolar');
-          console.log("ESTE ES EL ID NIVEL ESCOLAR ", id_nivel_escolar);
           if (gradoId) {
             try {
               const response = await fetch(
