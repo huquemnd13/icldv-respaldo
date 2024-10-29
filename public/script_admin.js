@@ -39,7 +39,7 @@ async function verificarToken() {
         id_rol = decodedToken.id_rol; // Asumiendo que el id_rol está en el payload
 
         // Verificar si el rol es 2 o 3
-        if (id_rol !== 2 && id_rol !== 3) {
+        if (id_rol !== 1) {
             localStorage.removeItem('token'); // Opcional: Eliminar el token
             window.location.href = "login.html"; // Redirigir a login
             return;
@@ -70,27 +70,10 @@ async function verificarToken() {
 // Ejecutar la función de verificación cada cierto tiempo
 setInterval(verificarToken, CHECK_INTERVAL);
 window.onload = function () {
+  const idCiclo = 1; // Falta definir
   cargarToken();
   verificarToken();
-  if (isTokenExpired(token)) {
-    alert("La sesión ha expirado. Por favor, inicia sesión nuevamente.");
-    logout();
-    return;
-  }
-
-  try {
-    const decodedToken = jwt_decode(token);
-    if (decodedToken && decodedToken.nombre_completo) {
-      document.getElementById("nombre_usuario").textContent =
-        decodedToken.nombre_completo;
-    } else {
-      document.getElementById("nombre_usuario").textContent = "Invitado";
-    }
-  } catch (error) {
-    document.getElementById("nombre_usuario").textContent = "Invitado";
-  }
-
-  const idCiclo = 1;
+  document.getElementById("nombre_usuario").textContent =  nombreProfesor;
   obtenerDatosCalificaciones(idCiclo);
 };
 
