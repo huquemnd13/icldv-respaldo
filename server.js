@@ -335,11 +335,8 @@ app.get("/obtener-alumnos-grados", async (req, res) => {
 
 app.get("/obtener-grados-profesor", async (req, res) => {
   const token = req.headers.authorization.split(" ")[1];
-  console.log("11111");
   const decodedToken = jwt.verify(token, jwtSecret);
-  console.log("22222");
   const profesorId = decodedToken.id_profesor;
-  console.log("33333");
   console.log(profesorId);
 
   if (!profesorId) {

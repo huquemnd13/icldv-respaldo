@@ -116,6 +116,7 @@ window.onload = async function () {
           const option = document.createElement("option");
           option.value = grado.id;
           option.textContent = grado.descripcion;
+          option.setAttribute('data-nivel-escolar', grado.id_nivel_escolar);
           selectGrados.appendChild(option);
         });
       } else {
@@ -355,10 +356,8 @@ function crearCeldaConInasistencias(calificacion, inasistencias) {
 
     // Obtener el ID de la opción seleccionada del select "grados"
     const gradoSelectElement = document.getElementById("grados");
-    console.log(gradoSelectElement);
     const selectedGradoOption = gradoSelectElement.options[gradoSelectElement.selectedIndex];
-    const idGradoSeleccionado = selectedGradoOption.getAttribute('data-id');
-    console.log(idGradoSeleccionado);
+    const idGradoSeleccionado = selectedGradoOption.getAttribute('value');
     try {
       await guardarInasistencias(id_alumno, inasistencia, idGradoSeleccionado); // Ahora pasas el ID del grado también
     } catch (error) {
