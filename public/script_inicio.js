@@ -170,8 +170,6 @@ window.onload = async function () {
                     materiaSeleccionadaId = selectMateria.value;
                     textoMateriaSeleccionada =
                       selectMateria.options[selectMateria.selectedIndex].text;
-                  console.log("ESTE ES EL ROL ", id_rol);
-                  console.log("ESTA ES LA MATERIA SELECCIONADA ", materiaSeleccionadaId );
                   });
               } else {
                 console.error(
@@ -345,8 +343,6 @@ function crearCeldaConInasistencias(calificacion, inasistencias) {
   const id_alumno = calificacion.id_alumno;
   selectElement.classList.add('inasistencias');
   selectElement.dataset.calificacion = calificacion.id_calificacion;
-  console.log(materiaSeleccionadaId);
-  console.log(id_rol);
   selectElement.disabled = !(id_rol === 3 || (id_rol === 4 && materiaSeleccionadaId === "21"));
 
 
