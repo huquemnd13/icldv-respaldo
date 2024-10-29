@@ -10,6 +10,7 @@ let id_usuario;
 let id_rol;
 let nombreProfesor;
 let id_profesor;
+let id_nivel_escolar;
 
 const CHECK_INTERVAL = 70000;
 
@@ -112,6 +113,7 @@ window.onload = async function () {
         const grados = await responseGrados.json();
         const selectGrados = document.getElementById("grados");
 
+
         grados.forEach((grado) => {
           const option = document.createElement("option");
           option.value = grado.id;
@@ -127,6 +129,9 @@ window.onload = async function () {
         .getElementById("grados")
         .addEventListener("change", async (event) => {
           const gradoId = event.target.value;
+          const selectedOption = event.target.options[event.target.selectedIndex];
+          id_nivel_escolar = selectedOption.getAttribute('data-nivel-escolar');
+          console.log("ESTE ES EL ID NIVEL ESCOLAR ", id_nivel_escolar);
           if (gradoId) {
             try {
               const response = await fetch(
@@ -353,13 +358,8 @@ function crearCeldaConInasistencias(calificacion, inasistencias) {
 
   selectElement.addEventListener('change', async function() {
     const inasistencia = selectElement.value;
-
-    // Obtener el ID de la opción seleccionada del select "grados"
-    const gradoSelectElement = document.getElementById("grados");
-    const selectedGradoOption = gradoSelectElement.options[gradoSelectElement.selectedIndex];
-    const idGradoSeleccionado = selectedGradoOption.getAttribute('value');
     try {
-      await guardarInasistencias(id_alumno, inasistencia, idGradoSeleccionado); // Ahora pasas el ID del grado también
+      await guardarInasistencias(id_alumno, inasistencia); 
     } catch (error) {
       mostrarToast(`Error al guardar inasistencias: ${error.message}`, "error");
     }
