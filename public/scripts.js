@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         setTimeout(() => {
                             window.location.href = '/administracion.html';
                         }, 2000);
-                    } else if (userRole === 2 || userRole === 3) {
+                    } else if (userRole === 2 || userRole === 3 || userRole === 4) {
                         showNotification('Inicio de sesión exitoso.', false);
                         setTimeout(() => {
                             window.location.href = '/inicio.html';

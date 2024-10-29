@@ -46,7 +46,7 @@ async function verificarToken() {
         id_rol = decodedToken.id_rol; // Asumiendo que el id_rol está en el payload
 
         // Verificar si el rol es 2 o 3
-        if (id_rol !== 2 && id_rol !== 3) {
+        if (id_rol !== 2 && id_rol !== 3 && id_rol !== 4) {
             localStorage.removeItem('token'); // Opcional: Eliminar el token
             window.location.href = "login.html"; // Redirigir a login
             return;
@@ -343,7 +343,8 @@ function crearCeldaConInasistencias(calificacion, inasistencias) {
   selectElement.classList.add('inasistencias');
   selectElement.dataset.calificacion = calificacion.id_calificacion;
 
-  selectElement.disabled = id_rol !== 3; // Solo habilitar si el rol es 3
+  selectElement.disabled = !(id_rol === 3 || (id_rol === 4 && id_nivel_escolar === 3));
+
 
   // Llenar el select con opciones de inasistencias
   for (let i = 0; i <= 20; i++) {
