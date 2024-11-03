@@ -106,8 +106,33 @@ tr:last-child td:last-child {
   border-bottom-right-radius: 8px;
 }
 
+.campoformativo {
+  width: 20%; /* Ajustar según sea necesario para coincidir con el ancho de Campo Formativo y Materia */
+  font-weight: bold;
+}
+.materia {
+  width: 40%; /* Ajustar según sea necesario para coincidir con el ancho de Campo Formativo y Materia */
+  font-weight: bold;
+}
+.cp123 {
+  width: 10%; /* Ajustar según sea necesario para coincidir con el ancho de Campo Formativo y Materia */
+  font-weight: bold;
+}
+.ctotal {
+  width: 10%; /* Ajustar según sea necesario para coincidir con el ancho de Campo Formativo y Materia */
+  font-weight: bold;
+}
+
 /* Estilos para la tabla de inasistencias */
 .inasistencias {
-  width: 30%; /* Ajustar según sea necesario para coincidir con el ancho de Campo Formativo y Materia */
+  width: 60%; /* Ajustar según sea necesario para coincidir con el ancho de Campo Formativo y Materia */
+  font-weight: bold;
+}
+.ip123 {
+  width: 10%; /* Ajustar según sea necesario para coincidir con el ancho de Campo Formativo y Materia */
+  font-weight: bold;
+}
+.itotal {
+  width: 10%; /* Ajustar según sea necesario para coincidir con el ancho de Campo Formativo y Materia */
   font-weight: bold;
 }
