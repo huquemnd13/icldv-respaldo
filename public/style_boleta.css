@@ -136,3 +136,44 @@ tr:last-child td:last-child {
   width: 10%; /* Ajustar según sea necesario para coincidir con el ancho de Campo Formativo y Materia */
   font-weight: bold;
 }
+
+/* Estilos para el contenedor de firmas */
+.firma-container {
+  display: flex;
+  justify-content: space-around; /* Distribuye los espacios uniformemente */
+  margin-top: 20px; /* Espaciado arriba */
+}
+
+/* Estilos para cada firma */
+.firma {
+  text-align: center; /* Centra el texto */
+  width: 30%; /* Ajusta el ancho según sea necesario */
+  padding: 15px; /* Espaciado interno */
+  border-radius: 10px; /* Bordes redondeados */
+  background-color: #f9f9f9; /* Fondo claro */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+/* Línea para la firma */
+.linea-firma {
+  width: 200px; /* Ancho de la línea de firma */
+  height: 2px; /* Altura de la línea de firma */
+  background-color: #333; /* Color de la línea */
+  margin: 50px 0; /* Espacio vertical adicional (20px arriba y abajo) */
+}
+
+
+/* Estilo para el texto bajo la línea */
+.firma-label {
+  margin-top: 5px; /* Espaciado superior */
+  font-weight: normal; /* Peso normal para el texto */
+  color: #555; /* Color gris para el texto */
+}
+
+/* Estilo para el texto de descripción de la firma */
+.firma-descripcion {
+  margin-top: 5px; /* Espaciado superior */
+  font-size: 14px; /* Tamaño de fuente más pequeño */
+  color: #777; /* Color gris para el texto */
+}
+
