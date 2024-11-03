@@ -9,7 +9,7 @@ body {
 }
 
 header {
-  background-color: #007bff;
+  background: linear-gradient(135deg, #007bff, #0056b3); /* Degradado azul */
   color: white;
   padding: 20px;
   border-radius: 8px;
@@ -20,6 +20,7 @@ header {
   width: 80%;
   max-width: 800px;
 }
+
 
 .logo-container {
   background-color: white;
@@ -32,17 +33,17 @@ header {
 }
 
 .bloque-azul {
-  background-color: #007bff;
-  color: white;
+  /* Quitar el fondo */
+  background-color: transparent; /* Cambiar el color de fondo a transparente */
+  color: #ffffff; /* Cambiar el color del texto si es necesario */
   padding: 20px;
-  border-radius: 8px;
   text-align: center;
   font-size: 20px;
   font-weight: bold;
   width: 80%;
   max-width: 800px;
   margin-top: 20px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: none; /* Quitar la sombra si se desea */
 }
 
 .bloque-blanco {
@@ -159,8 +160,9 @@ tr:last-child td:last-child {
   width: 200px; /* Ancho de la línea de firma */
   height: 2px; /* Altura de la línea de firma */
   background-color: #333; /* Color de la línea */
-  margin: 50px 0; /* Espacio vertical adicional (20px arriba y abajo) */
+  margin: 50px 0 20px 0; /* Espacio vertical: 40px arriba, 20px abajo */
 }
+
 
 
 /* Estilo para el texto bajo la línea */
@@ -175,5 +177,15 @@ tr:last-child td:last-child {
   margin-top: 5px; /* Espaciado superior */
   font-size: 14px; /* Tamaño de fuente más pequeño */
   color: #777; /* Color gris para el texto */
+}
+
+.tabla-contenedor {
+  width: 80%;
+  max-width: 800px;
+  margin: 20px auto; /* Centrar el contenedor */
+  background-color: #ffffff; /* Fondo blanco */
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px; /* Espaciado interno */
 }
 
