@@ -70,7 +70,8 @@ table {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-th, td {
+th,
+td {
   padding: 15px;
   text-align: center;
   font-size: 16px;
@@ -103,4 +104,10 @@ tr:last-child td:first-child {
 }
 tr:last-child td:last-child {
   border-bottom-right-radius: 8px;
+}
+
+/* Estilos para la tabla de inasistencias */
+.inasistencias {
+  width: 30%; /* Ajustar según sea necesario para coincidir con el ancho de Campo Formativo y Materia */
+  font-weight: bold;
 }
