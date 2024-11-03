@@ -140,14 +140,15 @@ tr:last-child td:last-child {
 
 /* Estilos para el contenedor de firmas */
 .firma-container {
-  display: flex;
-  justify-content: space-around; /* Distribuye los espacios uniformemente */
-  margin-top: 20px; /* Espaciado arriba */
+  display: flex; /* Usar flexbox para centrar contenido */
+  justify-content: space-around; /* Espacia los elementos equitativamente */
+  align-items: flex-start; /* Alinear los elementos al inicio del contenedor */
+  margin: 20px 0; /* Espaciado vertical alrededor del contenedor */
 }
 
 /* Estilos para cada firma */
 .firma {
-  text-align: center; /* Centra el texto */
+  text-align: center; /* Centra el texto dentro de cada firma */
   width: 30%; /* Ajusta el ancho según sea necesario */
   padding: 15px; /* Espaciado interno */
   border-radius: 10px; /* Bordes redondeados */
@@ -160,10 +161,8 @@ tr:last-child td:last-child {
   width: 200px; /* Ancho de la línea de firma */
   height: 2px; /* Altura de la línea de firma */
   background-color: #333; /* Color de la línea */
-  margin: 50px 0 20px 0; /* Espacio vertical: 40px arriba, 20px abajo */
-}
-
-
+  margin: 60px auto 10px auto; /* Espacio vertical adicional (40px arriba) y centrar horizontalmente */
+} 
 
 /* Estilo para el texto bajo la línea */
 .firma-label {
@@ -173,10 +172,12 @@ tr:last-child td:last-child {
 }
 
 /* Estilo para el texto de descripción de la firma */
-.firma-descripcion {
-  margin-top: 5px; /* Espaciado superior */
-  font-size: 14px; /* Tamaño de fuente más pequeño */
-  color: #777; /* Color gris para el texto */
+.firma-indicacion {
+  text-align: center; /* Centra el texto */
+  font-size: 18px; /* Tamaño de fuente */
+  font-weight: bold; /* Negrita */
+  margin-bottom: 20px; /* Espacio debajo del texto */
+  color: #333; /* Color del texto */
 }
 
 .tabla-contenedor {
@@ -188,4 +189,20 @@ tr:last-child td:last-child {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   padding: 20px; /* Espaciado interno */
 }
+
+.docente-container {
+  display: flex; /* Utiliza flexbox para alinear horizontalmente */
+  justify-content: space-between; /* Espacio entre elementos */
+  margin-top: 30px; /* Espacio superior entre la firma y estas secciones */
+}
+
+.docente, .direccion, .sello {
+  text-align: center; /* Centra el texto dentro de cada firma */
+  width: 30%; /* Ajusta el ancho según sea necesario */
+  padding: 15px; /* Espaciado interno */
+  border-radius: 10px; /* Bordes redondeados */
+  background-color: #f9f9f9; /* Fondo claro */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
 
