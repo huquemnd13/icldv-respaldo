@@ -126,7 +126,7 @@ tr:last-child td:last-child {
 
 /* Estilos para la tabla de inasistencias */
 .inasistencias {
-  width: 60%; /* Ajustar según sea necesario para coincidir con el ancho de Campo Formativo y Materia */
+  width: 45%; /* Ajustar según sea necesario para coincidir con el ancho de Campo Formativo y Materia */
   font-weight: bold;
 }
 .ip123 {
@@ -174,7 +174,7 @@ tr:last-child td:last-child {
 /* Estilo para el texto de descripción de la firma */
 .firma-indicacion {
   text-align: center; /* Centra el texto */
-  font-size: 18px; /* Tamaño de fuente */
+  font-size: 12px; /* Tamaño de fuente */
   font-weight: bold; /* Negrita */
   margin-bottom: 20px; /* Espacio debajo del texto */
   color: #333; /* Color del texto */
