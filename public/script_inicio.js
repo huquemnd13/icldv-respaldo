@@ -242,33 +242,30 @@ async function cargarAlumnos() {
       if (observacionesGlobales.length === 0) {
         observacionesGlobales = await cargarObservaciones(materiaSeleccionadaId);
       }
-      const periodoActivo = periodos.find((periodo) =>
-        esPeriodoActivo(periodo)
-      );
+      const periodoActivo = periodos.find((periodo) => esPeriodoActivo(periodo));
       if (periodoActivo) {
         mostrarToast(
-          `Periodo de captura activo: Desde ${new Date(
-            periodoActivo.fecha_inicio
-          ).toLocaleDateString()} hasta ${new Date(
-            periodoActivo.fecha_fin
-          ).toLocaleDateString()}`,
+          `Periodo de captura activo: Desde ${new Date(periodoActivo.fecha_inicio).toLocaleDateString()} hasta ${new Date(periodoActivo.fecha_fin).toLocaleDateString()}`,
           "success"
         );
       } else {
-        mostrarToast(
-          "No hay ningún periodo de captura activo en este momento.",
-          "warning"
-        );
+        mostrarToast("No hay ningún periodo de captura activo en este momento.", "warning");
       }
-      const tableBody = document
-        .getElementById("alumnos-table")
-        .querySelector("tbody");
+
+      const tableBody = document.getElementById("alumnos-table").querySelector("tbody");
       tableBody.innerHTML = "";
       for (const calificacion of calificaciones) {
         const row = document.createElement("tr");
-
-        const inasistencias = await obtenerInasistencias(calificacion.id_alumno, cicloId, periodoActivo.id);
-
+        
+        // Verificar que periodoActivo existe antes de llamar a obtenerInasistencias
+        let inasistencias = [];
+        if (periodoActivo) {
+          inasistencias = await obtenerInasistencias(calificacion.id_alumno, cicloId, periodoActivo.id);
+          console.log(periodoActivo.id);
+        } else {
+          console.warn("Periodo activo no definido. No se obtendrán inasistencias para este alumno.");
+        }
+        
         row.appendChild(crearCelda(calificacion.id_calificacion));
         row.appendChild(crearCelda(calificacion.id_alumno));
         row.appendChild(crearCelda(textoMateriaSeleccionada));
@@ -287,6 +284,7 @@ async function cargarAlumnos() {
     console.error("No hay token disponible. Por favor inicia sesión.");
   }
 }
+
 
 function crearCelda(texto) {
   const cell = document.createElement("td");
