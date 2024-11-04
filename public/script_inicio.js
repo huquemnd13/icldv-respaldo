@@ -249,6 +249,7 @@ async function cargarAlumnos() {
           "success");
       } else {
         mostrarToast("No hay ningún periodo de captura activo en este momento.", "warning");
+        mostrarToast("Estás en periodo de consulta.", "warning");
       }
 
       const tableBody = document.getElementById("alumnos-table").querySelector("tbody");
