@@ -12,6 +12,10 @@ const moment = require("moment-timezone");
 const { isAfter, addMinutes } = require("date-fns");
 const app = express();
 
+const PDFDocument = require('pdfkit');
+const { Writable } = require('stream');
+const pdf = require('html-pdf');
+
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -754,46 +758,109 @@ app.get(
   }
 );
 
-
-
+// Endpoint para generar el PDF
 app.get('/generar-boleta', verificarToken, async (req, res) => {
   try {
-    // Recupera los datos de los alumnos desde Supabase
+    // Recupera los datos de todos los alumnos desde Supabase
     const { data: alumnos, error } = await supabase
       .from('Alumno')
       .select('nombre, apellido_paterno, apellido_materno, curp, id_grado_nivel_escolar');
 
     if (error) throw error;
 
-    // Crear un nuevo documento PDF
-    const doc = new PDFDocument();
-    
-    // Configura la respuesta para la descarga del PDF
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', 'attachment; filename=boletas.pdf');
+    // Crear el contenido HTML para las boletas
+    let html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Instituto Cultural Leonardo da Vinci</title>
+        <link rel="stylesheet" href="style_boleta.css">
+      </head>
+      <body>
+        <header>
+          <div class="logo-container">
+            <img
+              class="logo"
+              src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/LogoLDV-removebg.png?v=1729718938375"
+              alt="Logo del Instituto"
+            />
+          </div>
+          <div class="bloque-azul">
+            INSTITUTO CULTURAL LEONARDO DA VINCI<br />
+            INFORME DE CALIFICACIONES<br />
+            NIVEL PRIMARIA<br />
+            CCT: 15PPR3434K
+          </div>
+        </header>`;
 
-    // Pipe el documento a la respuesta
-    doc.pipe(res);
-
-    // Agregar contenido al PDF para cada alumno
+    // Agregar una boleta por cada alumno
     alumnos.forEach(alumno => {
-      doc.fontSize(20).text(`Boleta de ${alumno.nombre} ${alumno.apellido_paterno} ${alumno.apellido_materno}`, {
-        align: 'center'
-      });
-      doc.moveDown();
-      doc.text(`CURP: ${alumno.curp}`);
-      doc.text(`Grado: ${alumno.id_grado_nivel_escolar}`);
-      doc.addPage(); // Agrega una nueva página para el siguiente alumno
+      html += `
+        <div class="tabla-contenedor">
+          <table>
+            <tr>
+              <th>NOMBRE DEL ALUMNO</th>
+              <th>CICLO ESCOLAR</th>
+              <th>GRADO</th>
+              <th>GRUPO</th>
+              <th>PERIODO</th>
+            </tr>
+            <tr>
+              <td>${alumno.nombre} ${alumno.apellido_paterno} ${alumno.apellido_materno}</td>
+              <td>2023-2024</td>
+              <td>${alumno.id_grado_nivel_escolar}</td>
+              <td>B</td>
+              <td>Segundo</td>
+            </tr>
+          </table>
+          <div class="firma-container">
+            <div class="firma">
+              <div class="linea-firma"></div>
+              <div class="firma-label">Primer Periodo</div>
+            </div>
+            <div class="firma">
+              <div class="linea-firma"></div>
+              <div class="firma-label">Segundo Periodo</div>
+            </div>
+            <div class="firma">
+              <div class="linea-firma"></div>
+              <div class="firma-label">Tercer Periodo</div>
+            </div>
+          </div>
+          <div class="firma-indicacion">
+            Firmas del padre, madre o tutor
+          </div>
+          <div>
+            Avenida Nuestra Señora de Guadalupe, Manzana 36 Lote 146, Colonia La Guadalupana, Ecatepec de Morelos, Estado de México, C.P. 55060<br />
+            Teléfonos 2607-1747 y 2607-1955
+          </div>
+        </div>
+        <hr />
+      `;
     });
 
-    // Finaliza el documento PDF
-    doc.end();
+    html += `</body></html>`; // Cierra el HTML
+
+    // Establecer las opciones para el PDF
+    const options = { format: 'A4' };
+
+    // Crear el PDF
+    pdf.create(html, options).toStream((err, stream) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error al generar el PDF');
+      } else {
+        // Establecer los encabezados para la descarga del PDF
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=boletas.pdf');
+        stream.pipe(res); // Pasa el flujo del PDF a la respuesta
+      }
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send('Error al generar las boletas en PDF');
   }
 });
-
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
