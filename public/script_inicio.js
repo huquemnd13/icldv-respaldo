@@ -247,7 +247,6 @@ async function cargarAlumnos() {
         mostrarToast(
           `Periodo de captura activo: Desde ${new Date(periodoActivo.fecha_inicio).toLocaleDateString()} hasta ${new Date(periodoActivo.fecha_fin).toLocaleDateString()}`,
           "success");
-        console.log(periodoActivo);
       } else {
         mostrarToast("No hay ningún periodo de captura activo en este momento.", "warning");
       }
@@ -269,7 +268,6 @@ async function cargarAlumnos() {
         row.appendChild(crearCeldaConDropdown(calificacion.periodo_2, periodos[1], 2));
         row.appendChild(crearCeldaConDropdown(calificacion.periodo_3, periodos[2], 3));
         row.appendChild(crearCeldaConObservaciones(calificacion, periodoActivo));
-        console.log(periodoActivo);
         row.appendChild(crearCeldaConInasistencias(calificacion, inasistencias, periodoActivo));
         tableBody.appendChild(row);
       }
@@ -337,10 +335,8 @@ function crearCeldaConInasistencias(calificacion, inasistencias, periodoActivo) 
   const id_alumno = calificacion.id_alumno;
   selectElement.classList.add('inasistencias');
   selectElement.dataset.calificacion = calificacion.id_calificacion;
-  selectElement.disabled = !(id_rol === 3 || (id_rol === 4 && materiaSeleccionadaId === "21")) && !(periodoActivo === false);
-
-
-
+  selectElement.disabled = !(id_rol === 3 || (id_rol === 4 && materiaSeleccionadaId === "21")) || !periodoActivo || periodoActivo === true;
+  
   // Llenar el select con opciones de inasistencias
   for (let i = 0; i <= 20; i++) {
     const option = document.createElement('option');
@@ -415,7 +411,7 @@ function llenarSelectConObservaciones(selectElement, observaciones, periodoActiv
     option.text = `${index + 1}. ${observacion.descripcion}`;
     option.dataset.descripcionLarga = observacion.descripcion_larga;
     selectElement.appendChild(option);
-    option.disabled = !(periodoActivo === false);
+    option.disabled = !periodoActivo || periodoActivo === true;
   });
 }
 
