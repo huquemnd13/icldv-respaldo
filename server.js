@@ -11,10 +11,12 @@ const helmet = require("helmet");
 const moment = require("moment-timezone");
 const { isAfter, addMinutes } = require("date-fns");
 const app = express();
+const puppeteer = require('puppeteer');
 
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
+
 /*
 function redirectToHTTPS(req, res, next) {
   if (req.headers['x-forwarded-proto'] !== 'https') {
@@ -752,6 +754,116 @@ app.get(
     }
   }
 );
+
+// Endpoint para generar el PDF
+app.get('/generar-boleta', verificarToken, async (req, res) => {
+  try {
+    // Recupera los datos del alumno desde Supabase
+    const { data: alumno, error } = await supabase
+      .from('Alumno')
+      .select('nombre, apellido_paterno, apellido_materno, curp, id_grado_nivel_escolar')
+      .eq('id', req.user.id_alumno) // Asume que el ID del alumno está en el token
+      .single(); // Obtener un solo registro
+
+    if (error) throw error;
+
+    // Crea el contenido HTML para la boleta
+    const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Instituto Cultural Leonardo da Vinci</title>
+        <link rel="stylesheet" href="style_boleta.css">
+      </head>
+      <body>
+        <header>
+          <div class="logo-container">
+            <img
+              class="logo"
+              src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/LogoLDV-removebg.png?v=1729718938375"
+              alt="Logo del Instituto"
+            />
+          </div>
+          <div class="bloque-azul">
+            INSTITUTO CULTURAL LEONARDO DA VINCI<br />
+            INFORME DE CALIFICACIONES<br />
+            NIVEL PRIMARIA<br />
+            CCT: 15PPR3434K
+          </div>
+        </header>
+
+        <div class="tabla-contenedor">
+          <table>
+            <tr>
+              <th>NOMBRE DEL ALUMNO</th>
+              <th>CICLO ESCOLAR</th>
+              <th>GRADO</th>
+              <th>GRUPO</th>
+              <th>PERIODO</th>
+            </tr>
+            <tr>
+              <td>${alumno.nombre} ${alumno.apellido_paterno} ${alumno.apellido_materno}</td>
+              <td>2023-2024</td>
+              <td>${alumno.id_grado_nivel_escolar}</td>
+              <td>B</td>
+              <td>Segundo</td>
+            </tr>
+          </table>
+          
+          <div class="firma-container">
+            <div class="firma">
+              <div class="linea-firma"></div>
+              <div class="firma-label">Primer Periodo</div>
+            </div>
+            <div class="firma">
+              <div class="linea-firma"></div>
+              <div class="firma-label">Segundo Periodo</div>
+            </div>
+            <div class="firma">
+              <div class="linea-firma"></div>
+              <div class="firma-label">Tercer Periodo</div>
+            </div>
+          </div>
+          <div class="firma-indicacion">
+            Firmas del padre, madre o tutor
+          </div>
+
+          <div>
+            Avenida Nuestra Señora de Guadalupe, Manzana 36 Lote 146, Colonia La Guadalupana, Ecatepec de Morelos, Estado de México, C.P. 55060<br />
+            Teléfonos 2607-1747 y 2607-1955
+          </div>
+        </div>
+      </body>
+    </html>`;
+
+    // Iniciar Puppeteer para generar el PDF
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    
+    // Establecer el contenido HTML
+    await page.setContent(html, { waitUntil: 'networkidle0' });
+    
+    // Generar el PDF
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      printBackground: true,
+    });
+    
+    // Cerrar el navegador
+    await browser.close();
+
+    // Establecer los encabezados para la descarga del PDF
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename=boleta.pdf');
+
+    // Enviar el PDF como respuesta
+    res.end(pdfBuffer);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al generar la boleta en PDF');
+  }
+});
+Aspe
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
