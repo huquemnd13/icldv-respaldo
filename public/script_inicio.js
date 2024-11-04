@@ -269,6 +269,7 @@ async function cargarAlumnos() {
         row.appendChild(crearCeldaConDropdown(calificacion.periodo_2, periodos[1], 2));
         row.appendChild(crearCeldaConDropdown(calificacion.periodo_3, periodos[2], 3));
         row.appendChild(crearCeldaConObservaciones(calificacion, periodoActivo));
+        console.log(periodoActivo);
         row.appendChild(crearCeldaConInasistencias(calificacion, inasistencias, periodoActivo));
         tableBody.appendChild(row);
       }
@@ -302,7 +303,7 @@ function crearCeldaConObservaciones(calificacion, periodoActivo) {
   selectObservacion.size = 6;
   selectObservacion.dataset.alumno = calificacion.id_alumno;
   selectObservacion.dataset.calificacion = calificacion.id_calificacion;
-  llenarSelectConObservaciones(selectObservacion, observacionesGlobales);
+  llenarSelectConObservaciones(selectObservacion, observacionesGlobales, periodoActivo);
   cell.appendChild(selectObservacion);
 
   selectObservacion.addEventListener("change", async function () {
@@ -336,7 +337,8 @@ function crearCeldaConInasistencias(calificacion, inasistencias, periodoActivo) 
   const id_alumno = calificacion.id_alumno;
   selectElement.classList.add('inasistencias');
   selectElement.dataset.calificacion = calificacion.id_calificacion;
-  selectElement.disabled = !(id_rol === 3 || (id_rol === 4 && materiaSeleccionadaId === "21")) && periodoActivo;
+  selectElement.disabled = !(id_rol === 3 || (id_rol === 4 && materiaSeleccionadaId === "21")) && !(periodoActivo === false);
+
 
 
   // Llenar el select con opciones de inasistencias
@@ -413,7 +415,7 @@ function llenarSelectConObservaciones(selectElement, observaciones, periodoActiv
     option.text = `${index + 1}. ${observacion.descripcion}`;
     option.dataset.descripcionLarga = observacion.descripcion_larga;
     selectElement.appendChild(option);
-    option.disabled = periodoActivo; 
+    option.disabled = !(periodoActivo === false);
   });
 }
 
