@@ -259,11 +259,7 @@ async function cargarAlumnos() {
         
         // Verificar que periodoActivo existe antes de llamar a obtenerInasistencias
         let inasistencias = [];
-        if (periodoActivo) {
-          inasistencias = await obtenerInasistencias(calificacion.id_alumno, cicloId, periodoActivo.id);
-        } else {
-          console.warn("Periodo activo no definido. No se obtendrán inasistencias para este alumno.");
-        }
+        inasistencias = await obtenerInasistencias(calificacion.id_alumno, cicloId);
         
         row.appendChild(crearCelda(calificacion.id_calificacion));
         row.appendChild(crearCelda(calificacion.id_alumno));
@@ -369,8 +365,8 @@ function crearCeldaConInasistencias(calificacion, inasistencias) {
 
 
 
-async function obtenerInasistencias(id_alumno, cicloId, periodoId) {
-  const response = await fetch(`/inasistencias?id_alumno=${id_alumno}&id_ciclo_escolar=${cicloId}&id_periodo_ciclo_escolar=${periodoId}`, {
+async function obtenerInasistencias(id_alumno, cicloId) {
+  const response = await fetch(`/inasistencias?id_alumno=${id_alumno}&id_ciclo_escolar=${cicloId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
