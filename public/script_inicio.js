@@ -290,7 +290,7 @@ function crearCelda(texto) {
 function crearCeldaConDropdown(valor, periodo, numPeriodo) {
   const cell = document.createElement("td");
   cell.dataset.periodo = numPeriodo;
-  cell.appendChild(crearDropdown(valor, periodo, numPeriodo));
+  cell.appendChild(crearDropdown(valor, periodo));
   return cell;
 }
 
@@ -502,7 +502,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-function crearDropdown(calificacionActual, periodo, periodoNumero) {
+function crearDropdown(calificacionActual, periodo) {
   const select = document.createElement("select");
   select.classList.add("calificaciones");
 
