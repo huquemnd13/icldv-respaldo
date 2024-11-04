@@ -205,15 +205,4 @@ tr:last-child td:last-child {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
 }
 
-.leyenda-contacto {
-  text-align: center; /* Centra el texto */
-  margin-top: 20px; /* Espacio superior para separar de los elementos anteriores */
-  font-size: 14px; /* Tamaño de fuente más pequeño */
-  color: #333; /* Color del texto */
-}
 
-.codigo-qr {
-  width: 100px; /* Ajusta el tamaño del QR según sea necesario */
-  height: auto; /* Mantiene la proporción */
-  z-index: 10; /* Asegúrate de que esté encima de otros elementos */
-}
