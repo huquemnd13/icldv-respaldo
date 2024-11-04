@@ -765,7 +765,10 @@ app.get('/generar-boleta', verificarToken, async (req, res) => {
       .eq('id', req.user.id_alumno) // Asume que el ID del alumno está en el token
       .single(); // Obtener un solo registro
 
-    if (error) throw error;
+    if (error || !alumno) {
+      // Maneja el caso en que no se encuentra al alumno
+      return res.status(404).send("Alumno no encontrado.");
+    }
 
     // Crea el contenido HTML para la boleta
     const html = `
@@ -859,11 +862,10 @@ app.get('/generar-boleta', verificarToken, async (req, res) => {
     // Enviar el PDF como respuesta
     res.end(pdfBuffer);
   } catch (error) {
-    console.error(error);
+    console.error("Error al generar la boleta:", error);
     res.status(500).send('Error al generar la boleta en PDF');
   }
 });
-Aspe
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
