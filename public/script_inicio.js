@@ -268,8 +268,8 @@ async function cargarAlumnos() {
         row.appendChild(crearCeldaConDropdown(calificacion.periodo_1, periodos[0], 1));
         row.appendChild(crearCeldaConDropdown(calificacion.periodo_2, periodos[1], 2));
         row.appendChild(crearCeldaConDropdown(calificacion.periodo_3, periodos[2], 3));
-        row.appendChild(crearCeldaConObservaciones(calificacion));
-        row.appendChild(crearCeldaConInasistencias(calificacion, inasistencias));
+        row.appendChild(crearCeldaConObservaciones(calificacion, periodoActivo));
+        row.appendChild(crearCeldaConInasistencias(calificacion, inasistencias, periodoActivo));
         tableBody.appendChild(row);
       }
     } catch (error) {
@@ -294,7 +294,7 @@ function crearCeldaConDropdown(valor, periodo, numPeriodo) {
   return cell;
 }
 
-function crearCeldaConObservaciones(calificacion) {
+function crearCeldaConObservaciones(calificacion, periodoActivo) {
   const cell = document.createElement("td");
   const selectObservacion = document.createElement("select");
   selectObservacion.classList.add('observaciones');
@@ -330,13 +330,13 @@ function crearCeldaConObservaciones(calificacion) {
   return cell;
 }
 
-function crearCeldaConInasistencias(calificacion, inasistencias) {
+function crearCeldaConInasistencias(calificacion, inasistencias, periodoActivo) {
   const cell = document.createElement("td");
   const selectElement = document.createElement('select');
   const id_alumno = calificacion.id_alumno;
   selectElement.classList.add('inasistencias');
   selectElement.dataset.calificacion = calificacion.id_calificacion;
-  selectElement.disabled = !(id_rol === 3 || (id_rol === 4 && materiaSeleccionadaId === "21"));
+  selectElement.disabled = !(id_rol === 3 || (id_rol === 4 && materiaSeleccionadaId === "21")) && periodoActivo;
 
 
   // Llenar el select con opciones de inasistencias
@@ -406,13 +406,14 @@ async function cargarObservaciones(idMateria) {
   return observacionesGlobales;
 }
 
-function llenarSelectConObservaciones(selectElement, observaciones) {
+function llenarSelectConObservaciones(selectElement, observaciones, periodoActivo) {
   observaciones.forEach((observacion, index) => {
     const option = document.createElement("option");
     option.value = observacion.id;
     option.text = `${index + 1}. ${observacion.descripcion}`;
     option.dataset.descripcionLarga = observacion.descripcion_larga;
     selectElement.appendChild(option);
+    option.disabled = periodoActivo; 
   });
 }
 
