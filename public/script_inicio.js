@@ -246,8 +246,8 @@ async function cargarAlumnos() {
       if (periodoActivo) {
         mostrarToast(
           `Periodo de captura activo: Desde ${new Date(periodoActivo.fecha_inicio).toLocaleDateString()} hasta ${new Date(periodoActivo.fecha_fin).toLocaleDateString()}`,
-          "success"
-        );
+          "success");
+        console.log(periodoActivo);
       } else {
         mostrarToast("No hay ningún periodo de captura activo en este momento.", "warning");
       }
@@ -261,7 +261,6 @@ async function cargarAlumnos() {
         let inasistencias = [];
         if (periodoActivo) {
           inasistencias = await obtenerInasistencias(calificacion.id_alumno, cicloId, periodoActivo.id);
-          console.log(periodoActivo.id);
         } else {
           console.warn("Periodo activo no definido. No se obtendrán inasistencias para este alumno.");
         }
