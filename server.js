@@ -10,7 +10,6 @@ const jwtSecret = process.env.JWT_SECRET;
 const helmet = require("helmet");
 const moment = require("moment-timezone");
 const { isAfter, addMinutes } = require("date-fns");
-const { format, utcToZonedTime } = require('date-fns-tz');
 const app = express();
 
 const PDFDocument = require('pdfkit');
@@ -141,7 +140,6 @@ app.post("/verificarToken", verificarToken, (req, res) => {
 
 app.post("/login", async (req, res) => {
   try {
-    res.setHeader('Content-Type', 'application/json; charset=utf-8');
     const { email, password } = req.body;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -179,48 +177,11 @@ app.post("/login", async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, usuario.password);
 
     if (passwordMatch) {
-        // Convertir la hora actual a la zona horaria deseada
-        const obtenerFechaHoraMexico = () => {
-        const fechaActual = new Date();
-        return new Intl.DateTimeFormat('sv-SE', {
-          timeZone: 'America/Mexico_City',
-          year: 'numeric',
-          month: '2-digit',
-          day: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: false,
-        }).format(fechaActual).replace(" ", "T"); // Formato ISO 'yyyy-MM-ddTHH:mm:ss'
-      };
+      await supabase
+        .from("Usuario")
+        .update({ intentos_fallidos: 0, estatus: true })
+        .eq("id", usuario.id);
 
-      const fechaHoraMexico = obtenerFechaHoraMexico();
-      
-      try {
-        // Actualizar intentos_fallidos, estatus y ultimo_login
-        const { error: updateError } = await supabase
-          .from("Usuario")
-          .update({
-            intentos_fallidos: 0,
-            estatus: true,
-            ultimo_login: fechaHoraMexico,
-          })
-          .eq("id", usuario.id);
-
-        if (updateError) {
-          console.error("Error al actualizar ultimo_login:", updateError);
-          return res.status(500).json({
-            success: false,
-            message: "Error al actualizar datos de inicio de sesión.",
-          });
-        }
-      } catch (err) {
-        console.error("Error interno al actualizar ultimo_login:", err);
-        return res.status(500).json({
-          success: false,
-          message: "Error interno al actualizar datos de inicio de sesión.",
-        });
-      }
       let token;
 
       if (usuario.id_rol === 1) {
@@ -293,7 +254,6 @@ app.post("/login", async (req, res) => {
       .json({ success: false, message: "Error interno del servidor." });
   }
 });
-
 
 app.get("/grados", async (req, res) => {
   try {
@@ -901,66 +861,6 @@ app.get('/generar-boleta', verificarToken, async (req, res) => {
     res.status(500).send('Error al generar las boletas en PDF');
   }
 });
-
-// Ruta para actualizar la contraseña del usuario
-app.post("/actualizar-contrasena", verificarToken, async (req, res) => {
-  try {
-    const { email, nuevaContrasena } = req.body;
-
-    // Verificar si el rol del usuario es 1
-    if (req.user.id_rol !== 1) {
-      return res.status(403).json({
-        success: false,
-        message: "No tienes permiso para actualizar contraseñas.",
-      });
-    }
-
-    // Validar la estructura del correo electrónico
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email)) {
-      return res.status(400).json({ success: false, message: "Correo inválido." });
-    }
-
-    // Validar que se ha proporcionado la nueva contraseña
-    if (!nuevaContrasena || nuevaContrasena.length < 8) {
-      return res.status(400).json({ success: false, message: "La nueva contraseña debe tener al menos 8 caracteres." });
-    }
-
-    // Buscar el usuario en la base de datos
-    const { data: usuario, error } = await supabase
-      .from("Usuario")
-      .select("*")
-      .eq("email", email)
-      .single();
-
-    if (error || !usuario) {
-      return res.status(404).json({ success: false, message: "Usuario no encontrado." });
-    }
-
-    // Generar el hash de la nueva contraseña
-    const hashedPassword = await bcrypt.hash(nuevaContrasena, 10);
-
-    // Actualizar la contraseña, estatus y intentos fallidos en la base de datos
-    const { error: updateError } = await supabase
-      .from("Usuario")
-      .update({
-        password: hashedPassword,
-        estatus: true,  // Cambia el estatus a TRUE
-        intentos_fallidos: 0  // Restablece intentos fallidos a 0
-      })
-      .eq("email", email);
-
-    if (updateError) {
-      return res.status(500).json({ success: false, message: "Error al actualizar la contraseña." });
-    }
-
-    res.json({ success: true, message: "Contraseña actualizada con éxito." });
-  } catch (err) {
-    res.status(500).json({ success: false, message: "Error interno del servidor." });
-  }
-});
-
-
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
