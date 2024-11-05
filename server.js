@@ -10,6 +10,7 @@ const jwtSecret = process.env.JWT_SECRET;
 const helmet = require("helmet");
 const moment = require("moment-timezone");
 const { isAfter, addMinutes } = require("date-fns");
+const { format, utcToZonedTime } = require('date-fns-tz');
 const app = express();
 
 const PDFDocument = require('pdfkit');
@@ -178,11 +179,36 @@ app.post("/login", async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, usuario.password);
 
     if (passwordMatch) {
-      await supabase
-        .from("Usuario")
-        .update({ intentos_fallidos: 0, estatus: true })
-        .eq("id", usuario.id);
+      // Convertir la hora actual a la zona horaria deseada
+      const timeZone = 'America/Mexico_City';
+      const zonedDate = utcToZonedTime(new Date(), timeZone);
+      const formattedDate = format(zonedDate, "yyyy-MM-dd'T'HH:mm:ssXXX", { timeZone });
 
+      try {
+        // Actualizar intentos_fallidos, estatus y ultimo_login
+        const { error: updateError } = await supabase
+          .from("Usuario")
+          .update({
+            intentos_fallidos: 0,
+            estatus: true,
+            ultimo_login: formattedDate,
+          })
+          .eq("id", usuario.id);
+
+        if (updateError) {
+          console.error("Error al actualizar ultimo_login:", updateError);
+          return res.status(500).json({
+            success: false,
+            message: "Error al actualizar datos de inicio de sesión.",
+          });
+        }
+      } catch (err) {
+        console.error("Error interno al actualizar ultimo_login:", err);
+        return res.status(500).json({
+          success: false,
+          message: "Error interno al actualizar datos de inicio de sesión.",
+        });
+      }
       let token;
 
       if (usuario.id_rol === 1) {
@@ -255,6 +281,7 @@ app.post("/login", async (req, res) => {
       .json({ success: false, message: "Error interno del servidor." });
   }
 });
+
 
 app.get("/grados", async (req, res) => {
   try {
