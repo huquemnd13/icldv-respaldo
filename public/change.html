@@ -22,32 +22,7 @@
 
   <p id="message"></p>
 
-  <script>
-    document.getElementById('updatePasswordForm').addEventListener('submit', async (event) => {
-      event.preventDefault();
-
-      const email = document.getElementById('email').value;
-      const currentPassword = document.getElementById('currentPassword').value;
-      const newPassword = document.getElementById('newPassword').value;
-
-      const token = localStorage.getItem('token'); // Usa el token guardado en el cliente
-
-      try {
-        const response = await fetch('/actualizarPassword', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-          },
-          body: JSON.stringify({ email, currentPassword, newPassword })
-        });
-
-        const result = await response.json();
-        document.getElementById('message').textContent = result.message;
-      } catch (error) {
-        document.getElementById('message').textContent = "Error en la actualización de contraseña.";
-      }
-    });
-  </script>
+  <!-- Mueve la etiqueta script aquí -->
+  <script src="script-change.js"></script>
 </body>
 </html>
