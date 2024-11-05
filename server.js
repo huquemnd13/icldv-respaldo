@@ -140,6 +140,7 @@ app.post("/verificarToken", verificarToken, (req, res) => {
 
 app.post("/login", async (req, res) => {
   try {
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
     const { email, password } = req.body;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
