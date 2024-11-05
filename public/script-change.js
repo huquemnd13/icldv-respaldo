@@ -36,3 +36,13 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 });
+
+// Función para alternar la visibilidad de la contraseña
+document.querySelectorAll('.toggle-password').forEach(item => {
+  item.addEventListener('click', function() {
+    const inputId = this.getAttribute('data-target');
+    const inputField = document.getElementById(inputId);
+    const type = inputField.getAttribute('type') === 'password' ? 'text' : 'password';
+    inputField.setAttribute('type', type);
+  });
+});
