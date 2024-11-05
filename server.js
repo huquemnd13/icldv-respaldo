@@ -862,6 +862,61 @@ app.get('/generar-boleta', verificarToken, async (req, res) => {
   }
 });
 
+// Ruta para actualizar la contraseña del usuario
+app.post("/actualizar-contrasena", verificarToken, async (req, res) => {
+  try {
+    const { email, nuevaContrasena } = req.body;
+
+    // Verificar si el rol del usuario es 1
+    if (req.user.id_rol !== 1) {
+      return res.status(403).json({
+        success: false,
+        message: "No tienes permiso para actualizar contraseñas.",
+      });
+    }
+
+    // Validar la estructura del correo electrónico
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email)) {
+      return res.status(400).json({ success: false, message: "Correo inválido." });
+    }
+
+    // Validar que se ha proporcionado la nueva contraseña
+    if (!nuevaContrasena || nuevaContrasena.length < 8) {
+      return res.status(400).json({ success: false, message: "La nueva contraseña debe tener al menos 8 caracteres." });
+    }
+
+    // Buscar el usuario en la base de datos
+    const { data: usuario, error } = await supabase
+      .from("Usuario")
+      .select("*")
+      .eq("email", email)
+      .single();
+
+    if (error || !usuario) {
+      return res.status(404).json({ success: false, message: "Usuario no encontrado." });
+    }
+
+    // Generar el hash de la nueva contraseña
+    const hashedPassword = await bcrypt.hash(nuevaContrasena, 10);
+
+    // Actualizar la contraseña en la base de datos
+    const { error: updateError } = await supabase
+      .from("Usuario")
+      .update({ password: hashedPassword })
+      .eq("email", email);
+
+    if (updateError) {
+      return res.status(500).json({ success: false, message: "Error al actualizar la contraseña." });
+    }
+
+    res.json({ success: true, message: "Contraseña actualizada con éxito." });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error interno del servidor." });
+  }
+});
+
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`);
