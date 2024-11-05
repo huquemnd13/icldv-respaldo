@@ -11,40 +11,61 @@
   <script src="script_admin.js" defer></script>
 </head>
 <body>
-  <header id="header">
-    <div id="welcome-message">
+  <div class="admin-container">
+    <!-- Menú lateral izquierdo -->
+    <aside class="sidebar">
       <div class="logo-container">
         <img src="https://cdn.glitch.global/053303b6-9407-4474-b212-bccd4a7b7e5d/MarcaLDV.png?v=1728659537627" alt="Logo" class="logo">
-        <div class="welcome-message">Bienvenid@, <span id="nombre_usuario">Usuario</span></div>
-        <div id="ciclo_activo" class="active-cycle"></div>
       </div>
-      <nav>
-        <button id="export-button" aria-label="Exportar calificaciones a Excel">Exportar a Excel</button>
-        <button id="generate-report-button" aria-label="Generar boletas">Generar Boletas</button>
-        <button id="logout-button">Cerrar sesión</button>
+      <nav class="nav-menu">
+        <ul>
+          <li><button onclick="navigateTo('dashboard')">Dashboard</button></li>
+          <li><button onclick="navigateTo('students')">Gestión de Estudiantes</button></li>
+          <li><button onclick="navigateTo('grades')">Calificaciones</button></li>
+          <li><button onclick="navigateTo('attendance')">Asistencia</button></li>
+          <li><button onclick="navigateTo('reports')">Reportes</button></li>
+          <li><button onclick="navigateTo('settings')">Configuración</button></li>
+          <li><button id="logout-button">Cerrar sesión</button></li>
+        </ul>
       </nav>
-    </div>
-  </header>
+    </aside>
 
-  <div id="toast-container" class="toast-container"></div>
+    <!-- Contenido principal -->
+    <main class="main-content">
+      <header id="header">
+        <div id="welcome-message">
+          <div class="welcome-info">
+            <div class="welcome-message">Bienvenid@, <span id="nombre_usuario">Usuario</span></div>
+            <div id="ciclo_activo" class="active-cycle"></div>
+          </div>
+          <nav>
+            <button id="export-button" aria-label="Exportar calificaciones a Excel">Exportar a Excel</button>
+            <button id="generate-report-button" aria-label="Generar boletas">Generar Boletas</button>
+          </nav>
+        </div>
+      </header>
 
-  <div class="table-container">
-    <table id="tablaCalificaciones">
-      <thead>
-        <tr>
-          <th>Nombre del Alumno</th>
-          <th>CURP</th>
-          <th>Ciclo Escolar</th>
-          <th>Grado Escolar</th>
-          <th>Campo Formativo</th>
-          <th>Materia</th>
-          <th>P1</th>
-          <th>P2</th>
-          <th>P3</th>
-        </tr>
-      </thead>
-      <tbody id="tbodyCalificaciones"></tbody>
-    </table>
+      <div id="toast-container" class="toast-container"></div>
+
+      <div class="table-container">
+        <table id="tablaCalificaciones">
+          <thead>
+            <tr>
+              <th>Nombre del Alumno</th>
+              <th>CURP</th>
+              <th>Ciclo Escolar</th>
+              <th>Grado Escolar</th>
+              <th>Campo Formativo</th>
+              <th>Materia</th>
+              <th>P1</th>
+              <th>P2</th>
+              <th>P3</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyCalificaciones"></tbody>
+        </table>
+      </div>
+    </main>
   </div>
 </body>
 </html>

@@ -1,3 +1,4 @@
+/* General */
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -19,6 +20,64 @@ body::before {
   z-index: -1;
 }
 
+/* Contenedor Principal */
+.admin-container {
+  display: flex;
+}
+
+/* Sidebar (menú lateral izquierdo) */
+.sidebar {
+  width: 250px;
+  background-color: #333;
+  color: #fff;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+.logo {
+  width: 80%;
+  margin-bottom: 20px;
+}
+
+.nav-menu ul {
+  list-style-type: none;
+  padding: 0;
+  width: 100%;
+}
+
+.nav-menu li {
+  margin: 15px 0;
+  text-align: center;
+}
+
+.nav-menu button {
+  width: 100%;
+  padding: 10px;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.nav-menu button:hover {
+  background-color: #444;
+}
+
+/* Contenido principal */
+.main-content {
+  margin-left: 250px;
+  padding: 20px;
+  width: calc(100% - 250px);
+}
+
 #header {
   display: flex;
   justify-content: space-between;
@@ -29,7 +88,7 @@ body::before {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   position: fixed;
   top: 0;
-  left: 0;
+  left: 250px; /* Ajuste para el menú lateral */
   right: 0;
   z-index: 10;
   height: 70px;
@@ -54,15 +113,16 @@ h1 {
   text-align: center;
 }
 
+/* Contenedor de tabla */
 .table-container {
-  width: 900px;
+  width: 90%;
+  max-width: 900px;
   height: 400px;
   overflow-y: auto;
-  margin: 20px auto;
+  margin: 120px auto 20px auto;
   border: 1px solid #dddddd;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   background-color: white;
-  margin-top: 120px;
 }
 
 table {
@@ -85,6 +145,7 @@ th {
   z-index: 1;
 }
 
+/* Botones */
 button {
   padding: 10px 20px;
   border: none;
@@ -103,23 +164,22 @@ button:hover {
   background-color: #008cb6;
 }
 
+/* Fila de promedio */
 .promedio-row {
   background-color: #fffbaa;
   font-weight: bold;
 }
 
+/* Toast */
 .toast-container {
   position: fixed;
   bottom: 20px;
   right: 20px;
   z-index: 9999;
 }
+
+/* Contenedor del logo */
 .logo-container {
   display: flex;
   align-items: center;
-}
-
-.logo {
-  width: 300px;
-  margin-right: 20px;
 }
