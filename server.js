@@ -179,11 +179,23 @@ app.post("/login", async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, usuario.password);
 
     if (passwordMatch) {
-      // Convertir la hora actual a la zona horaria deseada
-      const timeZone = 'America/Mexico_City';
-      const zonedDate = utcToZonedTime(new Date(), timeZone);
-      const formattedDate = format(zonedDate, "yyyy-MM-dd'T'HH:mm:ssXXX", { timeZone });
+        // Convertir la hora actual a la zona horaria deseada
+        const obtenerFechaHoraMexico = () => {
+        const fechaActual = new Date();
+        return new Intl.DateTimeFormat('sv-SE', {
+          timeZone: 'America/Mexico_City',
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+        }).format(fechaActual).replace(" ", "T"); // Formato ISO 'yyyy-MM-ddTHH:mm:ss'
+      };
 
+      const fechaHoraMexico = obtenerFechaHoraMexico();
+      
       try {
         // Actualizar intentos_fallidos, estatus y ultimo_login
         const { error: updateError } = await supabase
@@ -191,7 +203,7 @@ app.post("/login", async (req, res) => {
           .update({
             intentos_fallidos: 0,
             estatus: true,
-            ultimo_login: formattedDate,
+            ultimo_login: fechaHoraMexico,
           })
           .eq("id", usuario.id);
 
