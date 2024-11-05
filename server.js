@@ -901,10 +901,14 @@ app.post("/actualizar-contrasena", verificarToken, async (req, res) => {
     // Generar el hash de la nueva contraseña
     const hashedPassword = await bcrypt.hash(nuevaContrasena, 10);
 
-    // Actualizar la contraseña en la base de datos
+    // Actualizar la contraseña, estatus y intentos fallidos en la base de datos
     const { error: updateError } = await supabase
       .from("Usuario")
-      .update({ password: hashedPassword })
+      .update({
+        password: hashedPassword,
+        estatus: true,  // Cambia el estatus a TRUE
+        intentos_fallidos: 0  // Restablece intentos fallidos a 0
+      })
       .eq("email", email);
 
     if (updateError) {
@@ -916,6 +920,7 @@ app.post("/actualizar-contrasena", verificarToken, async (req, res) => {
     res.status(500).json({ success: false, message: "Error interno del servidor." });
   }
 });
+
 
 
 const PORT = process.env.PORT || 3001;
